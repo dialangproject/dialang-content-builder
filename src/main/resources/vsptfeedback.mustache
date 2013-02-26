@@ -1,0 +1,75 @@
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <link rel="stylesheet" type="text/css" href="../../../css/dialang.css" media="all"/>
+        <link rel="stylesheet" type="text/css" href="../../../css/smoothness/jquery-ui-1.9.2.custom.min.css" media="all"/>
+        <script type="text/javascript" src="../../../js/jquery-1.8.3.js"></script>
+        <script type="text/javascript" src="../../../js/jquery-ui-1.9.2.custom.min.js"></script>
+        <style>
+            .ui-tabs-vertical { width: 36.6em; }
+            .ui-tabs-vertical .ui-tabs-nav { padding: .2em .1em .2em .2em; float: left; width: 8em; }
+            .ui-tabs-vertical .ui-tabs-nav li { clear: left; width: 100%; border-bottom-width: 1px !important; border-right-width: 0 !important; margin: 0 -1px .2em 0; }
+            .ui-tabs-vertical .ui-tabs-nav li a { display:block; }
+            .ui-tabs-vertical .ui-tabs-nav li.ui-tabs-active { padding-bottom: 0; padding-right: .1em; border-right-width: 1px; border-right-width: 1px; }
+            .ui-tabs-vertical .ui-tabs-panel { padding: 1em; float: right; width: 24.1em;}
+        </style>
+    </head>
+    <body>
+        <div id="container">
+            <div id="topbar">
+                <div id="navbar">
+                    <button id="skipback" disabled><img src="../../../images/skipb.gif"/></button>
+                    <button id="back" disabled><img src="../../../images/prev.gif"/></button>
+                    <button id="next" title="{{nexttooltip}}"><img src="../../../images/next.gif"/></button>
+                    <button id="skipforward" disabled><img src="../../../images/skipf.gif"/></button>
+                    <button id="help"><img src="../../../images/help.gif" height="23px;"/></button>
+                </div>  <!-- /navbar -->
+                <div id="logo"><img src="../../../images/Logo.gif"/></div> 
+            </div> <!-- /topbar -->
+            <div id="content">
+                <h1 id="vsptfeedback-title">{{title}}</h1>
+                <div id="vsptfeedback-text">{{yourscore}}<span id="score"><span></div>
+                <div style="height: 20px;"></div>
+                <div id="tabs" style="margin-left: auto; margin-right:auto;">
+                    <ul>
+                        <li><a href="#tabs-1">901 - 1000</a></li>
+                        <li><a href="#tabs-2">601 - 900</a></li>
+                        <li><a href="#tabs-3">401 - 600</a></li>
+                        <li><a href="#tabs-4">201 - 400</a></li>
+                        <li><a href="#tabs-5">101 - 200</a></li>
+                        <li><a href="#tabs-6">0 - 100</a></li>
+                    </ul>
+                    <div id="tabs-1">
+                        <p>{{levelv6}}</p>
+                    </div>
+                    <div id="tabs-2">
+                        <p>{{levelv5}}</p>
+                    </div>
+                    <div id="tabs-3">
+                        <p>{{levelv4}}</p>
+                    </div>
+                    <div id="tabs-4">
+                        <p>{{levelv3}}</p>
+                    </div>
+                    <div id="tabs-5">
+                        <p>{{levelv2}}</p>
+                    </div>
+                    <div id="tabs-6">
+                        <p>{{levelv1}}</p>
+                    </div>
+                </div>
+                </div>
+            </div> <!-- /content -->
+            <div style="height: 20px;"></div>
+        </div> <!-- /container -->
+        <script type="text/javascript" src="../../../js/dialang.js"></script>
+        <script type="text/javascript">
+            $('#score').html(getVSPTScore());
+            $( "#tabs" ).tabs({ active: {{activeTab}} }).addClass( "ui-tabs-vertical ui-helper-clearfix" );
+            $( "#tabs li" ).removeClass( "ui-corner-top" ).addClass( "ui-corner-left" );
+
+            var skill = getSkill();
+            $('#next').click(function() { window.location.href = '../../saintro/{{al}}/' + skill + '.html'; });
+        </script>
+    </body>
+</html>

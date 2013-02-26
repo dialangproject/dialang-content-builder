@@ -1,0 +1,45 @@
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <link rel="stylesheet" type="text/css" href="../../css/dialang.css" media="all"/>
+        <script type="text/javascript" src="../../js/jquery-1.8.3.js"></script>
+    </head>
+    <body>
+        <div id="container">
+            <div id="topbar">
+                <div id="navbar">
+                    <button id="skipback" disabled><img src="../../images/skipb.gif"/></button>
+                    <button id="back" title="{{prevtooltip}}" disabled><img src="../../images/prev.gif"/></button>
+                    <button id="next" title="{{nexttooltip}}"><img src="../../images/next.gif"/></button>
+                    <button id="skipforward" title="{{skipftooltip}}"><img src="../../images/skipf.gif"/></button>
+                    <button id="help"><img src="../../images/help.gif" height="23px;"/></button>
+                </div>  <!-- /navbar -->
+                <div id="logo"><img src="../../images/Logo.gif"/></div> 
+            </div> <!-- /topbar -->
+            <div id="content">
+                <h1 id="testintro-title">{{title}}</h1>
+                <div id="testintro-text">{{text}}</div>
+                <form id="testintroform" method="POST" action="/dialang/starttest">
+                    <input type="hidden" name="al" value="{{al}}" />
+                </form>
+                <div style="height: 20px;"></div>
+                <button id="feedback_button" title="{{instantfeedbackontooltip}}"><img src="../../images/instantFeedbackOff.gif"/></button><span>{{feedback}}</span>
+            </div> <!-- /content -->
+            <div style="height: 20px;"></div>
+        </div> <!-- /container -->
+        <script type="text/javascript" src="../../js/dialang.js"></script>
+        <script type="text/javascript">
+            $('#next').click(function() { window.location.href = '/dialang/starttest'; });
+            $('#feedback_button').click(function() {
+                var img = $(this).find('img');
+                if(img.attr('src') == "../../images/instantFeedbackOff.gif") {
+                    $(this).attr('title','{{instantfeedbackofftooltip}}');
+                    img.attr('src',"../../images/instantFeedbackOn.gif");
+                } else {
+                    $(this).attr('title','{{instantfeedbackontooltip}}');
+                    img.attr('src',"../../images/instantFeedbackOff.gif");
+                }
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,142 @@
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <link rel="stylesheet" type="text/css" href="../../../css/dialang.css" media="all"/>
+        <link rel="stylesheet" type="text/css" href="../../../css/smoothness/jquery-ui-1.9.2.custom.min.css" media="all"/>
+        <script type="text/javascript" src="../../../js/jquery-1.8.3.js"></script>
+        <script src="../../../js/jquery-ui-1.9.2.custom.min.js"></script>
+        <script type="text/javascript">
+
+            var answered = {
+                {{#words}}
+                '{{id}}':false,
+                {{/words}}
+                };
+
+            $(document).ready(function () {
+                $(".valid-button").click(function () {
+                    var wordId = this.id.substring(0,this.id.indexOf('_'));
+                    $("[for=" + this.id + "]").html("<img src=\"../../../images/trueselected.gif\"/>");
+                    $("[for=" + wordId + "_incorrect]").html("<img src=\"../../../images/false.gif\"/>");
+                });
+                $(".invalid-button").click(function () {
+                    var wordId = this.id.substring(0,this.id.indexOf('_'));
+                    $("[for=" + this.id + "]").html("<img src=\"../../../images/falseselected.gif\"/>");
+                    $("[for=" + wordId + "_correct]").html("<img src=\"../../../images/true.gif\"/>");
+                });
+
+                $('.word').click(function () {
+                    var wordId = this.id.substring(0,this.id.indexOf('_'));
+                    answered[wordId] = true;
+                    var wordsSelected = $('.word');
+                    if(wordsSelected.length == 27) {
+                    }
+                    var allAnswered = true;
+                    for(var id in answered) {
+                        if(!answered[id]) allAnswered = false; 
+                    }
+                    if(allAnswered) {
+                        $('#sendbutton').removeAttr('disabled');
+                        $('#next').removeAttr('disabled');
+                    }
+                });
+            });
+
+        </script>
+    </head>
+    <body>
+        <div id="container">
+            <div id="topbar">
+                <div id="navbar">
+                    <button id="skipback" disabled><img src="../../../images/skipb.gif"/></button>
+                    <button id="back" disabled><img src="../../../images/prev.gif"/></button>
+                    <button id="next" title="{{nexttooltip}}" disabled><img src="../../../images/next.gif"/></button>
+                    <button id="skipforward" title="{{skipftooltip}}"><img src="../../../images/skipf.gif"/></button>
+                    <button id="help"><img src="../../../images/help.gif" height="23px;"/></button>
+                </div>  <!-- /navbar -->
+                <div id="logo"><img src="../../../images/Logo.gif"/></div> 
+            </div> <!-- /topbar -->
+            <div id="content">
+                <h1>{{title}}</h1>
+                <form id="vsptform" action="/dialang/scorevspt" method="POST">
+                    <input type="hidden" name="al" value="{{al}}"/>
+                    <input type="hidden" name="tl" value="{{tl}}"/>
+                    <input type="hidden" id="cheatlevel" name="cheatlevel" value="zero"/>
+                    <!--input type="hidden" name="skill" value="{{skill}}"/-->
+                            <table class="vspt-table" cols="3">
+                                <tbody>
+                                {{#tab}}
+                                <tr>
+                                    <td><input class="valid-button word {{#isCorrect}}{{id1}}_valid{{/isCorrect}}" id="{{id1}}_correct" type="radio" name="word:{{id1}}" value="valid"/>
+                                        <label for="{{id1}}_correct"><img src="../../../images/true.gif"/></label>
+                                        <input class="invalid-button word {{#isCorrect}}{{id1}}_invalid{{/isCorrect}}" id="{{id1}}_incorrect" type="radio" name="word:{{id1}}" value="invalid"/>
+                                        <label for="{{id1}}_incorrect"><img src="../../../images/false.gif"/></label>
+                                        {{word1}}
+                                    </td>
+                                    <td><input class="valid-button word {{#isCorrect}}{{id2}}_valid{{/isCorrect}}" id="{{id2}}_correct" type="radio" name="word:{{id2}}" value="valid"/>
+                                        <label for="{{id2}}_correct"><img src="../../../images/true.gif"/></label>
+                                        <input class="invalid-button word {{#isCorrect}}{{id2}}_invalid{{/isCorrect}}" id="{{id2}}_incorrect" type="radio" name="word:{{id2}}" value="invalid"/>
+                                        <label for="{{id2}}_incorrect"><img src="../../../images/false.gif"/></label>
+                                        {{word2}}
+                                    </td>
+                                    <td><input class="valid-button word {{#isCorrect}}{{id3}}_valid{{/isCorrect}}" id="{{id3}}_correct" type="radio" name="word:{{id3}}" value="valid"/>
+                                        <label for="{{id3}}_correct"><img src="../../../images/true.gif"/></label>
+                                        <input class="invalid-button word {{#isCorrect}}{{id3}}_invalid{{/isCorrect}}" id="{{id3}}_incorrect" type="radio" name="word:{{id3}}" value="invalid"/>
+                                        <label for="{{id3}}_incorrect"><img src="../../../images/false.gif"/></label>
+                                        {{word3}}
+                                    </td>
+                                </tr>
+                                {{/tab}}
+                                </tbody>
+                            </table>
+                    <img src="../../../images/true.gif"/> = {{yes}} <img src="../../../images/false.gif"/> = No <input id="sendbutton" type="button" value="{{submit}}" disabled/>
+                </form>
+                <div id="confirmationdialog" title="{{confirmationTitle}}">
+                    <div style="margin-left: auto; margin-right: auto;">
+                    <p>{{confirmsendquestion}}</p>
+                    <table cols="2">
+                        <tbody>
+                            <tr>
+                                <td align="center"><button id="confirmation_yes" style="background-color: white;"><img src="../../../images/yes.gif"/></button></td>
+                                <td align="center"><button id="confirmation_no" style="background-color: white;"><img src="../../../images/no.gif" width="58" height="58"/></button></td>
+                            </tr>
+                            <tr>
+                                <td align="center">{{yes}}</td><td align="center">{{no}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+            </div> <!-- /content -->
+            <div style="height: 20px;"></div>
+        </div> <!-- /container -->
+        <script type="text/javascript" src="../../../js/dialang.js"></script>
+        <script type="text/javascript">
+            $(document).keydown(function (e) {
+                if(e.keyCode == '72' && e.ctrlKey) {
+                    $('#sendbutton').removeAttr('disabled');
+                    $('#next').removeAttr('disabled');
+                    $('.correct').click();
+                    $('#next').click(function () { $('#confirmationdialog').dialog('open'); });
+                } else if(e.keyCode == '77' && e.ctrlKey) {
+                    $('#sendbutton').removeAttr('disabled');
+                    $('#next').removeAttr('disabled');
+                    $('.incorrect').click();
+                    $('#next').click(function () { $('#confirmationdialog').dialog('open'); });
+                } else if(e.keyCode == '76' && e.ctrlKey) {
+                    $('#sendbutton').removeAttr('disabled');
+                    $('#next').removeAttr('disabled');
+                    $('.incorrect').click();
+                    $('#next').click(function () { $('#confirmationdialog').dialog('open'); });
+                }
+            });
+            $('#sendbutton').click( function (e) {
+                $('#confirmationdialog').dialog('open');
+            });
+            $('#confirmationdialog').dialog({modal: true, width: 400, height: 250, autoOpen: false});
+            $('#confirmation_yes').click(function (e) { $('#vsptform').submit(); });
+            $('#confirmation_no').click(function (e) { $('#confirmationdialog').dialog('close'); });
+            $('#skipforward').click(function () { window.location.href = '/{{al}}/sa'; });
+        </script>
+    </body>
+</html>

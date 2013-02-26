@@ -1,0 +1,47 @@
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <link rel="stylesheet" type="text/css" href="../css/dialang.css" media="all"/>
+        <script type="text/javascript" src="../js/jquery-1.8.3.js"></script>
+        <style type="text/css">
+            #content > table > tbody > tr > td {
+                white-space: nowrap;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container">
+            <div id="topbar">
+                <div id="navbar" style="display: none;">
+                    <button id="skipback"><img src="../images/skipb.gif"/></button>
+                    <button id="back"><img src="../images/prev.gif"/></button>
+                    <button id="next"><img src="../images/next.gif"/></button>
+                    <button id="skipforward"><img src="../images/skipf.gif"/></button>
+                    <button id="help"><img src="../images/help.gif" height="23px;"/></button>
+                </div>  <!-- /navbar -->
+                <div id="logo"><img src="../images/Logo.gif"/></div> 
+            </div> <!-- /topbar -->
+            <div id="content">
+                <div style="text-align: center;margin-left: auto;margin-right: auto; margin-top: 20px;"><img src="../images/dlogo_large_dark.gif"/></div>
+                <table cols="2" style="margin-left: auto;margin-right: auto; margin-top: 30px;">
+                    <tbody>
+                        <tr><td><button class="language-button al-button" id="da">{{da}}</button></<td><td><button class="language-button al-button" id="de">{{de}}</button></td></tr>
+                        <tr><td><button class="language-button al-button" id="el">{{el}}</button></<td><td><button class="language-button al-button" id="en">{{en}}</button></td></tr>
+                        <tr><td><button class="language-button al-button" id="es">{{es}}</button></<td><td><button class="language-button al-button" id="fi">{{fi}}</button></td></tr>
+                        <tr><td><button class="language-button al-button" id="fr">{{fr}}</button></<td><td><button class="language-button al-button" id="ga">{{ga}}</button></td></tr>
+                        <tr><td><button class="language-button al-button" id="is">{{is}}</button></<td><td><button class="language-button al-button" id="it">{{it}}</button></td></tr>
+                        <tr><td><button class="language-button al-button" id="nl">{{nl}}</button></<td><td><button class="language-button al-button" id="no">{{no}}</button></td></tr>
+                        <tr><td><button class="language-button al-button" id="pt">{{pt}}</button></<td><td><button class="language-button al-button" id="sv">{{sv}}</button></td></tr>
+                    </tbody>
+                </table>
+                <div id="funder">{{fundermessage}}</div>
+            </div> <!-- /content -->
+            <div style="height: 20px;"></div>
+        </div> <!-- /container -->
+        <script type="text/javascript">
+            $('.al-button').click( function(e) {
+                window.location = "legend/" + this.id + ".html";
+            });
+        </script>
+    </body>
+</html>

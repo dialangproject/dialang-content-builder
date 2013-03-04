@@ -15,10 +15,15 @@ object DialangExporter extends App {
 
   val db = new DB
   val engine = new TemplateEngine
+  val websiteDir = new File("website/dialang/content")
+
+  if(!websiteDir.exists) {
+    websiteDir.mkdirs();
+  }
 
   val adminLanguages = db.getAdminLanguageLocales
 
-  exportAls
+  exportAls()
   exportLegendPages(adminLanguages)
   exportFlowchartPages(adminLanguages)
   exportTLSPages(adminLanguages)
@@ -29,13 +34,13 @@ object DialangExporter extends App {
   exportSAPages(adminLanguages)
   exportTestIntroPages(adminLanguages)
 
-  sys.exit
+  sys.exit()
 
-  def exportAls {
+  def exportAls() {
     val output = engine.layout("src/main/resources/als.mustache",db.getAdminLanguages)
     val alsFile = new OutputStreamWriter(new FileOutputStream("website/dialang/content/als.html"),"UTF-8")
     alsFile.write(output)
-    alsFile.close
+    alsFile.close()
   }
 
   def exportLegendPages(adminLanguages:List[String]) {
@@ -64,7 +69,7 @@ object DialangExporter extends App {
         val output = engine.layout("src/main/resources/legend.mustache",map)
         val legendFile = new OutputStreamWriter(new FileOutputStream(new File(legendDir,al + ".html")),"UTF-8")
         legendFile.write(output)
-        legendFile.close
+        legendFile.close()
     }
   }
 

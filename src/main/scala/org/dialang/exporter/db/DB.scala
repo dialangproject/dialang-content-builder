@@ -3,7 +3,10 @@ package org.dialang.exporter.db
 import java.sql.{DriverManager,Connection}
 
 import scala.collection.JavaConversions._
-import scala.collection.mutable.{ListBuffer,HashMap,ArrayBuffer} 
+import scala.collection.mutable.{ListBuffer,HashMap,ArrayBuffer}
+
+import org.dialang.common.model.Item
+
 class DB {
 
   Console.setOut(System.err)
@@ -58,6 +61,18 @@ class DB {
     translation
   }
 
+  def getTranslationLike(key:String,language:String) = {
+    val st = conn.createStatement
+    var rs = st.executeQuery("SELECT value FROM display_texts WHERE key LIKE '" + key + "' and locale = '" + language + "'")
+    var translation = ""
+    if(rs.next) {
+        translation = rs.getString("value")
+    }
+    rs.close
+    st.close
+    translation
+  }
+
   // TODO: Cache this
   def getTestLanguagePrompts(adminLanguageCode:String) = {
     val st = conn.createStatement
@@ -99,13 +114,12 @@ class DB {
         list += ((rs.getString("word"),rs.getString("id"),rs.getBoolean("valid")))
     }
 
-    rs.close
-    st.close
+    rs.close()
+    st.close()
 
     list.toList
   }
 
-  // TODO: Cache this
   def getSAStatements(al: String, skill: String) = {
     val st = conn.createStatement
     val rs = st.executeQuery("SELECT * FROM sa_statements WHERE locale = '" + al + "' AND skill = '" + skill + "'")
@@ -114,6 +128,94 @@ class DB {
     while(rs.next) {
         list += Map("wid" -> rs.getString("wid"),"statement" -> rs.getString("statement"))
     }
+
+    rs.close()
+    st.close()
+
+    list.toList
+  }
+
+  def getBaskets = {
+    val st = conn.createStatement
+    val rs = st.executeQuery("SELECT * FROM baskets")
+    //val rs = st.executeQuery("SELECT * FROM baskets WHERE type = 'tabbedpane'")
+
+    val list = new ListBuffer[Basket]
+
+    while(rs.next) {
+      list += new Basket(rs)
+    }
+
+    rs.close()
+    st.close()
+
+    list.toList
+  }
+
+  def getChildBaskets(testletId:Int) = {
+    val st = conn.createStatement
+    val rs = st.executeQuery("SELECT * FROM baskets WHERE parent_basket_id = " + testletId)
+
+    val list = new ListBuffer[Basket]
+
+    while(rs.next) {
+      list += new Basket(rs)
+    }
+
+    rs.close()
+    st.close()
+
+    list.toList
+  }
+
+  def getItemsForBasket(basketId:Int) = {
+    val st = conn.createStatement
+    val rs = st.executeQuery("SELECT items.* FROM baskets,basket_item,items WHERE baskets.id = " + basketId + " AND baskets.id = basket_item.basket_id AND basket_item.item_id = items.id")
+
+    val list = new ListBuffer[Item]
+
+    while(rs.next) {
+      list += new Item(rs)
+    }
+
+    rs.close()
+    st.close()
+
+    list.toList
+  }
+
+  def getAnswersForItem(itemId:Int) = {
+    val st = conn.createStatement
+    val rs = st.executeQuery("SELECT * FROM answers WHERE item_id = " + itemId)
+
+    val list = new ListBuffer[Map[String,String]]
+
+    while(rs.next) {
+      list += Map( "id" -> rs.getInt("id").toString,
+                    "item_id" -> rs.getInt("item_id").toString,
+                    "text" -> rs.getString("text"),
+                    "correct" -> rs.getInt("correct").toString )
+    }
+
+    rs.close()
+    st.close()
+
+    list.toList
+  }
+
+  def getLevels = {
+
+    val st = conn.createStatement
+    val rs = st.executeQuery("SELECT level FROM levels")
+
+    val list = new ListBuffer[String]
+
+    while(rs.next) {
+      list += rs.getString(1)
+    }
+
+    rs.close()
+    st.close()
 
     list.toList
   }

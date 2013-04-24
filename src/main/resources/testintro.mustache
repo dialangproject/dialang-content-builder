@@ -1,3 +1,4 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
@@ -22,24 +23,12 @@
                 <form id="testintroform" method="POST" action="/dialang/starttest">
                     <input type="hidden" name="al" value="{{al}}" />
                 </form>
-                <div style="height: 20px;"></div>
-                <button id="feedback_button" title="{{instantfeedbackontooltip}}"><img src="../../images/instantFeedbackOff.gif"/></button><span>{{feedback}}</span>
+                <div class="bottom-margin"></div>
+                <button id="feedback-button" title="{{instantfeedbackontooltip}}"><img src="../../images/instantFeedbackOff.gif"/></button><span>{{feedback}}</span>
             </div> <!-- /content -->
-            <div style="height: 20px;"></div>
+            <div class="bottom-margin"></div>
         </div> <!-- /container -->
         <script type="text/javascript" src="../../js/dialang.js"></script>
-        <script type="text/javascript">
-            $('#next').click(function() { window.location.href = '/dialang/starttest'; });
-            $('#feedback_button').click(function() {
-                var img = $(this).find('img');
-                if(img.attr('src') == "../../images/instantFeedbackOff.gif") {
-                    $(this).attr('title','{{instantfeedbackofftooltip}}');
-                    img.attr('src',"../../images/instantFeedbackOn.gif");
-                } else {
-                    $(this).attr('title','{{instantfeedbackontooltip}}');
-                    img.attr('src',"../../images/instantFeedbackOff.gif");
-                }
-            });
-        </script>
+        <script type="text/javascript" src="../../js/testintro.js"></script>
     </body>
 </html>

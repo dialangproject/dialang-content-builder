@@ -5,6 +5,7 @@ import org.fusesource.scalate._
 import org.dialang.exporter.db.DB
 
 import java.io.{File,FileOutputStream,OutputStreamWriter}
+import java.util.regex.{Pattern,Matcher}
 
 import scala.collection.JavaConversions._
 import scala.collection.mutable.{ListBuffer,HashMap,ArrayBuffer}
@@ -15,7 +16,7 @@ object DialangExporter extends App {
 
   val db = new DB
   val engine = new TemplateEngine
-  val websiteDir = new File("website/dialang/content")
+  val websiteDir = new File("website/dialang/html")
 
   if(!websiteDir.exists) {
     websiteDir.mkdirs();
@@ -23,6 +24,7 @@ object DialangExporter extends App {
 
   val adminLanguages = db.getAdminLanguageLocales
 
+  /*
   exportAls()
   exportLegendPages(adminLanguages)
   exportFlowchartPages(adminLanguages)
@@ -33,19 +35,26 @@ object DialangExporter extends App {
   exportSAIntroPages(adminLanguages)
   exportSAPages(adminLanguages)
   exportTestIntroPages(adminLanguages)
+  exportBasketPages(adminLanguages)
+  exportEndOfTestPages(adminLanguages)
+  exportFeedbackMenuPages(adminLanguages)
+  */
+  //exportLevelPages(adminLanguages)
+  //exportSAFeedbackPages(adminLanguages)
+  exportTestResultPages(adminLanguages)
 
   sys.exit()
 
   def exportAls() {
     val output = engine.layout("src/main/resources/als.mustache",db.getAdminLanguages)
-    val alsFile = new OutputStreamWriter(new FileOutputStream("website/dialang/content/als.html"),"UTF-8")
+    val alsFile = new OutputStreamWriter(new FileOutputStream("website/dialang/html/als.html"),"UTF-8")
     alsFile.write(output)
     alsFile.close()
   }
 
   def exportLegendPages(adminLanguages:List[String]) {
 
-    val legendDir = new File("website/dialang/content/legend")
+    val legendDir = new File("website/dialang/html/legend")
     if(!legendDir.isDirectory) {
         legendDir.mkdirs()
     }
@@ -75,7 +84,7 @@ object DialangExporter extends App {
 
   def exportFlowchartPages(adminLanguages:List[String]) {
 
-    val flowchartDir = new File("website/dialang/content/flowchart")
+    val flowchartDir = new File("website/dialang/html/flowchart")
     if(!flowchartDir.isDirectory) {
         flowchartDir.mkdirs()
     }
@@ -123,7 +132,7 @@ object DialangExporter extends App {
 
   def exportTLSPages(adminLanguages:List[String]) {
 
-    val tlsDir = new File("website/dialang/content/tls")
+    val tlsDir = new File("website/dialang/html/tls")
     if(!tlsDir.isDirectory) {
         tlsDir.mkdirs()
     }
@@ -187,7 +196,7 @@ object DialangExporter extends App {
 
   def exportVSPTIntroPages(adminLanguages:List[String]) {
 
-    val vsptIntroDir = new File("website/dialang/content/vsptintro")
+    val vsptIntroDir = new File("website/dialang/html/vsptintro")
     if(!vsptIntroDir.isDirectory) vsptIntroDir.mkdirs()
 
     val testLanguages = db.getTestLanguageCodes
@@ -212,7 +221,7 @@ object DialangExporter extends App {
   }
 
   def exportVSPTPages(adminLanguages:List[String]) {
-    val vsptDir = new File("website/dialang/content/vspt")
+    val vsptDir = new File("website/dialang/html/vspt")
     val testLanguages = db.getTestLanguageCodes
     for(al <- adminLanguages) { 
       val alDir = new File(vsptDir,al)
@@ -298,7 +307,7 @@ object DialangExporter extends App {
   }
 
   def exportVSPTFeedbackPages(adminLanguages:List[String]) {
-    val vsptfeedbackDir = new File("website/dialang/content/vsptfeedback")
+    val vsptfeedbackDir = new File("website/dialang/html/vsptfeedback")
     val levels = db.vsptLevels
 
     // We use this to select the correct jquery-ui tab for the level.
@@ -344,7 +353,7 @@ object DialangExporter extends App {
 
   def exportSAIntroPages(adminLanguages:List[String]) {
 
-    val saIntroDir = new File("website/dialang/content/saintro")
+    val saIntroDir = new File("website/dialang/html/saintro")
 
     for(al <- adminLanguages) { 
       val alDir = new File(saIntroDir,al)
@@ -373,7 +382,7 @@ object DialangExporter extends App {
 
   def exportSAPages(adminLanguages:List[String]) {
 
-    val saDir = new File("website/dialang/content/sa")
+    val saDir = new File("website/dialang/html/sa")
 
     for(al <- adminLanguages) { 
       val alDir = new File(saDir,al)
@@ -409,7 +418,7 @@ object DialangExporter extends App {
 
   def exportTestIntroPages(adminLanguages:List[String]) {
 
-    val testIntroDir = new File("website/dialang/content/testintro")
+    val testIntroDir = new File("website/dialang/html/testintro")
     if(!testIntroDir.isDirectory) {
         testIntroDir.mkdirs()
     }
@@ -437,11 +446,284 @@ object DialangExporter extends App {
     }
   }
 
-  def exportMCQBasketPages(adminLanguages:List[String]) {
+  def exportBasketPages(adminLanguages:List[String]) {
 
-    val basketDir = new File("website/dialang/content/baskets")
+    val typeMap = Map( "gapdrop" -> "GapDrop",
+                        "gaptext" -> "GapText",
+                        "mcq" -> "MCQ",
+                        "shortanswer" -> "ShortAnswer",
+                        "tabbedpane" -> "TabbedMCQ" )
+
+    val basketDir = new File("website/dialang/html/baskets")
     if(!basketDir.isDirectory) {
         basketDir.mkdirs()
+    }
+
+    val itemPlaceholderPattern = Pattern.compile("<(\\d*)>")
+
+    db.getBaskets.foreach(basket => {
+
+      // Render the media markup independently of al
+      val mediaMarkup = basket.mediatype match { 
+          case "text/html" => {
+            engine.layout("src/main/resources/textmedia.mustache",Map("markup" -> basket.textmedia))
+          }
+          case "audio/mpeg" => {
+            engine.layout("src/main/resources/audiomedia.mustache",Map("filename" -> basket.filemedia))
+          }
+          case "image/jpeg" => {
+            engine.layout("src/main/resources/imagemedia.mustache",Map("filename" -> basket.filemedia))
+          }
+          case "none" => {
+            ""
+          }
+        }
+
+      val basketType = basket.basketType
+      val basketId = basket.id
+      val skill = basket.skill
+      val basketPrompt = basket.prompt
+
+      val responseMarkup = basketType match {
+          case "mcq" => {
+            val item = db.getItemsForBasket(basketId).head
+            val answers = db.getAnswersForItem(item.id)
+            engine.layout("src/main/resources/mcqresponse.mustache",Map("itemtext" -> item.text,"itemId" -> item.id.toString,"answers" -> answers))
+          }
+          case "shortanswer" => {
+            val items = db.getItemsForBasket(basketId)
+            val itemList = items.map(item => {
+                Map("id" -> item.id.toString,"text" -> item.text)
+              })
+            engine.layout("src/main/resources/saresponse.mustache",Map("basketPrompt" -> basketPrompt,"items" -> itemList))
+          }
+          case "gaptext" => {
+            val gapText = basket.gaptext
+            var gapMarkup = gapText
+            val items = db.getItemsForBasket(basketId)
+
+            val m = itemPlaceholderPattern.matcher(gapText)
+
+            while(m.find()) {
+              val itemNumber = m.group(1)
+              val item = items(itemNumber.toInt)
+              gapMarkup = gapMarkup.replace("<" + itemNumber + ">","<input type=\"text\" name=\"" + item.id.toString + "-response\" />")
+            }
+
+            engine.layout("src/main/resources/gtresponse.mustache",Map("basketPrompt" -> basketPrompt,"markup" -> gapMarkup))
+          }
+          case "gapdrop" => {
+            val gapText = basket.gaptext
+            var gapMarkup = gapText
+            val items = db.getItemsForBasket(basketId)
+
+            val m = itemPlaceholderPattern.matcher(gapText)
+
+            while(m.find()) {
+              val itemNumber = m.group(1)
+              val item = items(itemNumber.toInt)
+              val answers = db.getAnswersForItem(item.id)
+              var select = "<select name=\"" + item.id.toString + "-response\">"
+              select += "<option></option>"
+              answers.foreach(answer => {
+                select += "<option value=\"" + answer.get("id").get + "\">" + answer.get("text").get + "</option>"
+              })
+              select += "</select>"
+              gapMarkup = gapMarkup.replace("<" + itemNumber + ">",select)
+            }
+
+            engine.layout("src/main/resources/gdresponse.mustache",Map("basketPrompt" -> basketPrompt,"markup" -> gapMarkup))
+          }
+          case "tabbedpane" => {
+
+            val childBaskets
+              = db.getChildBaskets(basketId).map(childBasket => {
+                  val childBasketId = childBasket.id
+                  val item = db.getItemsForBasket(childBasketId).head
+                  val answers = db.getAnswersForItem(item.id)
+                  Map("basketId" -> childBasketId.toString,"itemId" -> item.id.toString,"itemtext" -> item.text,"answers" -> answers)
+              })
+
+            engine.layout("src/main/resources/tabbedpaneresponse.mustache",Map("childBaskets" -> childBaskets))
+          }
+          case _ => {
+            engine.layout("src/main/resources/mcqresponse.mustache",Map("blah" -> "blah"))
+          }
+        }
+
+      for(al <- adminLanguages) {
+
+        val alDir = new File(basketDir,al)
+        if(!alDir.isDirectory) {
+          alDir.mkdirs()
+        }
+
+        val rubricText = db.getTranslation("LangTest_Rubric#" + typeMap.get(basketType).get + "#Text",al)
+        
+        val map = Map("basketId" -> basketId.toString,"type" -> basketType, "rubricText" -> rubricText,"mediaMarkup" -> mediaMarkup,"responseMarkup" -> responseMarkup)
+        val output = engine.layout("src/main/resources/basket.mustache",map)
+        val basketFile = new OutputStreamWriter(new FileOutputStream(new File(alDir,basketId + ".html")),"UTF-8")
+        basketFile.write(output)
+        basketFile.close
+      }
+    })
+
+  }
+
+  def exportEndOfTestPages(adminLanguages:List[String]) {
+
+    val endOfTestDir = new File("website/dialang/html/endoftest")
+    if(!endOfTestDir.isDirectory) {
+        endOfTestDir.mkdirs()
+    }
+
+    for(al <- adminLanguages) { 
+        val title = db.getTranslation("Title_LangTestEnd",al)
+        val text = db.getTranslation("LangTestEnd_Text",al)
+        val nexttooltip = db.getTranslation("Caption_Feedback",al)
+        val map = Map("title" -> title,"text" -> text,"nexttooltip" -> nexttooltip,"al" -> al)
+        val output = engine.layout("src/main/resources/endoftest.mustache",map)
+        val endOfTestFile = new OutputStreamWriter(new FileOutputStream(new File(endOfTestDir,al + ".html")),"UTF-8")
+        endOfTestFile.write(output)
+        endOfTestFile.close()
+    }
+  }
+
+  def exportFeedbackMenuPages(adminLanguages:List[String]) {
+
+    val feedbackMenuDir = new File("website/dialang/html/feedbackmenu")
+    if(!feedbackMenuDir.isDirectory) {
+        feedbackMenuDir.mkdirs()
+    }
+
+    for(al <- adminLanguages) { 
+      val title = db.getTranslation("Title_FeedbackMenu",al)
+      val text = db.getTranslation("FeedbackMenu_Text",al)
+      val resultsTitle = db.getTranslation("Title_Results",al)
+      val yourLevelText = db.getTranslation("FeedbackOption_Level",al)
+      val checkAnswersText = db.getTranslation("FeedbackOption_CheckAnswers",al)
+      val placementTestText = db.getTranslation("Title_Placement",al)
+      val saFeedbackText = db.getTranslation("Title_SelfAssessFeedback",al)
+      val adviceTitle = db.getTranslation("Title_Advice",al)
+      val adviceText = adviceTitle
+      val aboutSAText = db.getTranslation("FeedbackOption_AboutSelfAssess",al)
+      val skipbtooltip = db.getTranslation("Caption_ChooseAnotherTest",al)
+      val skipftooltip = skipbtooltip
+      val map = Map("al" -> al,
+                      "title" -> title,
+                      "text" -> text,
+                      "resultsTitle" -> resultsTitle,
+                      "yourLevelText" -> yourLevelText,
+                      "checkAnswersText" -> checkAnswersText,
+                      "placementTestText" -> placementTestText,
+                      "saFeedbackText" -> saFeedbackText,
+                      "adviceTitle" -> adviceTitle,
+                      "adviceText" -> adviceText,
+                      "aboutSAText" -> aboutSAText,
+                      "skipbtooltip" -> skipbtooltip,
+                      "skipftooltip" -> skipftooltip)
+      val output = engine.layout("src/main/resources/feedbackmenu.mustache",map)
+      val feedbackMenuFile = new OutputStreamWriter(new FileOutputStream(new File(feedbackMenuDir,al + ".html")),"UTF-8")
+      feedbackMenuFile.write(output)
+      feedbackMenuFile.close
+    }
+  }
+
+  def exportSAFeedbackPages(adminLanguages:List[String]) {
+
+    val saFeedbackDir = new File("website/dialang/html/safeedback")
+    if(!saFeedbackDir.isDirectory) {
+        saFeedbackDir.mkdirs()
+    }
+
+    val levels = db.getLevels
+
+    for(al <- adminLanguages) { 
+      val alDir = new File(saFeedbackDir,al)
+      if(!alDir.isDirectory) {
+        alDir.mkdir()
+      }
+
+      val title = db.getTranslation("Title_SelfAssessFeedback",al)
+      val prevtooltip = db.getTranslation("Caption_BacktoFeedback",al)
+      val aboutSAText = db.getTranslation("FeedbackOption_AboutSelfAssess",al)
+      val overEst = db.getTranslation("SelfAssessFeedback_OverEst_Par2",al)
+      val underEst = db.getTranslation("SelfAssessFeedback_UnderEst_Par2",al)
+
+      levels.foreach(itemLevel => {
+        val itemLevelDir = new File(alDir,itemLevel)
+        if(!itemLevelDir.isDirectory) {
+          itemLevelDir.mkdir()
+        }
+        levels.foreach(saLevel => {
+          val partOne = db.getTranslationLike("SelfAssessFeedback%Par1#" + itemLevel + "#" + saLevel,al)
+          val partTwo = {
+              if(saLevel > itemLevel) {
+                overEst
+              } else {
+                underEst
+              }
+            }
+
+          val map = Map("al" -> al,
+                      "title" -> title,
+                      "partOne" -> partOne,
+                      "partTwo" -> partTwo,
+                      "aboutSAText" -> aboutSAText,
+                      "prevtooltip" -> prevtooltip)
+          val output = engine.layout("src/main/resources/safeedback.mustache",map)
+          val saFeedbackFile = new OutputStreamWriter(new FileOutputStream(new File(itemLevelDir,saLevel + ".html")),"UTF-8")
+          saFeedbackFile.write(output)
+          saFeedbackFile.close
+        })
+      })
+    }
+  }
+
+  def exportTestResultPages(adminLanguages:List[String]) {
+
+    val testresultsDir = new File("website/dialang/html/testresults")
+    if(!testresultsDir.isDirectory) {
+        testresultsDir.mkdirs()
+    }
+
+    val levels = db.getLevels
+
+    for(al <- adminLanguages) { 
+
+      val alDir = new File(testresultsDir,al)
+      if(!alDir.isDirectory) {
+        alDir.mkdir()
+      }
+
+      val title = db.getTranslation("Title_DIALANGTestResults",al)
+      val prevtooltip = db.getTranslation("Caption_BacktoWelcome",al)
+
+      for(skill <- db.saSkills) {
+
+        val skillDir = new File(alDir,skill.toLowerCase)
+        if(!skillDir.isDirectory) {
+          skillDir.mkdir()
+        }
+
+        val explanTexts = levels.map(l => {
+            val text = db.getTranslation("TestResults_Text#" + skill + "#" + l,al)
+            ((l + "Explanation",text))
+          })
+
+        levels.foreach(itemLevel => {
+          val text = db.getTranslation("TestResults_Text#" + skill + "#" + itemLevel,al)
+          val map = Map("al" -> al,
+                      "title" -> title,
+                      "text" -> text,
+                      "itemLevel" -> itemLevel,
+                      "prevtooltip" -> prevtooltip) ++ explanTexts
+          val output = engine.layout("src/main/resources/testresults.mustache",map)
+          val testresultsFile = new OutputStreamWriter(new FileOutputStream(new File(skillDir,itemLevel + ".html")),"UTF-8")
+          testresultsFile.write(output)
+          testresultsFile.close()
+        })
+      }
     }
   }
 }

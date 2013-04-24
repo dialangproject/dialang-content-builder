@@ -1,3 +1,4 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
@@ -53,45 +54,29 @@
                     <img src="../../images/notavailable.gif"/>{{notavailable}}
                 </div>
 
-                <div id="disclaimerdialog" title="{{disclaimerTitle}}">
-                    <div style="height: 275px;overflow: scroll;overflow-x: hidden;">{{{disclaimer}}}</div>
-                    <br />
-                    <div style="text-align: center;"><button style="background-color: white;" onclick="$('#disclaimerdialog').dialog('close');"><img src="../../images/yes.gif"/></button><br />{{ok}}</div>
+                <div id="disclaimer-dialog" title="{{disclaimerTitle}}">
+                    <div id="disclaimer-text">{{{disclaimer}}}</div>
+                    <div><button id="disclaimer-button"><img src="../../images/yes.gif"/></button><br />{{ok}}</div>
                 </div>
-                <div id="confirmationdialog" title="{{confirmationTitle}}">
-                    <div style="margin-left: auto; margin-right: auto;">
+                <div id="confirmation-dialog" title="{{confirmationTitle}}">
                     <p>{{testChosen}}</p>
                     <p id="confirmation_langskill"></p>
                     <table cols="2">
                         <tbody>
                             <tr>
-                                <td align="center"><button id="confirmation_yes" style="background-color: white;"><img src="../../images/yes.gif"/></button></td>
-                                <td align="center"><button id="confirmation_no" style="background-color: white;"><img src="../../images/no.gif" width="58" height="58"/></button></td>
+                                <td align="center"><button id="confirmation_yes"><img src="../../images/yes.gif"/></button></td>
+                                <td align="center"><button id="confirmation_no"><img src="../../images/no.gif" width="58" height="58"/></button></td>
                             </tr>
                             <tr>
                                 <td align="center">{{yes}}</td><td align="center">{{no}}</td>
                             </tr>
                         </tbody>
                     </table>
-                    </div>
                 </div>
             </div> <!-- /content -->
-            <div style="height: 20px;"></div>
+            <div class="bottom-margin"></div>
         </div> <!-- /container -->
-        <script type="text/javascript">
-            $('#back').click(function () { window.location.href = '../flowchart/{{al}}.html'; });
-            $('#skipback').click(function () { window.location.href = '../als.html'; });
-            $('.tls-link').click(function () {
-                var langskill = $(this).attr('title');
-                $('#confirmation_langskill').html(langskill);
-                var href = $(this).attr('href');
-                $('#confirmation_yes').click(function (e) { document.location.href = href; });
-                $('#confirmationdialog').dialog('open');
-                return false;
-            });
-            $('#disclaimerdialog').dialog({modal: true, width: 500, height: 450});
-            $('#confirmationdialog').dialog({modal: true, width: 500, height: 450, autoOpen: false});
-            $('#confirmation_no').click(function (e) { $('#confirmationdialog').dialog('close'); });
-        </script>
+        <script type="text/javascript" src="../../js/dialang.js"></script>
+        <script type="text/javascript" src="../../js/tls.js"></script>
     </body>
 </html>

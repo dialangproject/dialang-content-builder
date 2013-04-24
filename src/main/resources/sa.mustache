@@ -1,4 +1,5 @@
-<html lang="utf-8">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
         <link rel="stylesheet" type="text/css" href="../../../css/dialang.css" media="all"/>
@@ -12,39 +13,6 @@
                 '{{wid}}':false,
                 {{/statements}}
                 };
-
-            $(document).ready(function () {
-                $(".valid-button").click(function () {
-                    var statementId = this.id.substring(0,this.id.indexOf('_'));
-                    $("[for=" + this.id + "]").html("<img src=\"../../../images/trueselected.gif\"/>");
-                    $("[for=" + statementId + "_invalid]").html("<img src=\"../../../images/false.gif\"/>");
-                });
-                $(".invalid-button").click(function () {
-                    var statementId = this.id.substring(0,this.id.indexOf('_'));
-                    $("[for=" + this.id + "]").html("<img src=\"../../../images/falseselected.gif\"/>");
-                    $("[for=" + statementId + "_valid]").html("<img src=\"../../../images/true.gif\"/>");
-                });
-
-                $('.statement').click(function () {
-                    var statementId = this.id.substring(0,this.id.indexOf('_'));
-                    answered[statementId] = true;
-                    var statementsSelected = $('.statement');
-                    if(statementsSelected.length == 27) {
-                    }
-                    var allAnswered = true;
-                    for(var id in answered) {
-                        if(!answered[id]) allAnswered = false; 
-                    }
-                    if(allAnswered) {
-                        $('#sendbutton').removeAttr('disabled');
-                        $('#next')
-                            .removeAttr('disabled')
-                            .click( function (e) {
-                            $('#confirmationdialog').dialog('open');
-                        });
-                    }
-                });
-            });
 
         </script>
     </head>
@@ -64,7 +32,7 @@
                 <h1>{{title}}</h1>
                 <form id="saform" action="/dialang/recordsa" method="POST">
                     <input type="hidden" name="al" value="{{al}}"/>
-                    <table class="sa-table" cols="3">
+                    <table id="sa-table" cols="3">
                     <tbody>
                         <tr><td>{{yes}}</td><td>{{no}}</td><td></td></tr>
                     {{#statements}}
@@ -76,16 +44,15 @@
                         {{/statements}}
                     </tbody>
                     </table>
-                    <input id="sendbutton" type="button" value="{{submit}}" disabled/>
+                    <input id="send-button" type="button" value="{{submit}}" disabled/>
                 </form>
-                <div id="confirmationdialog" title="{{confirmationTitle}}">
-                    <div style="margin-left: auto; margin-right: auto;">
+                <div id="confirmation-dialog" title="{{confirmationTitle}}">
                     <p>{{confirmsendquestion}}</p>
                     <table cols="2">
                         <tbody>
                             <tr>
-                                <td align="center"><button id="confirmation_yes" style="background-color: white;"><img src="../../../images/yes.gif"/></button></td>
-                                <td align="center"><button id="confirmation_no" style="background-color: white;"><img src="../../../images/no.gif" width="58" height="58"/></button></td>
+                                <td align="center"><button id="confirmation_yes"><img src="../../../images/yes.gif"/></button></td>
+                                <td align="center"><button id="confirmation_no"><img src="../../../images/no.gif" width="58" height="58"/></button></td>
                             </tr>
                             <tr>
                                 <td align="center">{{yes}}</td><td align="center">{{no}}</td>
@@ -95,33 +62,9 @@
                     </div>
                 </div>
             </div> <!-- /content -->
-            <div style="height: 20px;"></div>
+            <div class="bottom-margin"></div>
         </div> <!-- /container -->
         <script type="text/javascript" src="../../../js/dialang.js"></script>
-        <script type="text/javascript">
-            $(document).keydown(function (e) {
-                if(e.keyCode == '72' && e.ctrlKey) {
-                    $('.valid-button').attr('checked','checked');
-                    $('#sendbutton').removeAttr('disabled');
-                    $('#next').removeAttr('disabled');
-                    $('#cheatlevel').val('high');
-                } else if(e.keyCode == '76' && e.ctrlKey) {
-                    $('.invalid-button').attr('checked','checked');
-                    $('#sendbutton').removeAttr('disabled');
-                    $('#next').removeAttr('disabled');
-                    $('#cheatlevel').val('low');
-                }
-            });
-            $('#sendbutton').click( function (e) {
-                $('#confirmationdialog').dialog('open');
-            });
-            $('#next').click( function (e) {
-                $('#confirmationdialog').dialog('open');
-            });
-            $('#confirmationdialog').dialog({modal: true, width: 400, height: 250, autoOpen: false});
-            $('#confirmation_yes').click(function (e) { $('#saform').submit(); });
-            $('#confirmation_no').click(function (e) { $('#confirmationdialog').dialog('close'); });
-            $('#skipforward').click(function () { window.location.href = '/{{al}}/sa'; });
-        </script>
+        <script type="text/javascript" src="../../../js/sa.js"></script>
     </body>
 </html>

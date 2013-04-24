@@ -1,0 +1,8 @@
+<input type="hidden" name="itemId" value="{{itemId}}" />
+<div id="prompt">{{{itemtext}}}</div>
+<div id="radios">
+    {{#answers}}
+    <input type="radio" name="response" value="{{id}}" />{{{text}}}<br />
+    {{/answers}}
+</div> <!-- /radios -->
+<script type="text/javascript" src="../../../js/mcqresponse.js"></script>

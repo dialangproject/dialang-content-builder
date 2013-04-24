@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <link rel="stylesheet" type="text/css" href="../../../../css/dialang.css" media="all"/>
+        <link rel="stylesheet" type="text/css" href="../../../../css/smoothness/jquery-ui-1.9.2.custom.min.css" media="all"/>
+        <script type="text/javascript" src="../../../../js/jquery-1.8.3.js"></script>
+        <script src="../../../../js/jquery-ui-1.9.2.custom.min.js"></script>
+    </head>
+    <body>
+        <div id="container">
+            <div id="topbar">
+                <div id="navbar">
+                    <button id="skipback" disabled><img src="../../../../images/skipb.gif"/></button>
+                    <button id="back" title="{{prevtooltip}}"><img src="../../../../images/prev.gif"/></button>
+                    <button id="next" disabled><img src="../../../../images/next.gif"/></button>
+                    <button id="skipforward" disabled><img src="../../../../images/skipf.gif"/></button>
+                    <button id="help"><img src="../../../../images/help.gif" height="23px;"/></button>
+                </div>  <!-- /navbar -->
+                <div id="logo"><img src="../../../../images/Logo.gif"/></div> 
+            </div> <!-- /topbar -->
+            <div id="content">
+                <map name="thermometermap">
+                    <area shape="rect" coords="30,80,105,130" href="#" onclick="launchDialog('6');" title="C2" alt="C2">
+                    <area shape="rect" coords="30,130,105,185" href="#" onclick="launchDialog('5');" title="C1" alt="C1">
+                    <area shape="rect" coords="30,175,105,225" href="#" onclick="launchDialog('4');" title="B2" alt="B2">
+                    <area shape="rect" coords="30,225,105,270" href="#" onclick="launchDialog('3');" title="B1" alt="B1">
+                    <area shape="rect" coords="30,265,105,315" href="#" onclick="launchDialog('2');" title="A2" alt="A2">
+                    <area shape="rect" coords="30,315,105,365" href="#" onclick="launchDialog('1');" title="A1" alt="A1">
+                </map>
+                <div id="thermometer-image">
+                    <img src="../../../../images/therm{{itemLevel}}.gif" usemap="thermometermap"/>
+                </div>
+                <div id="results-content">
+                    <h1 id="welcome">{{{title}}}</h1>
+                    <p id="welcome-text">{{{text}}}</p>
+                </div>
+                <div style="clear:both;"></div>
+                <div id="dialog1" class="dialog" title="{{title}}">
+                    <p>{{A1Explanation}}</p>
+                </div>
+                <div id="dialog2" class="dialog" title="{{title}}">
+                    <p>{{A2Explanation}}</p>
+                </div>
+                <div id="dialog3" class="dialog" title="{{title}}">
+                    <p>{{B1Explanation}}</p>
+                </div>
+                <div id="dialog4" class="dialog" title="{{title}}">
+                    <p>{{B2Explanation}}</p>
+                </div>
+                <div id="dialog5" class="dialog" title="{{title}}">
+                    <p>{{C1Explanation}}</p>
+                </div>
+                <div id="dialog6" class="dialog" title="{{title}}">
+                    <p>{{C2Explanation}}</p>
+                </div>
+            </div> <!-- /content -->
+            <div class="bottom-margin"></div>
+        </div> <!-- /container -->
+        <script type="text/javascript" src="../../../../js/dialang.js"></script>
+        <script type="text/javascript" src="../../../../js/testresults.js"></script>
+    </body>
+</html>

@@ -2,8 +2,11 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <meta name="google" value="notranslate">
         <link rel="stylesheet" type="text/css" href="../../css/dialang.css" media="all"/>
+        <link rel="stylesheet" type="text/css" href="../../css/smoothness/jquery-ui-1.9.2.custom.min.css" media="all"/>
         <script type="text/javascript" src="../../js/jquery-1.8.3.js"></script>
+        <script src="../../js/jquery-ui-1.9.2.custom.min.js"></script>
     </head>
     <body>
         <div id="container">
@@ -21,6 +24,20 @@
                 <h1 id="vsptintro-title">{{{title}}}</h1>
                 <div id="vsptintro-text">{{{text}}}</div>
                 <div class="bottom-margin"></div>
+                <div id="confirmation-dialog" title="{{confirmationTitle}}">
+                    <p>{{{warningText}}}</p>
+                    <table cols="2">
+                        <tbody>
+                            <tr>
+                                <td align="center"><button id="confirmation_yes"><img src="../../images/yes.gif"/></button></td>
+                                <td align="center"><button id="confirmation_no"><img src="../../images/no.gif" width="58" height="58"/></button></td>
+                            </tr>
+                            <tr>
+                                <td align="center">{{yes}}</td><td align="center">{{no}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div> <!-- /confirmation-dialog -->
             </div> <!-- /content -->
             <div class="bottom-margin"></div>
         </div> <!-- /container -->

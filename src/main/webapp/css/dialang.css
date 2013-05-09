@@ -1,0 +1,257 @@
+body {
+    font-family: arial,sans-serif;
+}
+
+#cookie-text {
+    font-size: 10pt;
+    text-align:left;
+    padding-left: 50px;
+    padding-right: 50px;
+}
+
+#container {
+    width: 800px;
+    width: 770px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #e4b512;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+#content {
+    width: 750px;
+    background-color: #FFFFFF;
+    text-align:center;
+    clear: both;
+    margin-left: auto;
+    margin-right: auto;
+    overflow:none;
+}
+
+#topbar {
+    clear: both;
+    padding-top: 4px;
+}
+
+#navbar {
+    float: left;
+    width:370px;
+    padding-left: 8px;
+}
+
+#navbar button {
+    background-color: #e4b512;
+}
+
+#logo {
+    float:right;
+    padding-right: 10px;
+    padding-bottom: 3px;
+}
+
+#large-logo-wrapper {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+}
+
+button[disabled] {
+    opacity:.5;
+}
+
+#legend {
+    width: 580px;
+    background-color: #EEEEEE;
+    text-align:center;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top:10px;
+}
+
+#legend-table {
+    margin-left: auto;
+    margin-right: auto;
+    padding-top:10px;
+    padding-bottom:10px;
+}
+
+/* als screen */
+#funder {
+    font-style: italic;
+    font-family: arial,sans-serif;
+    font-size: 9pt;
+    margin-top: 30px;
+    padding-left: 50px;
+    padding-right: 50px;
+    padding-bottom: 20px;
+    text-align:left;
+}
+
+.language-button {
+    width: 300px;
+    font-weight: bold;
+    font-size: larger;
+}
+
+/* legend screen */
+#welcome {
+    font-size: 24pt;
+    padding-bottom: 20px;
+}
+
+#disclaimer-text {
+    height: 275px;
+    overflow: scroll;
+    overflow-x: hidden;
+}
+
+#disclaimer-button {
+    background-color: white;
+}
+
+#confirmation-dialog {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#confirmation-dialog button {
+    background-color: white;
+}
+
+#tls-table {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 30px;
+    padding-right:50px;
+}
+
+.language-column {
+    text-align: right;
+}
+.language-skill-column {
+    text-align: center;
+}
+
+#vsptfeedback-tabs {
+    margin-left: auto;
+    margin-right:auto;
+}
+
+#word-tabs {
+    width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#vspt-table  {
+    width: 85%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#vspt-table td {
+    width: 33%;
+    text-align: left;
+}
+
+.ui-state-active {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+#vspt-table input {
+    display: none;
+}
+
+#sa-table  {
+    width: 85%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align:left;
+}
+
+#basket {
+    background-color: #ffedb8;
+    font-size: 11pt;
+}
+
+#rubric {
+    padding: 5px;
+    background-color: #9698ff;
+    overflow: hidden;
+    color: #FFFFFF;
+}
+
+#rubric-image {
+    float:left;
+}
+
+#rubric-text {
+    float:left;
+    padding-left: 5px;
+    text-align: left;
+    clear:top;
+    width: 80%;
+}
+
+#media {
+    text-align: left;
+    margin: 1px;
+    clear: both;
+    padding: 3px;
+    padding-top:12px;
+    border: black solid 1px;
+    font-family: serif;
+}
+
+#response {
+    margin-left: 0px;
+    margin-right: 0px;
+    padding: 5px;
+    text-align: left;
+}
+
+#prompt {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+#submitmcqbasketform > input {
+    margin-bottom: 6px;
+}
+
+.completed-basket > a{
+    background-color: #fa7c01 !important;
+}
+#results-title {
+    margin-bottom: 10px;
+}
+
+#advice-title {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.feedback-menu-button {
+    margin-top: 5px;
+}
+
+.bottom-margin {
+    height: 20px;
+}
+
+#tabbedpane-tabs {
+    margin-left: auto;
+    margin-right:auto;
+}
+
+#thermometer-image {
+    float:left;
+}
+
+#results-content > p {
+    text-align:left;
+}

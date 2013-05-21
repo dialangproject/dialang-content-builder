@@ -1,8 +1,9 @@
 <input type="hidden" name="itemId" value="{{itemId}}" />
+<input type="hidden" name="{{itemId}}-position" value="{{positionInTest}}" />
 <div id="prompt">{{{itemtext}}}</div>
 <div id="radios">
     {{#answers}}
-    <input type="radio" name="response" value="{{id}}" />{{{text}}}<br />
+    <input type="radio" name="response" value="{{answerId}}" />{{{text}}}<br />
     {{/answers}}
 </div> <!-- /radios -->
 <script type="text/javascript" src="../../../js/mcqresponse.js"></script>

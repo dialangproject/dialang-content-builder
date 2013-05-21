@@ -9,3 +9,12 @@ $('#feedback-button').click(function() {
         img.attr('src',"../../images/instantFeedbackOff.gif");
     }
 });
+$('#confirm-skip-dialog').dialog({modal: true, width: 500, height: 450, autoOpen: false});
+$('#confirm-skip-yes').click(function (e) {
+    document.location.href = '../endoftest/' + dialang.session.al + '.html';
+});
+$('#confirm-skip-no').click(function (e) { $('#confirm-skip-dialog').dialog('close'); });
+$('#skipforward').click(function () {
+    $('#confirm-skip-dialog').dialog('open');
+    return false;
+});

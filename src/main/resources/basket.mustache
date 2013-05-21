@@ -7,6 +7,10 @@
         <link rel="stylesheet" type="text/css" href="../../../css/smoothness/jquery-ui-1.9.2.custom.min.css" media="all"/>
         <script type="text/javascript" src="../../../js/jquery-1.8.3.js"></script>
         <script src="../../../js/jquery-ui-1.9.2.custom.min.js"></script>
+        <script src="../../../js/mustache.js"></script>
+        <script type="text/javascript">
+            var basketType = '{{basketType}}';
+        </script>
     </head>
     <body>
         <div id="container">
@@ -36,11 +40,49 @@
                     <div id="response">
                     <form id="basketform" method="POST" action="/dialang/submitbasket">
                         <input type="hidden" name="basketId" value="{{basketId}}" />
-                        <input type="hidden" name="type" value="{{type}}" />
+                        <input type="hidden" name="type" value="{{basketType}}" />
                         {{{responseMarkup}}}
                     </form>
                     </div> <!-- /response -->
                 </div> <!-- /basket -->
+                <div id="confirm-skip-dialog" class="confirmation-dialog" title="{{confirmationTitle}}">
+                    <p>{{{warningText}}}</p>
+                    <table cols="2">
+                        <tbody>
+                            <tr>
+                                <td align="center"><button id="confirm-skip-yes"><img src="../../images/yes.gif"/></button></td>
+                                <td align="center"><button id="confirm-skip-no"><img src="../../images/no.gif" width="58" height="58"/></button></td>
+                            </tr>
+                            <tr>
+                                <td align="center">{{yes}}</td><td align="center">{{no}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div> <!-- /confirm-skip-dialog -->
+                <div id="mcq-review-dialog" class="review-dialog">
+                    <div class="review-smiley">
+                        <img src="../../images/smiley.gif"/>
+                    </div>
+                    <div class="review-answer-box">
+                        <div class="review-given-answer">
+                            <h3>{{yourAnswerTitle}}</h3>
+                            <p>{{! Will be filled by JS }}</p>
+                        </div>
+                        <div class="review-correct-answer">
+                            <h3>{{correctAnswerTitle}}</h3>
+                            <p>{{! Will be filled by JS }}</p>
+                        </div>
+                    </div>
+                </div> <!-- /mcq-review-dialog -->
+                {{!
+                    Review dialog tranlsations. These are needed for the multi item review dialogs
+                    as these are built dynamically in javascript, not scalate
+                }}
+                <input type="hidden" id="review-dialog-youranswer-title" value="{{yourAnswerTitle}}"/>
+                <input type="hidden" id="review-dialog-correctanswer-title" value="{{correctAnswerTitle}}"/>
+                <input type="hidden" id="review-dialog-correctanswers-title" value="{{correctAnswersTitle}}"/>
+                <div id="tp-review-dialog" class="review-dialog">
+                </div> <!-- /tp-review-dialog -->
             </div> <!-- /content -->
 
             <div class="bottom-margin"></div>

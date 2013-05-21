@@ -108,6 +108,30 @@ class DB {
     }
   }
 
+  def getSubSkills(adminLanguageCode:String) = {
+    var st:Statement = null
+    try {
+      st = conn.createStatement
+      val rs = st.executeQuery("SELECT * FROM display_texts WHERE key like 'Subskill#%' and locale = '" + adminLanguageCode + "'")
+      val map = new HashMap[String,String]
+      while(rs.next) {
+        val subskillDescription = rs.getString("value")
+        val vk = rs.getString("key")
+        val subskillCode = vk.substring(vk.indexOf("#") + 1)
+        map += (subskillCode.toLowerCase -> subskillDescription)
+      }
+
+      rs.close()
+      map.toMap
+    } finally {
+      if(st != null) {
+        try {
+          st.close()
+        } catch { case e:SQLException => }
+      }
+    }
+  }
+
   def getTestLanguagePrompts(adminLanguageCode:String) = {
     var st:Statement = null
     try {
@@ -252,7 +276,7 @@ class DB {
     var st:Statement = null
     try {
       st = conn.createStatement
-      val rs = st.executeQuery("SELECT items.* FROM baskets,basket_item,items WHERE baskets.id = " + basketId + " AND baskets.id = basket_item.basket_id AND basket_item.item_id = items.id")
+      val rs = st.executeQuery("SELECT items.* FROM baskets,basket_item,items WHERE baskets.id = " + basketId + " AND baskets.id = basket_item.basket_id AND basket_item.item_id = items.id ORDER BY position")
 
       val list = new ListBuffer[Item]
 
@@ -282,7 +306,7 @@ class DB {
       val list = new ListBuffer[Map[String,String]]
 
       while(rs.next) {
-        list += Map( "id" -> rs.getInt("id").toString,
+        list += Map( "answerId" -> rs.getInt("id").toString,
                     "item_id" -> rs.getInt("item_id").toString,
                     "text" -> rs.getString("text"),
                     "correct" -> rs.getInt("correct").toString )

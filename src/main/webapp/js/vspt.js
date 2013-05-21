@@ -33,22 +33,37 @@ $(document).keydown(function (e) {
         $('#send-button').removeAttr('disabled');
         $('#next').removeAttr('disabled');
         $('.correct').click();
-        $('#next').click(function () { $('#confirmation-dialog').dialog('open'); });
+        $('#next').click(function () { $('#confirm-send-dialog').dialog('open'); });
+        e.preventDefault();
+        return false;
     } else if(e.keyCode == '77' && e.ctrlKey) {
         $('#send-button').removeAttr('disabled');
         $('#next').removeAttr('disabled');
         $('.incorrect').click();
-        $('#next').click(function () { $('#confirmation-dialog').dialog('open'); });
+        $('#next').click(function () { $('#confirm-send-dialog').dialog('open'); });
+        e.preventDefault();
+        return false;
     } else if(e.keyCode == '76' && e.ctrlKey) {
         $('#send-button').removeAttr('disabled');
         $('#next').removeAttr('disabled');
         $('.incorrect').click();
-        $('#next').click(function () { $('#confirmation-dialog').dialog('open'); });
+        $('#next').click(function () { $('#confirm-send-dialog').dialog('open'); });
+        e.preventDefault();
+        return false;
     }
 });
 
-$('#send-button').click( function (e) { $('#confirmation-dialog').dialog('open'); });
-$('#confirmation-dialog').dialog({modal: true, width: 400, height: 250, autoOpen: false});
-$('#confirmation_yes').click(function (e) { $('#vsptform').submit(); });
-$('#confirmation_no').click(function (e) { $('#confirmation-dialog').dialog('close'); });
-$('#skipforward').click(function () { window.location.href = '/{{al}}/sa'; });
+$('#confirm-send-dialog').dialog({modal: true, width: 400, height: 250, autoOpen: false});
+$('#confirm-send-yes').click(function (e) { $('#vsptform').submit(); });
+$('#confirm-send-no').click(function (e) { $('#confirm-send-dialog').dialog('close'); });
+
+$('#send-button').click( function (e) { $('#confirm-send-dialog').dialog('open'); });
+
+$('#confirm-skip-dialog').dialog({modal: true, width: 400, height: 250, autoOpen: false});
+$('#confirm-skip-yes').click(dialang.skipVSPT)
+$('#confirm-skip-no').click(function (e) { $('#confirm-skip-dialog').dialog('close'); });
+
+$('#skipforward').click(function () {
+    $('#confirm-skip-dialog').dialog('open');
+    return false;
+});

@@ -25,7 +25,7 @@ $(document).ready(function () {
             $('#next')
                 .removeAttr('disabled')
                 .click( function (e) {
-                    $('#confirmation-dialog').dialog('open');
+                    $('#confirm-send-dialog').dialog('open');
                 });
         }
     });
@@ -45,13 +45,24 @@ $(document).keydown(function (e) {
     }
 });
 
-$('#send-button').click( function (e) {
-    $('#confirmation-dialog').dialog('open');
-});
+$('#confirm-send-dialog').dialog({modal: true, width: 400, height: 250, autoOpen: false});
+$('#confirm-send-yes').click(function (e) { $('#saform').submit(); });
+$('#confirm-send-no').click(function (e) { $('#confirm-send-dialog').dialog('close'); });
+
 $('#next').click( function (e) {
-    $('#confirmation-dialog').dialog('open');
+    $('#confirm-send-dialog').dialog('open');
 });
-$('#confirmation-dialog').dialog({modal: true, width: 400, height: 250, autoOpen: false});
-$('#confirmation_yes').click(function (e) { $('#saform').submit(); });
-$('#confirmation_no').click(function (e) { $('#confirmation-dialog').dialog('close'); });
-$('#skipforward').click(function () { window.location.href = '/{{al}}/sa'; });
+$('#send-button').click( function (e) {
+    $('#confirm-send-dialog').dialog('open');
+});
+
+$('#confirm-skip-dialog').dialog({modal: true, width: 400, height: 250, autoOpen: false});
+$('#confirm-skip-yes').click(function (e) {
+    document.location.href = '../../testintro/' + dialang.session.al + '.html';
+});
+$('#confirm-skip-no').click(function (e) { $('#confirm-skip-dialog').dialog('close'); });
+
+$('#skipforward').click(function () {
+    $('#confirm-skip-dialog').dialog('open');
+    return false;
+});

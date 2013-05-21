@@ -2,4 +2,9 @@
 <div id="radios">
     <span>{{{markup}}}</span>
 </div> <!-- /radios -->
+
+{{#items}}
+<input type="hidden" name="{{id}}-position" value="{{positionInTest}}" />
+{{/items}}
+
 <script type="text/javascript" src="../../../js/gtresponse.js"></script>

@@ -31,16 +31,17 @@ object DialangExporter extends App {
   exportVSPTIntroPages(adminLanguages)
   exportVSPTPages(adminLanguages)
   exportVSPTFeedbackPages(adminLanguages)
-  */
   exportSAIntroPages(adminLanguages)
-  /*
   exportSAPages(adminLanguages)
   exportTestIntroPages(adminLanguages)
+  */
   exportBasketPages(adminLanguages)
+  /*
   exportEndOfTestPages(adminLanguages)
   exportFeedbackMenuPages(adminLanguages)
   exportSAFeedbackPages(adminLanguages)
   exportTestResultPages(adminLanguages)
+  exportItemReviewPages(adminLanguages)
   */
 
   db.cleanup()
@@ -247,6 +248,9 @@ object DialangExporter extends App {
       val confirmSend = db.getTranslation("Dialogues_Submit",al)
       val skipftooltip = db.getTranslation("Caption_QuitPlacement",al)
 
+      // Confirmation dialog texts.
+      val warningText = db.getTranslation("Dialogues_SkipPlacement",al)
+
       for(tl <- testLanguages) { 
         val wordList = db.getVSPTWords(tl)
 
@@ -301,6 +305,7 @@ object DialangExporter extends App {
                           }),
                         "tl" -> tl,
                         "title" -> title,
+                        "warningText" -> warningText,
                         "yes" -> yes,
                         "no" -> no,
                         "nexttooltip" -> submit,
@@ -415,12 +420,16 @@ object DialangExporter extends App {
       val no = db.getTranslation("Caption_No",al)
       val confirmSend = db.getTranslation("Dialogues_Submit",al)
 
+      // Confirmation dialog texts.
+      val warningText = db.getTranslation("Dialogues_SkipSelfAssess",al)
+
       for(skill <- db.saSkills) {
         val statements = db.getSAStatements(al,skill.toLowerCase)
 
         val title = db.getTranslation("Title_SelfAssess#" + skill,al)
         val map = Map("al" -> al,
                     "title" -> title,
+                    "warningText" -> warningText,
                     "submit" -> submit,
                     "yes" -> yes,
                     "no" -> no,
@@ -450,9 +459,18 @@ object DialangExporter extends App {
       val feedback = db.getTranslation("Caption_InstantFeedback",al)
       val instantfeedbackofftooltip = db.getTranslation("Caption_InstantFeedbackOff",al)
       val instantfeedbackontooltip = db.getTranslation("Caption_InstantFeedbackOn",al)
+
+      // Confirmation dialog texts.
+      val warningText = db.getTranslation("Dialogues_SkipLangTest",al)
+      val yes = db.getTranslation("Caption_Yes",al)
+      val no = db.getTranslation("Caption_No",al)
+
       val map = Map("al" -> al,
                   "title" -> title,
                   "text" -> text,
+                  "warningText" -> warningText,
+                  "yes" -> yes,
+                  "no" -> no,
                   "feedback" -> feedback,
                   "instantfeedbackontooltip" -> instantfeedbackontooltip,
                   "instantfeedbackofftooltip" -> instantfeedbackofftooltip,
@@ -507,60 +525,67 @@ object DialangExporter extends App {
           case "mcq" => {
             val item = db.getItemsForBasket(basketId).head
             val answers = db.getAnswersForItem(item.id)
-            engine.layout("src/main/resources/mcqresponse.mustache",Map("itemtext" -> item.text,"itemId" -> item.id.toString,"answers" -> answers))
+            engine.layout("src/main/resources/mcqresponse.mustache",Map("itemtext" -> item.text,"itemId" -> item.id.toString,"positionInTest" -> item.positionInTest.toString, "answers" -> answers))
           }
           case "shortanswer" => {
             val items = db.getItemsForBasket(basketId)
             val itemList = items.map(item => {
-                Map("id" -> item.id.toString,"text" -> item.text)
+                Map("id" -> item.id.toString,"text" -> item.text,"positionInTest" -> item.positionInTest.toString)
               })
             engine.layout("src/main/resources/saresponse.mustache",Map("basketPrompt" -> basketPrompt,"items" -> itemList))
           }
           case "gaptext" => {
             val gapText = basket.gaptext
             var gapMarkup = gapText
-            val items = db.getItemsForBasket(basketId)
+
+            val items = db.getItemsForBasket(basketId).map(i => {
+                Map("id" -> i.id.toString,"positionInTest" -> i.positionInTest.toString)
+              })
 
             val m = itemPlaceholderPattern.matcher(gapText)
 
             while(m.find()) {
               val itemNumber = m.group(1)
               val item = items(itemNumber.toInt)
-              gapMarkup = gapMarkup.replace("<" + itemNumber + ">","<input type=\"text\" name=\"" + item.id.toString + "-response\" />")
+              gapMarkup = gapMarkup.replace("<" + itemNumber + ">","<input type=\"text\" name=\"" + item.get("id").get + "-response\" />")
             }
 
-            engine.layout("src/main/resources/gtresponse.mustache",Map("basketPrompt" -> basketPrompt,"markup" -> gapMarkup))
+            engine.layout("src/main/resources/gtresponse.mustache",Map("basketPrompt" -> basketPrompt,"items" -> items,"markup" -> gapMarkup))
           }
           case "gapdrop" => {
             val gapText = basket.gaptext
             var gapMarkup = gapText
-            val items = db.getItemsForBasket(basketId)
+
+            val items = db.getItemsForBasket(basketId).map(i => {
+                Map("id" -> i.id.toString,"positionInTest" -> i.positionInTest.toString)
+              })
 
             val m = itemPlaceholderPattern.matcher(gapText)
 
             while(m.find()) {
               val itemNumber = m.group(1)
               val item = items(itemNumber.toInt)
-              val answers = db.getAnswersForItem(item.id)
-              var select = "<select name=\"" + item.id.toString + "-response\">"
+              val answers = db.getAnswersForItem(item.get("id").get.toInt)
+              var select = "<select name=\"" + item.get("id").get + "-response\">"
               select += "<option></option>"
               answers.foreach(answer => {
-                select += "<option value=\"" + answer.get("id").get + "\">" + answer.get("text").get + "</option>"
+                select += "<option value=\"" + answer.get("answerId").get + "\">" + answer.get("text").get + "</option>"
               })
               select += "</select>"
               gapMarkup = gapMarkup.replace("<" + itemNumber + ">",select)
             }
 
-            engine.layout("src/main/resources/gdresponse.mustache",Map("basketPrompt" -> basketPrompt,"markup" -> gapMarkup))
+            engine.layout("src/main/resources/gdresponse.mustache",Map("basketPrompt" -> basketPrompt,"items" -> items,"markup" -> gapMarkup))
           }
           case "tabbedpane" => {
 
             val childBaskets
               = db.getChildBaskets(basketId).map(childBasket => {
                   val childBasketId = childBasket.id
+                  // Only ever one item for a tabbedpane child basket
                   val item = db.getItemsForBasket(childBasketId).head
                   val answers = db.getAnswersForItem(item.id)
-                  Map("basketId" -> childBasketId.toString,"itemId" -> item.id.toString,"itemtext" -> item.text,"answers" -> answers)
+                  Map("basketId" -> childBasketId.toString,"itemId" -> item.id.toString,"itemtext" -> item.text,"positionInTest" -> item.positionInTest,"answers" -> answers)
               })
 
             engine.layout("src/main/resources/tabbedpaneresponse.mustache",Map("childBaskets" -> childBaskets))
@@ -578,8 +603,26 @@ object DialangExporter extends App {
         }
 
         val rubricText = db.getTranslation("LangTest_Rubric#" + typeMap.get(basketType).get + "#Text",al)
+
+        // Confirmation dialog texts.
+        val warningText = db.getTranslation("Dialogues_SkipLangTest",al)
+        val yes = db.getTranslation("Caption_Yes",al)
+        val no = db.getTranslation("Caption_No",al)
+        val yourAnswerTitle = db.getTranslation("LangTest_ItemFeedback_YourAnswer",al)
+        val correctAnswerTitle = db.getTranslation("LangTest_ItemFeedback_CorrectAnswer",al)
+        val correctAnswersTitle = db.getTranslation("LangTest_ItemFeedback_CorrectAnswers",al)
         
-        val map = Map("basketId" -> basketId.toString,"type" -> basketType, "rubricText" -> rubricText,"mediaMarkup" -> mediaMarkup,"responseMarkup" -> responseMarkup)
+        val map = Map("basketId" -> basketId.toString,
+                        "basketType" -> basketType,
+                        "rubricText" -> rubricText,
+                        "warningText" -> warningText,
+                        "yes" -> yes,
+                        "no" -> no,
+                        "yourAnswerTitle" -> yourAnswerTitle,
+                        "correctAnswerTitle" -> correctAnswerTitle,
+                        "correctAnswersTitle" -> correctAnswersTitle,
+                        "mediaMarkup" -> mediaMarkup,
+                        "responseMarkup" -> responseMarkup)
         val output = engine.layout("src/main/resources/basket.mustache",map)
         val basketFile = new OutputStreamWriter(new FileOutputStream(new File(alDir,basketId + ".html")),"UTF-8")
         basketFile.write(output)
@@ -743,6 +786,33 @@ object DialangExporter extends App {
           testresultsFile.close()
         })
       }
+    }
+  }
+
+  def exportItemReviewPages(adminLanguages:List[String]) {
+
+    val itemreviewDir = new File(websiteDir,"itemreview")
+    if(!itemreviewDir.isDirectory) {
+        itemreviewDir.mkdirs()
+    }
+
+    for(al <- adminLanguages) { 
+
+      val title = db.getTranslation("Title_ItemReview",al)
+      val text = db.getTranslation("ItemReview_Text",al)
+      val prevtooltip = db.getTranslation("Caption_BacktoFeedback",al)
+      val subskills = {
+          val tmp = new ListBuffer[Map[String,String]]
+          db.getSubSkills(al).foreach(t => {
+              tmp += Map("code" -> t._1,"description" -> t._2)
+          })
+          tmp.toList
+        }
+      val map = Map("title" -> title,"text" -> text,"prevtooltip" -> prevtooltip,"subskills" -> subskills)
+      val output = engine.layout("src/main/resources/itemreviewwrapper.mustache",map)
+      val itemreviewFile = new OutputStreamWriter(new FileOutputStream(new File(itemreviewDir,al + ".html")),"UTF-8")
+      itemreviewFile.write(output)
+      itemreviewFile.close()
     }
   }
 }

@@ -2,6 +2,14 @@ body {
     font-family: arial,sans-serif;
 }
 
+a {
+    text-decoration: none;
+}
+
+img {
+    border:0px;
+}
+
 #cookie-text {
     font-size: 10pt;
     text-align:left;
@@ -90,12 +98,6 @@ button[disabled] {
     text-align:left;
 }
 
-.language-button {
-    width: 300px;
-    font-weight: bold;
-    font-size: larger;
-}
-
 /* legend screen */
 #welcome {
     font-size: 24pt;
@@ -112,13 +114,56 @@ button[disabled] {
     background-color: white;
 }
 
-#confirmation-dialog {
+.confirmation-dialog {
     margin-left: auto;
     margin-right: auto;
 }
 
-#confirmation-dialog button {
+.confirmation-dialog button {
     background-color: white;
+}
+
+.review-dialog {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.review-smiley {
+    float:left;
+}
+
+.review-answer-box {
+    float:right;
+}
+
+.ui-icon-closethick {
+    background-image: url(../../../images/cross.png) !important;
+    background-position: left top !important;
+    margin: 0 !important;
+}
+
+.ui-icon-prevButton {
+    background-image: url(../../../images/prev.gif) !important;
+    background-position: left top !important;
+    margin: 0 !important;
+}
+
+.ui-dialog .ui-dialog-titlebar-close, .ui-icon-closethick, .ui-icon-prevButton {
+    width: 22px !important;
+    height: 23px !important;
+}
+
+.ui-dialog .ui-dialog-titlebar-close {
+    background: none !important;
+    border: none !important;
+}
+
+.ui-dialog .ui-dialog-titlebar-close, .ui-dialog .ui-dialog-titlebar-close:hover {
+    padding: 0 !important;
+}
+
+.ui-widget-header {
+    background: #e4b512 !important;
 }
 
 #tls-table {
@@ -254,4 +299,32 @@ button[disabled] {
 
 #results-content > p {
     text-align:left;
+}
+
+#itemreview-table {
+    width:600px;
+    margin-left: auto;
+    margin-right: auto;
+    border-collapse:collapse;
+}
+
+#itemreview-table th,td {
+    border: 1px block solid;
+    padding-top: 5px;
+}
+
+#itemreview-table th {
+    background-color: #e4b512;
+}
+
+#itemreview-table td {
+    text-align: left;
+}
+
+.correct {
+    background-color: green;
+}
+
+.incorrect {
+    background-color: red;
 }

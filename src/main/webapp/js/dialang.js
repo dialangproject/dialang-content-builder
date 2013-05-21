@@ -17,6 +17,14 @@ for(var i=0,j=ca.length;i<j;i++) {
     }
 }
 
+dialang.skipVSPT = function () {
+    if(dialang.session.skill === 'structures' || dialang.session.skill === 'vocabulary') {
+        document.location.href = '../testintro/' + dialang.session.al + '.html';
+    } else {
+        document.location.href = '../../saintro/' + dialang.session.al + '/' + dialang.session.skill + '.html';
+    }
+}
+
 /*
 $(document).ready(function() {  
           

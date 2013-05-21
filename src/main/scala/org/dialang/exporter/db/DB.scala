@@ -252,7 +252,7 @@ class DB {
     var st:Statement = null
     try {
       st = conn.createStatement
-      val rs = st.executeQuery("SELECT * FROM baskets WHERE parent_basket_id = " + testletId)
+      val rs = st.executeQuery("SELECT * FROM baskets WHERE parent_testlet_id = " + testletId)
 
       val list = new ListBuffer[Basket]
 
@@ -276,12 +276,14 @@ class DB {
     var st:Statement = null
     try {
       st = conn.createStatement
-      val rs = st.executeQuery("SELECT items.* FROM baskets,basket_item,items WHERE baskets.id = " + basketId + " AND baskets.id = basket_item.basket_id AND basket_item.item_id = items.id ORDER BY position")
+      val rs = st.executeQuery("SELECT i.*,bi.position FROM baskets b,basket_item bi,items i WHERE b.id = " + basketId + " AND b.id = bi.basket_id AND bi.item_id = i.id ORDER BY position")
 
       val list = new ListBuffer[Item]
 
       while(rs.next) {
-        list += new Item(rs)
+        val item = new Item(rs)
+        item.positionInBasket = rs.getInt("position")
+        list += item
       }
 
       rs.close()

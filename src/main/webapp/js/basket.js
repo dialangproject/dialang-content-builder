@@ -27,6 +27,7 @@ if(basketString) {
 
     // We're in item review mode
 
+
     // Setup the toolbar appropriately
     $('#back')
         .prop("disabled",false)
@@ -56,10 +57,11 @@ if(basketString) {
 
             // This is a tabbedpane basket
 
+            var initialItemId = sessionStorage.getItem('itemId');
+
             // Get the yourAnswer and correctAnswer texts from the hidden form elements.
             var yourAnswerTitle = $('#review-dialog-youranswer-title').val();
             var correctAnswerTitle = $('#review-dialog-correctanswer-title').val();
-                console.log('here');
 
             $.get('/templates/tabbedpanereview.mustache',function(template) {
 
@@ -82,9 +84,13 @@ if(basketString) {
                                     $("#tabbedpane-tabs").tabs('option','active',index);
                                 }
                         });
+                        var initialIndex = $('#tabbedpane-tabs a[href="#tabs-' + initialItemId + '"]').parent().index();
+                        $("#tabbedpane-tabs").tabs('option','active',initialIndex);
+                        $("#review-tabs").tabs('option','active',initialIndex);
                     })
 
                 $('#tp-review-dialog').dialog('open');
+                $('.ui-dialog-titlebar-close span').removeClass('ui-icon-closethick').addClass('ui-icon-prevButton');
             });
 
             // This is a tabbebpane basket as it has multiple mcq items

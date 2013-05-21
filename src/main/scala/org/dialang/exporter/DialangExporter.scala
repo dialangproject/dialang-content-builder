@@ -525,12 +525,12 @@ object DialangExporter extends App {
           case "mcq" => {
             val item = db.getItemsForBasket(basketId).head
             val answers = db.getAnswersForItem(item.id)
-            engine.layout("src/main/resources/mcqresponse.mustache",Map("itemtext" -> item.text,"itemId" -> item.id.toString,"positionInTest" -> item.positionInTest.toString, "answers" -> answers))
+            engine.layout("src/main/resources/mcqresponse.mustache",Map("itemtext" -> item.text,"itemId" -> item.id.toString,"positionInBasket" -> item.positionInBasket.toString, "answers" -> answers))
           }
           case "shortanswer" => {
             val items = db.getItemsForBasket(basketId)
             val itemList = items.map(item => {
-                Map("id" -> item.id.toString,"text" -> item.text,"positionInTest" -> item.positionInTest.toString)
+                Map("id" -> item.id.toString,"text" -> item.text,"positionInBasket" -> item.positionInBasket.toString)
               })
             engine.layout("src/main/resources/saresponse.mustache",Map("basketPrompt" -> basketPrompt,"items" -> itemList))
           }
@@ -539,7 +539,7 @@ object DialangExporter extends App {
             var gapMarkup = gapText
 
             val items = db.getItemsForBasket(basketId).map(i => {
-                Map("id" -> i.id.toString,"positionInTest" -> i.positionInTest.toString)
+                Map("id" -> i.id.toString,"positionInBasket" -> i.positionInBasket.toString)
               })
 
             val m = itemPlaceholderPattern.matcher(gapText)
@@ -557,7 +557,7 @@ object DialangExporter extends App {
             var gapMarkup = gapText
 
             val items = db.getItemsForBasket(basketId).map(i => {
-                Map("id" -> i.id.toString,"positionInTest" -> i.positionInTest.toString)
+                Map("id" -> i.id.toString,"positionInBasket" -> i.positionInBasket.toString)
               })
 
             val m = itemPlaceholderPattern.matcher(gapText)
@@ -579,13 +579,15 @@ object DialangExporter extends App {
           }
           case "tabbedpane" => {
 
+            // This is a testlet and will contain child baskets
             val childBaskets
               = db.getChildBaskets(basketId).map(childBasket => {
                   val childBasketId = childBasket.id
-                  // Only ever one item for a tabbedpane child basket
+                  // NOTE: In the future there may be multi item baskets in a testlet. At the moment
+                  // there are mainly MCQ baskets and a gap drop with one item.
                   val item = db.getItemsForBasket(childBasketId).head
                   val answers = db.getAnswersForItem(item.id)
-                  Map("basketId" -> childBasketId.toString,"itemId" -> item.id.toString,"itemtext" -> item.text,"positionInTest" -> item.positionInTest,"answers" -> answers)
+                  Map("basketId" -> childBasketId.toString,"itemId" -> item.id.toString,"itemtext" -> item.text,"positionInBasket" -> childBasket.parentTestletPosition,"answers" -> answers)
               })
 
             engine.layout("src/main/resources/tabbedpaneresponse.mustache",Map("childBaskets" -> childBaskets))

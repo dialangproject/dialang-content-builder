@@ -1,6 +1,8 @@
 $('#skipback').click(function () { window.location.href = '../tls/' + dialang.session.al + '.html'; });
 $('#skipforward').click(function () { window.location.href = '../tls/' + dialang.session.al + '.html'; });
 
+$('#about-sa-button').prop('disabled',true)
+
 if(dialang.session.itemsDone) {
     $('#check-answers-button').click(function(e) {
         window.location.href = '../itemreview/' + dialang.session.al + '.html';
@@ -22,8 +24,8 @@ if(dialang.session.testDone) {
 
 if(dialang.session.vsptDone) {
     $('#placement-test-button').click(function(e) {
-        // Set a cookie variable to let the vspt feedback page wire up the back button correctly
-        sessionStorage.setItem('feedbackMenuPage',window.location.href);
+        // Set a sessionStorage variable to let the vspt feedback page wire up the back button correctly
+        sessionStorage.setItem('feedbackMenuPageUrl',window.location.href);
         window.location.href = '../vsptfeedback/' + dialang.session.al + '/' + dialang.session.vsptLevel + '.html';
     });
 } else {

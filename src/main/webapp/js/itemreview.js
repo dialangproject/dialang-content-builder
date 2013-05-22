@@ -94,8 +94,8 @@ $(document).ready(function() {
                     }
 
                     if(clickedItem !== null) {
-                        sessionStorage.setItem('basket',JSON.stringify(baskets[itemToBasketMap[clickedItem.id]]));
-                        sessionStorage.setItem('itemId',clickedItem.id);
+                        sessionStorage.setItem('reviewBasket',JSON.stringify(baskets[itemToBasketMap[clickedItem.id]]));
+                        sessionStorage.setItem('reviewItemId',clickedItem.id);
                         window.location.href = '../baskets/' + dialang.session.al + '/' + clickedItem.basketId + '.html';
                     } else {
                         alert('BOOOO');

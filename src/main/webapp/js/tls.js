@@ -2,7 +2,7 @@ $('#disclaimer-button').click(function(e) { $('#disclaimer-dialog').dialog('clos
 
 $('#back').click(function () { window.location.href = '../flowchart/' + dialang.session.al + '.html'; });
 $('#skipback').click(function () { window.location.href = '../als.html'; });
-$('.tls-link').click(function () {
+$('.tls-link').on('click', function () {
     var langskill = $(this).attr('title');
     $('#confirmation_langskill').html(langskill);
     var href = $(this).attr('href');
@@ -13,3 +13,17 @@ $('.tls-link').click(function () {
 $('#disclaimer-dialog').dialog({modal: true, width: 500, height: 450});
 $('#confirmation-dialog').dialog({modal: true, width: 500, height: 450, autoOpen: false});
 $('#confirmation_no').click(function (e) { $('#confirmation-dialog').dialog('close'); });
+
+// Disable the completed tests
+var testsDone = [];
+var testsDoneString = sessionStorage.getItem('testsDone');
+if(testsDoneString) {
+    testsDone = JSON.parse(testsDoneString);
+}
+
+for(var i=0,j=testsDone.length;i<j;i++) {
+    $('#' + testsDone[i])
+        .off('click')
+        .attr('href','javascript:;')
+        .children('img').attr('src','../../images/done.gif');
+}

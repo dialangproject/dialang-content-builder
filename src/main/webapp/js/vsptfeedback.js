@@ -2,7 +2,8 @@ $('#score').html(dialang.session.vsptMearaScore);
 $("#vsptfeedback-tabs").tabs({ active: activeTab }).addClass( "ui-tabs-vertical ui-helper-clearfix" );
 $( "#vsptfeedback-tabs li" ).removeClass( "ui-corner-top" ).addClass( "ui-corner-left" );
 
-var fbMenuPage = sessionStorage.getItem('feedbackMenuPage');
+// If this is set it means we're in feedback mode
+var fbMenuPage = sessionStorage.getItem('feedbackMenuPageUrl');
 
 if(fbMenuPage) {
     $('#next').prop('disabled',true);

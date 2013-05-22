@@ -27,16 +27,16 @@ object DialangExporter extends App {
   exportAls()
   exportLegendPages(adminLanguages)
   exportFlowchartPages(adminLanguages)
+  */
   exportTLSPages(adminLanguages)
+  /*
   exportVSPTIntroPages(adminLanguages)
   exportVSPTPages(adminLanguages)
   exportVSPTFeedbackPages(adminLanguages)
   exportSAIntroPages(adminLanguages)
   exportSAPages(adminLanguages)
   exportTestIntroPages(adminLanguages)
-  */
   exportBasketPages(adminLanguages)
-  /*
   exportEndOfTestPages(adminLanguages)
   exportFeedbackMenuPages(adminLanguages)
   exportSAFeedbackPages(adminLanguages)

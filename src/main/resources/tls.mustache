@@ -37,11 +37,11 @@
                         {{#testrows}}
                         <tr>
                             <td class="language-column">{{languageName}}</td>
-                            <td class="language-skill-column"><a href="/dialang/settls?al={{al}}&tl={{languageCode}}&skill=LISTENING" class="tls-link" title="{{languageName}}, {{listeningTooltip}}"><img src="../../images/available.gif"/></a></td>
-                            <td class="language-skill-column"><a href="/dialang/settls?al={{al}}&tl={{languageCode}}&skill=WRITING" class="tls-link" title="{{languageName}}, {{writingTooltip}}"><img src="../../images/available.gif"/></a></td>
-                            <td class="language-skill-column"><a href="/dialang/settls?al={{al}}&tl={{languageCode}}&skill=READING" class="tls-link" title="{{languageName}}, {{readingTooltip}}"><img src="../../images/available.gif"/></a></td>
-                            <td class="language-skill-column"><a href="/dialang/settls?al={{al}}&tl={{languageCode}}&skill=STRUCTURES" class="tls-link" title="{{languageName}}, {{structuresTooltip}}"><img src="../../images/available.gif"/></a></td>
-                            <td class="language-skill-column"><a href="/dialang/settls?al={{al}}&tl={{languageCode}}&skill=VOCABULARY" class="tls-link" title="{{languageName}}, {{vocabularyTooltip}}"><img src="../../images/available.gif"/></a></td>
+                            <td class="language-skill-column"><a id="{{languageCode}}-listening" href="/dialang/settls?al={{al}}&tl={{languageCode}}&skill=LISTENING" class="tls-link" title="{{languageName}}, {{listeningTooltip}}"><img src="../../images/available.gif"/></a></td>
+                            <td class="language-skill-column"><a id="{{languageCode}}-writing" href="/dialang/settls?al={{al}}&tl={{languageCode}}&skill=WRITING" class="tls-link" title="{{languageName}}, {{writingTooltip}}"><img src="../../images/available.gif"/></a></td>
+                            <td class="language-skill-column"><a id="{{languageCode}}-reading" href="/dialang/settls?al={{al}}&tl={{languageCode}}&skill=READING" class="tls-link" title="{{languageName}}, {{readingTooltip}}"><img src="../../images/available.gif"/></a></td>
+                            <td class="language-skill-column"><a id="{{languageCode}}-structures" href="/dialang/settls?al={{al}}&tl={{languageCode}}&skill=STRUCTURES" class="tls-link" title="{{languageName}}, {{structuresTooltip}}"><img src="../../images/available.gif"/></a></td>
+                            <td class="language-skill-column"><a id="{{languageCode}}-vocabulary" href="/dialang/settls?al={{al}}&tl={{languageCode}}&skill=VOCABULARY" class="tls-link" title="{{languageName}}, {{vocabularyTooltip}}"><img src="../../images/available.gif"/></a></td>
                         </tr>
                         {{/testrows}}
                     </tbody>

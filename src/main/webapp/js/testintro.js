@@ -18,3 +18,8 @@ $('#skipforward').click(function () {
     $('#confirm-skip-dialog').dialog('open');
     return false;
 });
+
+// We need to do this in case this isn't the first run
+sessionStorage.removeItem('reviewBasket');
+sessionStorage.removeItem('reviewItemId');
+sessionStorage.removeItem('feedbackMenuPageUrl');

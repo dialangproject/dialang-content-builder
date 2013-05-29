@@ -23,8 +23,8 @@ object DialangExporter extends App {
   }
 
   val adminLanguages = db.getAdminLanguageLocales
-  /*
-  exportAls()
+
+  exportAls(adminLanguages)
   exportLegendPages(adminLanguages)
   exportFlowchartPages(adminLanguages)
   exportTLSPages(adminLanguages)
@@ -34,22 +34,19 @@ object DialangExporter extends App {
   exportSAIntroPages(adminLanguages)
   exportSAPages(adminLanguages)
   exportTestIntroPages(adminLanguages)
-  */
   exportBasketPages(adminLanguages)
-  /*
   exportEndOfTestPages(adminLanguages)
   exportFeedbackMenuPages(adminLanguages)
   exportSAFeedbackPages(adminLanguages)
   exportTestResultPages(adminLanguages)
   exportItemReviewPages(adminLanguages)
-  */
 
   db.cleanup()
 
   sys.exit()
 
-  def exportAls() {
-    val output = engine.layout("src/main/resources/als.mustache",db.getAdminLanguages)
+  def exportAls(adminLanguages:List[String]) {
+    val output = engine.layout("src/main/resources/als.mustache",adminLanguages)
     val alsFile = new OutputStreamWriter(new FileOutputStream(new File(websiteDir,"als.html")),"UTF-8")
     alsFile.write(output)
     alsFile.close()

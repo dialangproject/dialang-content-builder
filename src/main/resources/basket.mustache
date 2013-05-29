@@ -24,9 +24,11 @@
                     <button id="help"><img src="../../../images/help.gif" height="23px;"/></button>
                     <button id="instfb"><img src="../../../images/instantFeedbackOff.gif" height="23px;"/></button>
                     <button id="keyboard"><img src="../../../images/keyb.gif" height="23px;"/></button>
-                    <span id="progressbar"></span>
                 </div>  <!-- /navbar -->
-                <div id="logo"><img src="../../../images/Logo.gif"/></div> 
+                <div id="logo">
+                    <div id="progressbar" class="dialang-progressbar"></div>
+                    <img src="../../../images/Logo.gif"/>
+                </div>
             </div> <!-- /topbar -->
 
             <div id="content">
@@ -45,7 +47,7 @@
                     </form>
                     </div> <!-- /response -->
                 </div> <!-- /basket -->
-                <div id="confirm-skip-dialog" class="confirmation-dialog" title="{{confirmationTitle}}">
+                <div id="confirm-skip-dialog" class="dialang-dialog" title="{{confirmationTitle}}">
                     <p>{{{warningText}}}</p>
                     <table cols="2">
                         <tbody>

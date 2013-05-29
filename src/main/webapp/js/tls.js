@@ -14,6 +14,11 @@ $('#disclaimer-dialog').dialog({modal: true, width: 500, height: 450});
 $('#confirmation-dialog').dialog({modal: true, width: 500, height: 450, autoOpen: false});
 $('#confirmation_no').click(function (e) { $('#confirmation-dialog').dialog('close'); });
 
+// We need to do this in case this isn't the first run
+sessionStorage.removeItem('reviewBasket');
+sessionStorage.removeItem('reviewItemId');
+sessionStorage.removeItem('feedbackMenuPageUrl');
+
 // Disable the completed tests
 var testsDone = [];
 var testsDoneString = sessionStorage.getItem('testsDone');

@@ -1,9 +1,19 @@
 $('#skipback').click(function () { window.location.href = '../tls/' + dialang.session.al + '.html'; });
-$('#skipforward').click(function () { window.location.href = '../tls/' + dialang.session.al + '.html'; });
+$('#skipforward').click(function () {
+    $('#confirm-restart-dialog').dialog('open');
+    return false;
+});
+
+$('#confirm-restart-dialog').dialog({modal: true, width: 500, height: 450, autoOpen: false});
+$('#confirm-restart-yes').click(function (e) {
+    document.location.href = '../tls/' + dialang.session.al + '.html';
+});
+$('#confirm-restart-no').click(function (e) { $('#confirm-restart-dialog').dialog('close'); });
+$('#confirm-restart-quit').click(function (e) { window.close(); });
 
 $('#about-sa-button').prop('disabled',true)
 
-if(dialang.session.itemsDone) {
+if(dialang.session.itemsCompleted) {
     $('#check-answers-button').click(function(e) {
         window.location.href = '../itemreview/' + dialang.session.al + '.html';
     });

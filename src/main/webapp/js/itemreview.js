@@ -10,6 +10,7 @@ $(document).ready(function() {
 
     $.ajax({
         url:'/dialang/mysession/items.json',
+        cache:false,
         dataType:'json',
         success: function(items,textStatus,xhr) {
 
@@ -35,6 +36,12 @@ $(document).ready(function() {
                             item.responseText = answer.text;
                         }
                     }
+                } else if(item.itemType == 'gaptext' || item.itemType == 'shortanswer') {
+                    var answersMarkup = '';
+                    for(var k=0,m=item.answers.length;k<m;k++) {
+                        answersMarkup += item.answers[k].text + '<br />';
+                    }
+                    item.correctAnswer = answersMarkup;
                 }
                 
                 // We use this to display an item number to the user
@@ -96,6 +103,7 @@ $(document).ready(function() {
                     if(clickedItem !== null) {
                         sessionStorage.setItem('reviewBasket',JSON.stringify(baskets[itemToBasketMap[clickedItem.id]]));
                         sessionStorage.setItem('reviewItemId',clickedItem.id);
+                        sessionStorage.setItem('reviewItemPosition',clickedItem.positionInBasket);
                         window.location.href = '../baskets/' + dialang.session.al + '/' + clickedItem.basketId + '.html';
                     } else {
                         alert('BOOOO');

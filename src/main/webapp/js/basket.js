@@ -2,6 +2,7 @@ var dialang = dialang || {};
 
 dialang.launchMultiItemReviewDialog = function (basket,initialIndex,selectCallback) {
 
+
     // Get the yourAnswer and correctAnswer texts from the hidden form elements.
     var yourAnswerTitle = $('#review-dialog-youranswer-title').val();
     var correctAnswerTitle = $('#review-dialog-correctanswer-title').val();
@@ -34,7 +35,6 @@ dialang.launchMultiItemReviewDialog = function (basket,initialIndex,selectCallba
     });
 }
 
-$('#progressbar').progressbar({max: dialang.session.totalItems, value: dialang.session.itemsCompleted});
 
 $('#next').click(function() { $('#basketform').submit(); });
 
@@ -63,6 +63,8 @@ if(basketString) {
 
     // We're in item review mode
     var initialItemId = sessionStorage.getItem('reviewItemId');
+
+    var positionInBasket = sessionStorage.getItem('reviewItemPosition') - 1;
 
     // Setup the toolbar appropriately
     $('#back')
@@ -93,11 +95,8 @@ if(basketString) {
 
             // This is a tabbebpane basket as it has multiple mcq items
 
-            // Get the index of the item being reviewed.
-            var initialIndex = $('#tabbedpane-tabs a[href="#tabs-' + initialItemId + '"]').parent().index();
-
             // Launch the dialog
-            dialang.launchMultiItemReviewDialog(basket,initialIndex, function (clickedItemId) {
+            dialang.launchMultiItemReviewDialog(basket,positionInBasket, function (clickedItemId) {
                         // Get the index of the clicked review tab
                         var index = $('#tabbedpane-tabs a[href="#tabs-' + clickedItemId + '"]').parent().index();
                         $("#tabbedpane-tabs").tabs('option','active',index);
@@ -110,14 +109,29 @@ if(basketString) {
             }
         }
     } else if(basket.type == 'gapdrop') {
+
+         // Launch the dialog
+         dialang.launchMultiItemReviewDialog(basket,positionInBasket, function (clickedItemId) {
+                    $('select').removeClass("outlined");
+                    $('select[name="'+ clickedItemId + '-response"]').addClass("outlined"); 
+                });
+
         for(var i=0,j=basket.items.length;i<j;i++) {
             var item = basket.items[i];
             $("option[value=\"" + item.responseId + "\"]").prop("selected",true);
         }
     } else if(basket.type == 'shortanswer' || basket.type == 'gaptext') {
+         // Launch the dialog
+         dialang.launchMultiItemReviewDialog(basket,positionInBasket, function (clickedItemId) {
+                    $('input[type="text"]').removeClass("outlined");
+                    $('input[name="'+ clickedItemId + '-response"]').addClass("outlined"); 
+                });
         for(var i=0,j=basket.items.length;i<j;i++) {
             var item = basket.items[i];
             $("input[name=\"" + item.id + "-response\"]").val(item.responseText);
         }
     }
+} else {
+    // We're not in review mode, so show the progress bar
+    $('#progressbar').css('display','inline-block').progressbar({max: parseInt(dialang.session.totalItems), value: parseInt(dialang.session.itemsCompleted)});
 }

@@ -31,6 +31,23 @@
                 <div id="advice-title">{{{adviceTitle}}}</div>
                 <div><button id="advice-button" class="feedback-menu-button">{{adviceText}}</button></div>
                 <div><button id="about-sa-button" class="feedback-menu-button">{{aboutSAText}}</button></div>
+                <div id="confirm-restart-dialog" class="dialang-dialog">
+                    <p>{{{restartText}}}</p>
+                    <table cols="2">
+                        <tbody>
+                            <tr>
+                                <td align="center"><button id="confirm-restart-yes"><img src="../../images/yes.gif"/></button></td>
+                                <td align="center"><button id="confirm-restart-no"><img src="../../images/no.gif" width="58" height="58"/></button></td>
+                                <td align="center"><button id="confirm-restart-quit"><img src="../../images/bigcross.gif" width="58" height="58"/></button></td>
+                            </tr>
+                            <tr>
+                                <td align="center">{{yes}}</td>
+                                <td align="center">{{no}}</td>
+                                <td align="center">{{quit}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div> <!-- /confirm-restart-dialog -->
             </div> <!-- /content -->
             <div class="bottom-margin"></div>
         </div> <!-- /container -->

@@ -57,9 +57,9 @@
 
                 <div id="disclaimer-dialog" title="{{disclaimerTitle}}">
                     <div id="disclaimer-text">{{{disclaimer}}}</div>
-                    <div><button id="disclaimer-button"><img src="../../images/yes.gif"/></button><br />{{ok}}</div>
-                </div>
-                <div id="confirmation-dialog" title="{{confirmationTitle}}">
+                    <div class="dialog-button-panel"><button id="disclaimer-button"><img src="../../images/yes.gif"/></button><br />{{ok}}</div>
+                </div> <!-- /disclaimer-dialog -->
+                <div id="confirmation-dialog" title="{{confirmationTitle}}" class="dialang-dialog">
                     <p>{{testChosen}}</p>
                     <p id="confirmation_langskill"></p>
                     <table cols="2">
@@ -73,7 +73,7 @@
                             </tr>
                         </tbody>
                     </table>
-                </div>
+                </div> <!-- /confirmation-dialog -->
             </div> <!-- /content -->
             <div class="bottom-margin"></div>
         </div> <!-- /container -->

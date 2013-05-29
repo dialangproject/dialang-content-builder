@@ -27,16 +27,16 @@ object DialangExporter extends App {
   exportAls()
   exportLegendPages(adminLanguages)
   exportFlowchartPages(adminLanguages)
-  */
   exportTLSPages(adminLanguages)
-  /*
   exportVSPTIntroPages(adminLanguages)
   exportVSPTPages(adminLanguages)
   exportVSPTFeedbackPages(adminLanguages)
   exportSAIntroPages(adminLanguages)
   exportSAPages(adminLanguages)
   exportTestIntroPages(adminLanguages)
+  */
   exportBasketPages(adminLanguages)
+  /*
   exportEndOfTestPages(adminLanguages)
   exportFeedbackMenuPages(adminLanguages)
   exportSAFeedbackPages(adminLanguages)
@@ -587,7 +587,11 @@ object DialangExporter extends App {
                   // there are mainly MCQ baskets and a gap drop with one item.
                   val item = db.getItemsForBasket(childBasketId).head
                   val answers = db.getAnswersForItem(item.id)
-                  Map("basketId" -> childBasketId.toString,"itemId" -> item.id.toString,"itemtext" -> item.text,"positionInBasket" -> childBasket.parentTestletPosition,"answers" -> answers)
+                  Map("basketId" -> childBasketId.toString,
+                        "itemId" -> item.id.toString,
+                        "itemtext" -> item.text,
+                        "positionInBasket" -> childBasket.parentTestletPosition,
+                        "answers" -> answers)
               })
 
             engine.layout("src/main/resources/tabbedpaneresponse.mustache",Map("childBaskets" -> childBaskets))
@@ -671,6 +675,10 @@ object DialangExporter extends App {
       val adviceTitle = db.getTranslation("Title_Advice",al)
       val adviceText = adviceTitle
       val aboutSAText = db.getTranslation("FeedbackOption_AboutSelfAssess",al)
+      val restartText = db.getTranslation("Dialogues_QuitFeedback",al)
+      val yes = db.getTranslation("Caption_Yes",al)
+      val no = db.getTranslation("Caption_No",al)
+      val quit = db.getTranslation("Caption_Quit",al)
       val skipbtooltip = db.getTranslation("Caption_ChooseAnotherTest",al)
       val skipftooltip = skipbtooltip
       val map = Map("al" -> al,
@@ -684,6 +692,10 @@ object DialangExporter extends App {
                       "adviceTitle" -> adviceTitle,
                       "adviceText" -> adviceText,
                       "aboutSAText" -> aboutSAText,
+                      "restartText" -> restartText,
+                      "yes" -> yes,
+                      "no" -> no,
+                      "quit" -> quit,
                       "skipbtooltip" -> skipbtooltip,
                       "skipftooltip" -> skipftooltip)
       val output = engine.layout("src/main/resources/feedbackmenu.mustache",map)

@@ -1,83 +1,19 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-    <head>
-        <meta http-equiv="content-type" content="text/html; charset=utf-8">
-        <meta name="google" value="notranslate">
-        <link rel="stylesheet" type="text/css" href="../../css/dialang.css" media="all"/>
-        <link rel="stylesheet" type="text/css" href="../../css/smoothness/jquery-ui-1.9.2.custom.min.css" media="all"/>
-        <script type="text/javascript" src="../../js/jquery-1.8.3.js"></script>
-        <script src="../../js/jquery-ui-1.9.2.custom.min.js"></script>
-    </head>
-    <body>
-        <div id="container">
-            <div id="topbar">
-                <div id="navbar">
-                    <button id="skipback" title="{{skipbtooltip}}"><img src="../../images/skipb.gif"/></button>
-                    <button id="back" title="{{prevtooltip}}"><img src="../../images/prev.gif"/></button>
-                    <button id="next" disabled><img src="../../images/next.gif"/></button>
-                    <button id="skipforward" disabled><img src="../../images/skipf.gif"/></button>
-                    <button id="help"><img src="../../images/help.gif" height="23px;"/></button>
-                </div>  <!-- /navbar -->
-                <div id="logo"><img src="../../images/Logo.gif"/></div> 
-            </div> <!-- /topbar -->
-            <div id="content">
-                <h1 id="tls-title">{{{tlsTitle}}}</h1>
-                <table id="tls-table" cols="6">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th><img src="../../images/listening.gif" title="{{listeningTooltip}}"/></th>
-                            <th><img src="../../images/writing.gif" title="{{writingTooltip}}"/></th>
-                            <th><img src="../../images/reading.gif" title="{{readingTooltip}}"/></th>
-                            <th><img src="../../images/hammer.gif" title="{{structuresTooltip}}"/></th>
-                            <th><img src="../../images/book.gif" title="{{vocabularyTooltip}}"/></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {{#testrows}}
-                        <tr>
-                            <td class="language-column">{{languageName}}</td>
-                            <td class="language-skill-column"><a id="{{languageCode}}-listening" href="/dialang/settls?al={{al}}&tl={{languageCode}}&skill=LISTENING" class="tls-link" title="{{languageName}}, {{listeningTooltip}}"><img src="../../images/available.gif"/></a></td>
-                            <td class="language-skill-column"><a id="{{languageCode}}-writing" href="/dialang/settls?al={{al}}&tl={{languageCode}}&skill=WRITING" class="tls-link" title="{{languageName}}, {{writingTooltip}}"><img src="../../images/available.gif"/></a></td>
-                            <td class="language-skill-column"><a id="{{languageCode}}-reading" href="/dialang/settls?al={{al}}&tl={{languageCode}}&skill=READING" class="tls-link" title="{{languageName}}, {{readingTooltip}}"><img src="../../images/available.gif"/></a></td>
-                            <td class="language-skill-column"><a id="{{languageCode}}-structures" href="/dialang/settls?al={{al}}&tl={{languageCode}}&skill=STRUCTURES" class="tls-link" title="{{languageName}}, {{structuresTooltip}}"><img src="../../images/available.gif"/></a></td>
-                            <td class="language-skill-column"><a id="{{languageCode}}-vocabulary" href="/dialang/settls?al={{al}}&tl={{languageCode}}&skill=VOCABULARY" class="tls-link" title="{{languageName}}, {{vocabularyTooltip}}"><img src="../../images/available.gif"/></a></td>
-                        </tr>
-                        {{/testrows}}
-                    </tbody>
-                </table>
-
-                <br />
-
-                <div>
-                    <img src="../../images/done.gif"/>{{done}}
-                    <img src="../../images/available.gif"/>{{available}}
-                    <img src="../../images/notavailable.gif"/>{{notavailable}}
-                </div>
-
-                <div id="disclaimer-dialog" title="{{disclaimerTitle}}">
-                    <div id="disclaimer-text">{{{disclaimer}}}</div>
-                    <div class="dialog-button-panel"><button id="disclaimer-button"><img src="../../images/yes.gif"/></button><br />{{ok}}</div>
-                </div> <!-- /disclaimer-dialog -->
-                <div id="confirmation-dialog" title="{{confirmationTitle}}" class="dialang-dialog">
-                    <p>{{testChosen}}</p>
-                    <p id="confirmation_langskill"></p>
-                    <table cols="2">
-                        <tbody>
-                            <tr>
-                                <td align="center"><button id="confirmation_yes"><img src="../../images/yes.gif"/></button></td>
-                                <td align="center"><button id="confirmation_no"><img src="../../images/no.gif" width="58" height="58"/></button></td>
-                            </tr>
-                            <tr>
-                                <td align="center">{{yes}}</td><td align="center">{{no}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div> <!-- /confirmation-dialog -->
-            </div> <!-- /content -->
-            <div class="bottom-margin"></div>
-        </div> <!-- /container -->
-        <script type="text/javascript" src="../../js/dialang.js"></script>
-        <script type="text/javascript" src="../../js/tls.js"></script>
-    </body>
-</html>
+{
+    "tlsTitle":           "{{{tlsTitle}}}",
+    "listeningTooltip":   "{{listeningTooltip}}",
+    "writingTooltip":     "{{writingTooltip}}",
+    "structuresTooltip":  "{{structuresTooltip}}",
+    "vocabularyTooltip":  "{{vocabularyTooltip}}",
+    "done":              "{{done}}",
+    "available":         "{{available}}",
+    "notavailable":      "{{notavailable}}",
+    "disclaimer":        "{{{disclaimer}}}",
+    "ok":                "{{ok}}",
+    "confirmationTitle": "{{confirmationTitle}}",
+    "testChosen":        "{{testChosen}}",
+    "yes":               "{{yes}}",
+    "no":                "{{no}}",
+    "testrows": [{{#testrows}}
+        {"languageName": "{{languageName}}","languageCode": "{{languageCode}}"}{{^last}},{{/last}}
+        {{/testrows}}]
+}

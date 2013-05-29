@@ -24,10 +24,11 @@ object DialangExporter extends App {
 
   val adminLanguages = db.getAdminLanguageLocales
 
-  exportAls(adminLanguages)
+  exportAls()
   exportLegendPages(adminLanguages)
   exportFlowchartPages(adminLanguages)
   exportTLSPages(adminLanguages)
+  /*
   exportVSPTIntroPages(adminLanguages)
   exportVSPTPages(adminLanguages)
   exportVSPTFeedbackPages(adminLanguages)
@@ -40,13 +41,14 @@ object DialangExporter extends App {
   exportSAFeedbackPages(adminLanguages)
   exportTestResultPages(adminLanguages)
   exportItemReviewPages(adminLanguages)
+  */
 
   db.cleanup()
 
   sys.exit()
 
-  def exportAls(adminLanguages:List[String]) {
-    val output = engine.layout("src/main/resources/als.mustache",adminLanguages)
+  def exportAls() {
+    val output = engine.layout("src/main/resources/als.mustache",db.getAdminLanguages)
     val alsFile = new OutputStreamWriter(new FileOutputStream(new File(websiteDir,"als.html")),"UTF-8")
     alsFile.write(output)
     alsFile.close()
@@ -60,25 +62,39 @@ object DialangExporter extends App {
     }
 
     for(al <- adminLanguages) { 
-        val key = db.getTranslation("Title_Key",al)
-        val welcome = db.getTranslation("Title_WelcomeDIALANG",al)
-        val next = db.getTranslation("Caption_ContinueNext",al)
-        val back = db.getTranslation("Caption_BackPrevious",al)
-        val skipf = db.getTranslation("Caption_SkipNextSection",al)
-        val skipb = db.getTranslation("Caption_SkipPreviousSection",al)
-        val yes = db.getTranslation("Caption_Yes",al)
-        val no = db.getTranslation("Caption_No",al)
-        val help = db.getTranslation("Caption_Help",al)
-        val smiley = db.getTranslation("CaptionInstantOnOff",al)
-        val keyboard = db.getTranslation("Caption_AdditionalCharacters",al)
-        val speaker = db.getTranslation("Caption_PlaySound",al)
-        val prevtooltip = db.getTranslation("Caption_BacktoALS",al)
-        val nexttooltip = db.getTranslation("Caption_ContinueNext",al)
-        val map = Map("key" -> key,"next" -> next,"back" -> back,"welcome" -> welcome,"skipf" -> skipf,"skipb" -> skipb,"yes" -> yes,"no" -> no,"help" -> help,"smiley" -> smiley,"keyboard" -> keyboard,"speaker" -> speaker,"prevtooltip" -> prevtooltip,"nexttooltip" -> nexttooltip,"al" -> al)
-        val output = engine.layout("src/main/resources/legend.mustache",map)
-        val legendFile = new OutputStreamWriter(new FileOutputStream(new File(legendDir,al + ".html")),"UTF-8")
-        legendFile.write(output)
-        legendFile.close()
+      val key = db.getTranslation("Title_Key",al)
+      val welcome = db.getTranslation("Title_WelcomeDIALANG",al)
+      val next = db.getTranslation("Caption_ContinueNext",al)
+      val back = db.getTranslation("Caption_BackPrevious",al)
+      val skipf = db.getTranslation("Caption_SkipNextSection",al)
+      val skipb = db.getTranslation("Caption_SkipPreviousSection",al)
+      val yes = db.getTranslation("Caption_Yes",al)
+      val no = db.getTranslation("Caption_No",al)
+      val help = db.getTranslation("Caption_Help",al)
+      val smiley = db.getTranslation("CaptionInstantOnOff",al)
+      val keyboard = db.getTranslation("Caption_AdditionalCharacters",al)
+      val speaker = db.getTranslation("Caption_PlaySound",al)
+      val prevtooltip = db.getTranslation("Caption_BacktoALS",al)
+      val nexttooltip = db.getTranslation("Caption_ContinueNext",al)
+      val map = Map("key" -> key,
+                      "next" -> next,
+                      "back" -> back,
+                      "welcome" -> welcome,
+                      "skipf" -> skipf,
+                      "skipb" -> skipb,
+                      "yes" -> yes,
+                      "no" -> no,
+                      "help" -> help,
+                      "smiley" -> smiley,
+                      "keyboard" -> keyboard,
+                      "speaker" -> speaker,
+                      "prevtooltip" -> prevtooltip,
+                      "nexttooltip" -> nexttooltip,
+                      "al" -> al)
+      val output = engine.layout("src/main/resources/legend.mustache",map)
+      val legendFile = new OutputStreamWriter(new FileOutputStream(new File(legendDir,al + ".json")),"UTF-8")
+      legendFile.write(output)
+      legendFile.close()
     }
   }
 
@@ -124,7 +140,7 @@ object DialangExporter extends App {
                       "prevtooltip" -> prevtooltip,
                       "nexttooltip" -> nexttooltip )
       val output = engine.layout("src/main/resources/flowchart.mustache",map)
-      val flowchartFile = new OutputStreamWriter(new FileOutputStream(new File(flowchartDir,al + ".html")),"UTF-8")
+      val flowchartFile = new OutputStreamWriter(new FileOutputStream(new File(flowchartDir,al + ".json")),"UTF-8")
       flowchartFile.write(output)
       flowchartFile.close
     }
@@ -164,8 +180,12 @@ object DialangExporter extends App {
       val tlsMap = db.getTestLanguagePrompts(al)
 
       var testRows = new ListBuffer[Map[String,String]]
-      tlsMap.foreach(t => {
-        testRows += Map("languageName" -> t._2,"languageCode" -> t._1)
+      tlsMap.zipWithIndex.foreach(t => {
+        if(t._2 < (tlsMap.size - 2)) {
+            testRows += Map("languageName" -> t._1._2,"languageCode" -> t._1._1)
+        } else {
+            testRows += Map("languageName" -> t._1._2,"languageCode" -> t._1._1,"last" -> "true")
+        }
       })
 
       val map = Map("al" -> al,
@@ -188,7 +208,7 @@ object DialangExporter extends App {
                       "structuresTooltip" -> structuresTooltip,
                       "vocabularyTooltip" -> vocabularyTooltip )
       val output = engine.layout("src/main/resources/tls.mustache",map)
-      val tlsFile = new OutputStreamWriter(new FileOutputStream(new File(tlsDir,al + ".html")),"UTF-8")
+      val tlsFile = new OutputStreamWriter(new FileOutputStream(new File(tlsDir,al + ".json")),"UTF-8")
       tlsFile.write(output)
       tlsFile.close
     }

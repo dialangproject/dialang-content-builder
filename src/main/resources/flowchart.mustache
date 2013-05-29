@@ -1,58 +1,21 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-    <head>
-        <meta http-equiv="content-type" content="text/html; charset=utf-8">
-        <meta name="google" value="notranslate">
-        <link rel="stylesheet" type="text/css" href="../../css/dialang.css" media="all"/>
-        <link rel="stylesheet" type="text/css" href="../../css/smoothness/jquery-ui-1.9.2.custom.min.css" media="all"/>
-        <script type="text/javascript" src="../../js/jquery-1.8.3.js"></script>
-        <script src="../../js/jquery-ui-1.9.2.custom.min.js"></script>
-    </head>
-    <body>
-        <div id="container">
-            <div id="topbar">
-                <div id="navbar">
-                    <button id="skipback" disabled><img src="../../images/skipb.gif"/></button>
-                    <button id="back" title="{{prevtooltip}}"><img src="../../images/prev.gif"/></button>
-                    <button id="next" title="{{nexttooltip}}"><img src="../../images/next.gif"/></button>
-                    <button id="skipforward" disabled><img src="../../images/skipf.gif"/></button>
-                    <button id="help"><img src="../../images/help.gif" height="23px;"/></button>
-                </div>  <!-- /navbar -->
-                <div id="logo"><img src="../../images/Logo.gif"/></div> 
-            </div> <!-- /topbar -->
-            <div id="content">
-                <h1 id="welcome-title">{{{welcomeTitle}}}</h1>
-                <p id="welcome-text">{{{welcomeText}}}</p>
-                <div id="procedure-title">{{{procedureTitle}}}</div>
-                <p id="procedure-text">{{{procedureText}}}</p>
-                <map name="flowchartmap">
-                    <area shape="rect" coords="20,0,104,126" href="#" onclick="launchDialog('1');" title="{{stage1Title}}" alt="{{stage1}}">
-                    <area shape="rect" coords="110,0,200,126" href="#" onclick="launchDialog('2');" title="{{stage2Title}}" alt="{{stage2}}">
-                    <area shape="rect" coords="206,0,290,126" href="#" onclick="launchDialog('3');" title="{{stage3Title}}" alt="{{stage3}}">
-                    <area shape="rect" coords="296,0,386,126" href="#" onclick="launchDialog('4');" title="{{stage4Title}}" alt="{{stage4}}">
-                    <area shape="rect" coords="392,0,482,126" href="#" onclick="launchDialog('5');" title="{{stage5Title}}" alt="{{stage5}}">
-                </map>
-                <div><img src="../../images/flowchart.gif" usemap="#flowchartmap"/></div> 
-                <div class="bottom-margin"></div>
-                <div id="dialog1" class="dialog" title="{{stage1Title}}">
-                    <p>{{{stage1}}}</p>
-                </div>
-                <div id="dialog2" class="dialog" title="{{stage2Title}}">
-                    <p>{{{stage2}}}</p>
-                </div>
-                <div id="dialog3" class="dialog" title="{{stage3Title}}">
-                    <p>{{{stage3}}}</p>
-                </div>
-                <div id="dialog4" class="dialog" title="{{stage4Title}}">
-                    <p>{{{stage4}}}</p>
-                </div>
-                <div id="dialog5" class="dialog" title="{{stage5Title}}">
-                    <p>{{{stage5}}}</p>
-                </div>
-            </div> <!-- /content -->
-            <div class="bottom-margin"></div>
-        </div> <!-- /container -->
-        <script type="text/javascript" src="../../js/dialang.js"></script>
-        <script type="text/javascript" src="../../js/flowchart.js"></script>
-    </body>
-</html>
+{
+    "skipback":       "",
+    "back":           "{{prevtooltip}}",
+    "next":           "{{nexttooltip}}",
+    "skipforward":    "",
+    "help":           "{{help}}",
+    "welcomeTitle":   "{{{welcomeTitle}}}",
+    "welcomeText":    "{{{welcomeText}}}",
+    "procedureTitle": "{{{procedureTitle}}}",
+    "procedureText":  "{{{procedureText}}}",
+    "stage1Title":    "{{stage1Title}}",
+    "stage1":         "{{stage1}}",
+    "stage2Title":    "{{stage2Title}}",
+    "stage2":         "{{stage2}}",
+    "stage3Title":    "{{stage3Title}}",
+    "stage3":         "{{stage3}}",
+    "stage4Title":    "{{stage4Title}}",
+    "stage4":         "{{stage4}}",
+    "stage5Title":    "{{stage5Title}}",
+    "stage5":         "{{stage5}}"
+}

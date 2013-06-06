@@ -1,2 +1,0 @@
-Short answer baskets can have multiple items. See basket 2536 for an example.
-Short answer items may have no text attribute whatsoever. The text may come either from the text media OR the prompt on the basket

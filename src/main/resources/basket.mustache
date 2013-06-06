@@ -1,48 +1,17 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-    <head>
-        <meta http-equiv="content-type" content="text/html; charset=utf-8">
-        <meta name="google" value="notranslate">
-        <link rel="stylesheet" type="text/css" href="../../../css/dialang.css" media="all"/>
-        <link rel="stylesheet" type="text/css" href="../../../css/smoothness/jquery-ui-1.9.2.custom.min.css" media="all"/>
-        <script type="text/javascript" src="../../../js/jquery-1.8.3.js"></script>
-        <script src="../../../js/jquery-ui-1.9.2.custom.min.js"></script>
-        <script src="../../../js/mustache.js"></script>
-        <script type="text/javascript">
-            var basketType = '{{basketType}}';
-        </script>
-    </head>
-    <body>
-        <div id="container">
-
-            <div id="topbar">
-                <div id="navbar">
-                    <button id="skipback" disabled><img src="../../../images/skipb.gif"/></button>
-                    <button id="back" title="{{prevtooltip}}" disabled><img src="../../../images/prev.gif"/></button>
-                    <button id="next" title="{{nexttooltip}}" disabled><img src="../../../images/next.gif"/></button>
-                    <button id="skipforward" title="{{skipftooltip}}"><img src="../../../images/skipf.gif"/></button>
-                    <button id="help"><img src="../../../images/help.gif" height="23px;"/></button>
-                    <button id="instfb"><img src="../../../images/instantFeedbackOff.gif" height="23px;"/></button>
-                    <button id="keyboard"><img src="../../../images/keyb.gif" height="23px;"/></button>
-                </div>  <!-- /navbar -->
-                <div id="logo">
-                    <div id="progressbar" class="dialang-progressbar"></div>
-                    <img src="../../../images/Logo.gif"/>
-                </div>
-            </div> <!-- /topbar -->
-
-            <div id="content">
+                <script type="text/javascript">
+                    var basketType = '{{basketType}}';
+                </script>
                 <div id="basket">
                     <div id="rubric">
-                        <div id="rubric-image"><img src="../../../images/Inform.gif"/></div>
+                        <div id="rubric-image"><img src="..//dialang-content/images/Inform.gif"/></div>
                         <div id="rubric-text">{{rubricText}}</div>
                         <div style="clear: both;"></div>
                     </div> <!-- /rubric -->
                     {{{mediaMarkup}}}
                     <div id="response">
-                    <form id="basketform" method="POST" action="/dialang/submitbasket">
+                    <form id="basketform" action="/submitbasket" method="POST">
                         <input type="hidden" name="basketId" value="{{basketId}}" />
-                        <input type="hidden" name="type" value="{{basketType}}" />
+                        <input type="hidden" name="basketType" value="{{basketType}}" />
                         {{{responseMarkup}}}
                     </form>
                     </div> <!-- /response -->
@@ -52,8 +21,8 @@
                     <table cols="2">
                         <tbody>
                             <tr>
-                                <td align="center"><button id="confirm-skip-yes"><img src="../../images/yes.gif"/></button></td>
-                                <td align="center"><button id="confirm-skip-no"><img src="../../images/no.gif" width="58" height="58"/></button></td>
+                                <td align="center"><button id="confirm-skip-yes"><img src="/dialang-content/images/yes.gif"/></button></td>
+                                <td align="center"><button id="confirm-skip-no"><img src="/dialang-content/images/no.gif" width="58" height="58"/></button></td>
                             </tr>
                             <tr>
                                 <td align="center">{{yes}}</td><td align="center">{{no}}</td>
@@ -63,7 +32,7 @@
                 </div> <!-- /confirm-skip-dialog -->
                 <div id="mcq-review-dialog" class="review-dialog">
                     <div class="review-smiley">
-                        <img src="../../images/smiley.gif"/>
+                        <img src="/dialang-content/images/smiley.gif"/>
                     </div>
                     <div class="review-answer-box">
                         <div class="review-given-answer">
@@ -85,13 +54,3 @@
                 <input type="hidden" id="review-dialog-correctanswers-title" value="{{correctAnswersTitle}}"/>
                 <div id="tp-review-dialog" class="review-dialog">
                 </div> <!-- /tp-review-dialog -->
-            </div> <!-- /content -->
-
-            <div class="bottom-margin"></div>
-
-        </div> <!-- /container -->
-
-        <script type="text/javascript" src="../../../js/dialang.js"></script>
-        <script type="text/javascript" src="../../../js/basket.js"></script>
-    </body>
-</html>

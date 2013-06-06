@@ -16,7 +16,7 @@ object DialangExporter extends App {
 
   val db = new DB
   val engine = new TemplateEngine
-  val websiteDir = new File("website")
+  val websiteDir = new File(args(0))
 
   if(!websiteDir.exists) {
     websiteDir.mkdirs();
@@ -28,7 +28,6 @@ object DialangExporter extends App {
   exportLegendPages(adminLanguages)
   exportFlowchartPages(adminLanguages)
   exportTLSPages(adminLanguages)
-  /*
   exportVSPTIntroPages(adminLanguages)
   exportVSPTPages(adminLanguages)
   exportVSPTFeedbackPages(adminLanguages)
@@ -41,13 +40,13 @@ object DialangExporter extends App {
   exportSAFeedbackPages(adminLanguages)
   exportTestResultPages(adminLanguages)
   exportItemReviewPages(adminLanguages)
-  */
 
   db.cleanup()
 
   sys.exit()
 
   def exportAls() {
+    
     val output = engine.layout("src/main/resources/als.mustache",db.getAdminLanguages)
     val alsFile = new OutputStreamWriter(new FileOutputStream(new File(websiteDir,"als.html")),"UTF-8")
     alsFile.write(output)
@@ -74,7 +73,7 @@ object DialangExporter extends App {
       val smiley = db.getTranslation("CaptionInstantOnOff",al)
       val keyboard = db.getTranslation("Caption_AdditionalCharacters",al)
       val speaker = db.getTranslation("Caption_PlaySound",al)
-      val prevtooltip = db.getTranslation("Caption_BacktoALS",al)
+      val backtooltip = db.getTranslation("Caption_BacktoALS",al)
       val nexttooltip = db.getTranslation("Caption_ContinueNext",al)
       val map = Map("key" -> key,
                       "next" -> next,
@@ -88,13 +87,19 @@ object DialangExporter extends App {
                       "smiley" -> smiley,
                       "keyboard" -> keyboard,
                       "speaker" -> speaker,
-                      "prevtooltip" -> prevtooltip,
+                      "backtooltip" -> backtooltip,
                       "nexttooltip" -> nexttooltip,
                       "al" -> al)
+
       val output = engine.layout("src/main/resources/legend.mustache",map)
-      val legendFile = new OutputStreamWriter(new FileOutputStream(new File(legendDir,al + ".json")),"UTF-8")
+      val legendFile = new OutputStreamWriter(new FileOutputStream(new File(legendDir,al + ".html")),"UTF-8")
       legendFile.write(output)
       legendFile.close()
+
+      val tipOutput = engine.layout("src/main/resources/toolbartooltips.mustache",map)
+      val tipFile = new OutputStreamWriter(new FileOutputStream(new File(legendDir,al + "-toolbarTooltips.json")),"UTF-8")
+      tipFile.write(tipOutput)
+      tipFile.close()
     }
   }
 
@@ -110,7 +115,7 @@ object DialangExporter extends App {
       val welcomeText = db.getTranslation("Welcome_Intro_Text",al)
       val procedureTitle = db.getTranslation("Title_ProcedureCAPS",al)
       val procedureText = db.getTranslation("Welcome_Procedure_Text",al)
-      val prevtooltip = db.getTranslation("Caption_BacktoWelcome",al)
+      val backtooltip = db.getTranslation("Caption_BacktoWelcome",al)
       val nexttooltip = db.getTranslation("Caption_GotoChooseTest",al)
       val stage1Title = db.getTranslation("Title_ChooseTest",al)
       val stage1 = db.getTranslation("Welcome_Chart_ChooseTest_Text",al)
@@ -137,12 +142,18 @@ object DialangExporter extends App {
                       "stage4" -> stage4,
                       "stage5Title" -> stage5Title,
                       "stage5" -> stage5,
-                      "prevtooltip" -> prevtooltip,
+                      "backtooltip" -> backtooltip,
                       "nexttooltip" -> nexttooltip )
+
       val output = engine.layout("src/main/resources/flowchart.mustache",map)
-      val flowchartFile = new OutputStreamWriter(new FileOutputStream(new File(flowchartDir,al + ".json")),"UTF-8")
+      val flowchartFile = new OutputStreamWriter(new FileOutputStream(new File(flowchartDir,al + ".html")),"UTF-8")
       flowchartFile.write(output)
       flowchartFile.close
+
+      val tipOutput = engine.layout("src/main/resources/toolbartooltips.mustache",map)
+      val tipFile = new OutputStreamWriter(new FileOutputStream(new File(flowchartDir,al + "-toolbarTooltips.json")),"UTF-8")
+      tipFile.write(tipOutput)
+      tipFile.close()
     }
   }
 
@@ -154,8 +165,8 @@ object DialangExporter extends App {
     }
 
     for(al <- adminLanguages) { 
-      val skipbtooltip = db.getTranslation("Caption_BacktoALS",al)
-      val prevtooltip = db.getTranslation("Caption_BacktoWelcome",al)
+      val skipbacktooltip = db.getTranslation("Caption_BacktoALS",al)
+      val backtooltip = db.getTranslation("Caption_BacktoWelcome",al)
       val tlsTitle = db.getTranslation("Title_ChooseTest",al)
       val listeningTooltip = db.getTranslation("ChooseTest_Skill#Listening",al)
       val writingTooltip = db.getTranslation("ChooseTest_Skill#Writing",al)
@@ -191,8 +202,8 @@ object DialangExporter extends App {
       val map = Map("al" -> al,
                       "tlsTitle" -> tlsTitle,
                       "testrows" -> testRows.toList,
-                      "skipbtooltip" -> skipbtooltip,
-                      "prevtooltip" -> prevtooltip,
+                      "skipbacktooltip" -> skipbacktooltip,
+                      "backtooltip" -> backtooltip,
                       "listeningTooltip" -> listeningTooltip,
                       "writingTooltip" -> writingTooltip,
                       "disclaimerTitle" -> disclaimerTitle,
@@ -207,10 +218,16 @@ object DialangExporter extends App {
                       "readingTooltip" -> readingTooltip,
                       "structuresTooltip" -> structuresTooltip,
                       "vocabularyTooltip" -> vocabularyTooltip )
+
       val output = engine.layout("src/main/resources/tls.mustache",map)
-      val tlsFile = new OutputStreamWriter(new FileOutputStream(new File(tlsDir,al + ".json")),"UTF-8")
+      val tlsFile = new OutputStreamWriter(new FileOutputStream(new File(tlsDir,al + ".html")),"UTF-8")
       tlsFile.write(output)
       tlsFile.close
+
+      val tipOutput = engine.layout("src/main/resources/toolbartooltips.mustache",map)
+      val tipFile = new OutputStreamWriter(new FileOutputStream(new File(tlsDir,al + "-toolbarTooltips.json")),"UTF-8")
+      tipFile.write(tipOutput)
+      tipFile.close()
     }
   }
 
@@ -222,9 +239,9 @@ object DialangExporter extends App {
     val testLanguages = db.getTestLanguageCodes
 
     for(al <- adminLanguages) { 
-      val prevtooltip = db.getTranslation("Caption_BacktoChooseTest",al)
+      val backtooltip = db.getTranslation("Caption_BacktoChooseTest",al)
       val nexttooltip = db.getTranslation("Caption_StartPlacement",al)
-      val skipftooltip = db.getTranslation("Caption_SkipPlacement",al)
+      val skipforwardtooltip = db.getTranslation("Caption_SkipPlacement",al)
       val title = db.getTranslation("Title_Placement",al)
       val text = db.getTranslation("PlacementIntro_Text",al)
 
@@ -240,12 +257,17 @@ object DialangExporter extends App {
                    "yes" -> yes,
                    "no" -> no,
                   "nexttooltip" -> nexttooltip,
-                  "prevtooltip" -> prevtooltip,
-                  "skipftooltip" -> skipftooltip )
+                  "backtooltip" -> backtooltip,
+                  "skipforwardtooltip" -> skipforwardtooltip )
       val output = engine.layout("src/main/resources/vsptintro.mustache",map)
       val vsptIntroFile = new OutputStreamWriter(new FileOutputStream(new File(vsptIntroDir,al + ".html")),"UTF-8")
       vsptIntroFile.write(output)
       vsptIntroFile.close
+
+      val tipOutput = engine.layout("src/main/resources/toolbartooltips.mustache",map)
+      val tipFile = new OutputStreamWriter(new FileOutputStream(new File(vsptIntroDir,al + "-toolbarTooltips.json")),"UTF-8")
+      tipFile.write(tipOutput)
+      tipFile.close()
     }
   }
 
@@ -263,7 +285,12 @@ object DialangExporter extends App {
       val yes = db.getTranslation("Caption_Yes",al)
       val no = db.getTranslation("Caption_No",al)
       val confirmSend = db.getTranslation("Dialogues_Submit",al)
-      val skipftooltip = db.getTranslation("Caption_QuitPlacement",al)
+      val skipforwardtooltip = db.getTranslation("Caption_QuitPlacement",al)
+
+      val tipOutput = engine.layout("src/main/resources/toolbartooltips.mustache",Map("nexttooltip" -> submit,"skipforwardtooltip" -> skipforwardtooltip))
+      val tipFile = new OutputStreamWriter(new FileOutputStream(new File(vsptDir,al + "-toolbarTooltips.json")),"UTF-8")
+      tipFile.write(tipOutput)
+      tipFile.close()
 
       // Confirmation dialog texts.
       val warningText = db.getTranslation("Dialogues_SkipPlacement",al)
@@ -325,8 +352,6 @@ object DialangExporter extends App {
                         "warningText" -> warningText,
                         "yes" -> yes,
                         "no" -> no,
-                        "nexttooltip" -> submit,
-                        "skipftooltip" -> skipftooltip,
                         "confirmsendquestion" -> confirmSend,
                         "submit" -> submit,
                         "words" -> words,
@@ -353,7 +378,13 @@ object DialangExporter extends App {
       }
       val title = db.getTranslation("Title_PlacementFeedback",al)
       val yourscore = db.getTranslation("PlacementFeedback_YourScore",al)
+      val backtooltip = db.getTranslation("Caption_BacktoFeedback",al)
       val nexttooltip = db.getTranslation("Caption_GotoNext",al)
+
+      val tipOutput = engine.layout("src/main/resources/toolbartooltips.mustache",Map("backtooltip" -> backtooltip,"nexttooltip" -> nexttooltip))
+      val tipFile = new OutputStreamWriter(new FileOutputStream(new File(vsptfeedbackDir,al + "-toolbarTooltips.json")),"UTF-8")
+      tipFile.write(tipOutput)
+      tipFile.close()
 
       val levelv6 = db.getTranslation("PlacementFeedback_Text#V6",al)
       val levelv5 = db.getTranslation("PlacementFeedback_Text#V5",al)
@@ -393,16 +424,24 @@ object DialangExporter extends App {
       if(!alDir.isDirectory) {
         alDir.mkdirs()
       }
-      for(skill <- db.saSkills) {
-        val nexttooltip = db.getTranslation("Caption_StartSelfAssess",al)
-        val skipftooltip = db.getTranslation("Caption_SkipSelfAssess",al)
-        val title = db.getTranslation("Title_SelfAssess#" + skill,al)
-        val text = db.getTranslation("SelfAssessIntro_Text",al)
 
-        // Confirmation dialog texts.
-        val warningText = db.getTranslation("Dialogues_SkipSelfAssess",al)
-        val yes = db.getTranslation("Caption_Yes",al)
-        val no = db.getTranslation("Caption_No",al)
+      val nexttooltip = db.getTranslation("Caption_StartSelfAssess",al)
+      val skipforwardtooltip = db.getTranslation("Caption_SkipSelfAssess",al)
+      val text = db.getTranslation("SelfAssessIntro_Text",al)
+
+      // Confirmation dialog texts.
+      val warningText = db.getTranslation("Dialogues_SkipSelfAssess",al)
+      val yes = db.getTranslation("Caption_Yes",al)
+      val no = db.getTranslation("Caption_No",al)
+
+      val tipOutput = engine.layout("src/main/resources/toolbartooltips.mustache",Map("nexttooltip" -> nexttooltip,"skipforwardtooltip" -> skipforwardtooltip))
+      val tipFile = new OutputStreamWriter(new FileOutputStream(new File(saIntroDir,al + "-toolbarTooltips.json")),"UTF-8")
+      tipFile.write(tipOutput)
+      tipFile.close()
+
+      for(skill <- db.saSkills) {
+
+        val title = db.getTranslation("Title_SelfAssess#" + skill,al)
 
         val map = Map("al" -> al,
                     "skill" -> skill.toLowerCase,
@@ -410,9 +449,7 @@ object DialangExporter extends App {
                     "text" -> text,
                     "warningText" -> warningText,
                     "yes" -> yes,
-                    "no" -> no,
-                    "nexttooltip" -> nexttooltip,
-                    "skipftooltip" -> skipftooltip )
+                    "no" -> no)
         val output = engine.layout("src/main/resources/saintro.mustache",map)
         val saIntroFile = new OutputStreamWriter(new FileOutputStream(new File(alDir,skill.toLowerCase + ".html")),"UTF-8")
         saIntroFile.write(output)
@@ -432,13 +469,18 @@ object DialangExporter extends App {
       }
 
       val submit = db.getTranslation("Caption_SubmitAnswers",al)
-      val skipftooltip = db.getTranslation("Caption_QuitSelfAssess",al)
+      val skipforwardtooltip = db.getTranslation("Caption_QuitSelfAssess",al)
       val yes = db.getTranslation("Caption_Yes",al)
       val no = db.getTranslation("Caption_No",al)
       val confirmSend = db.getTranslation("Dialogues_Submit",al)
 
       // Confirmation dialog texts.
       val warningText = db.getTranslation("Dialogues_SkipSelfAssess",al)
+
+      val tipOutput = engine.layout("src/main/resources/toolbartooltips.mustache",Map("nexttooltip" -> submit,"skipforwardtooltip" -> skipforwardtooltip))
+      val tipFile = new OutputStreamWriter(new FileOutputStream(new File(saDir,al + "-toolbarTooltips.json")),"UTF-8")
+      tipFile.write(tipOutput)
+      tipFile.close()
 
       for(skill <- db.saSkills) {
         val statements = db.getSAStatements(al,skill.toLowerCase)
@@ -451,8 +493,7 @@ object DialangExporter extends App {
                     "yes" -> yes,
                     "no" -> no,
                      "confirmsendquestion" -> confirmSend,
-                    "statements" -> statements,
-                    "skipftooltip" -> skipftooltip )
+                    "statements" -> statements )
         val output = engine.layout("src/main/resources/sa.mustache",map)
         val saFile = new OutputStreamWriter(new FileOutputStream(new File(alDir,skill.toLowerCase + ".html")),"UTF-8")
         saFile.write(output)
@@ -470,7 +511,7 @@ object DialangExporter extends App {
 
     for(al <- adminLanguages) { 
       val nexttooltip = db.getTranslation("Caption_StartTest",al)
-      val skipftooltip = db.getTranslation("Caption_SkipLangTest",al)
+      val skipforwardtooltip = db.getTranslation("Caption_SkipLangTest",al)
       val title = db.getTranslation("Title_DIALANGLangTest",al)
       val text = db.getTranslation("LangTestIntro_Text",al)
       val feedback = db.getTranslation("Caption_InstantFeedback",al)
@@ -490,13 +531,16 @@ object DialangExporter extends App {
                   "no" -> no,
                   "feedback" -> feedback,
                   "instantfeedbackontooltip" -> instantfeedbackontooltip,
-                  "instantfeedbackofftooltip" -> instantfeedbackofftooltip,
-                  "nexttooltip" -> nexttooltip,
-                  "skipftooltip" -> skipftooltip )
+                  "instantfeedbackofftooltip" -> instantfeedbackofftooltip )
       val output = engine.layout("src/main/resources/testintro.mustache",map)
       val saIntroFile = new OutputStreamWriter(new FileOutputStream(new File(testIntroDir,al + ".html")),"UTF-8")
       saIntroFile.write(output)
       saIntroFile.close
+
+      val tipOutput = engine.layout("src/main/resources/toolbartooltips.mustache",Map("nexttooltip" -> nexttooltip,"skipforwardtooltip" -> skipforwardtooltip))
+      val tipFile = new OutputStreamWriter(new FileOutputStream(new File(testIntroDir,al + "-toolbarTooltips.json")),"UTF-8")
+      tipFile.write(tipOutput)
+      tipFile.close()
     }
   }
 
@@ -511,6 +555,15 @@ object DialangExporter extends App {
     val basketDir = new File(websiteDir,"baskets")
     if(!basketDir.isDirectory) {
         basketDir.mkdirs()
+    }
+
+    for(al <- adminLanguages) {
+      val nexttooltip = db.getTranslation("Caption_Next",al)
+      val skipforwardtooltip = db.getTranslation("Caption_QuitLangTest",al)
+      val tipOutput = engine.layout("src/main/resources/toolbartooltips.mustache",Map("nexttooltip" -> nexttooltip,"skipforwardtooltip" -> skipforwardtooltip))
+      val tipFile = new OutputStreamWriter(new FileOutputStream(new File(basketDir,al + "-toolbarTooltips.json")),"UTF-8")
+      tipFile.write(tipOutput)
+      tipFile.close()
     }
 
     val itemPlaceholderPattern = Pattern.compile("<(\\d*)>")
@@ -618,24 +671,24 @@ object DialangExporter extends App {
           }
         }
 
-      for(al <- adminLanguages) {
+        for(al <- adminLanguages) {
 
-        val alDir = new File(basketDir,al)
-        if(!alDir.isDirectory) {
-          alDir.mkdirs()
-        }
+          val alDir = new File(basketDir,al)
+          if(!alDir.isDirectory) {
+            alDir.mkdirs()
+          }
 
-        val rubricText = db.getTranslation("LangTest_Rubric#" + typeMap.get(basketType).get + "#Text",al)
+          val rubricText = db.getTranslation("LangTest_Rubric#" + typeMap.get(basketType).get + "#Text",al)
 
-        // Confirmation dialog texts.
-        val warningText = db.getTranslation("Dialogues_SkipLangTest",al)
-        val yes = db.getTranslation("Caption_Yes",al)
-        val no = db.getTranslation("Caption_No",al)
-        val yourAnswerTitle = db.getTranslation("LangTest_ItemFeedback_YourAnswer",al)
-        val correctAnswerTitle = db.getTranslation("LangTest_ItemFeedback_CorrectAnswer",al)
-        val correctAnswersTitle = db.getTranslation("LangTest_ItemFeedback_CorrectAnswers",al)
+          // Confirmation dialog texts.
+          val warningText = db.getTranslation("Dialogues_SkipLangTest",al)
+          val yes = db.getTranslation("Caption_Yes",al)
+          val no = db.getTranslation("Caption_No",al)
+          val yourAnswerTitle = db.getTranslation("LangTest_ItemFeedback_YourAnswer",al)
+          val correctAnswerTitle = db.getTranslation("LangTest_ItemFeedback_CorrectAnswer",al)
+          val correctAnswersTitle = db.getTranslation("LangTest_ItemFeedback_CorrectAnswers",al)
         
-        val map = Map("basketId" -> basketId.toString,
+          val map = Map("basketId" -> basketId.toString,
                         "basketType" -> basketType,
                         "rubricText" -> rubricText,
                         "warningText" -> warningText,
@@ -646,13 +699,14 @@ object DialangExporter extends App {
                         "correctAnswersTitle" -> correctAnswersTitle,
                         "mediaMarkup" -> mediaMarkup,
                         "responseMarkup" -> responseMarkup)
-        val output = engine.layout("src/main/resources/basket.mustache",map)
-        val basketFile = new OutputStreamWriter(new FileOutputStream(new File(alDir,basketId + ".html")),"UTF-8")
-        basketFile.write(output)
-        basketFile.close
-      }
-    })
+          val output = engine.layout("src/main/resources/basket.mustache",map)
+          val basketFile = new OutputStreamWriter(new FileOutputStream(new File(alDir,basketId + ".html")),"UTF-8")
+          basketFile.write(output)
+          basketFile.close
 
+      } // admin language iterator
+
+    }) // basket iterator
   }
 
   def exportEndOfTestPages(adminLanguages:List[String]) {
@@ -666,11 +720,16 @@ object DialangExporter extends App {
         val title = db.getTranslation("Title_LangTestEnd",al)
         val text = db.getTranslation("LangTestEnd_Text",al)
         val nexttooltip = db.getTranslation("Caption_Feedback",al)
-        val map = Map("title" -> title,"text" -> text,"nexttooltip" -> nexttooltip,"al" -> al)
-        val output = engine.layout("src/main/resources/endoftest.mustache",map)
+
+        val output = engine.layout("src/main/resources/endoftest.mustache",Map("title" -> title,"text" -> text))
         val endOfTestFile = new OutputStreamWriter(new FileOutputStream(new File(endOfTestDir,al + ".html")),"UTF-8")
         endOfTestFile.write(output)
         endOfTestFile.close()
+
+        val tipOutput = engine.layout("src/main/resources/toolbartooltips.mustache",Map("nexttooltip" -> nexttooltip))
+        val tipFile = new OutputStreamWriter(new FileOutputStream(new File(endOfTestDir,al + "-toolbarTooltips.json")),"UTF-8")
+        tipFile.write(tipOutput)
+        tipFile.close()
     }
   }
 
@@ -696,8 +755,8 @@ object DialangExporter extends App {
       val yes = db.getTranslation("Caption_Yes",al)
       val no = db.getTranslation("Caption_No",al)
       val quit = db.getTranslation("Caption_Quit",al)
-      val skipbtooltip = db.getTranslation("Caption_ChooseAnotherTest",al)
-      val skipftooltip = skipbtooltip
+      val skipbacktooltip = db.getTranslation("Caption_ChooseAnotherTest",al)
+      val skipforwardtooltip = skipbacktooltip
       val map = Map("al" -> al,
                       "title" -> title,
                       "text" -> text,
@@ -712,13 +771,16 @@ object DialangExporter extends App {
                       "restartText" -> restartText,
                       "yes" -> yes,
                       "no" -> no,
-                      "quit" -> quit,
-                      "skipbtooltip" -> skipbtooltip,
-                      "skipftooltip" -> skipftooltip)
+                      "quit" -> quit)
       val output = engine.layout("src/main/resources/feedbackmenu.mustache",map)
       val feedbackMenuFile = new OutputStreamWriter(new FileOutputStream(new File(feedbackMenuDir,al + ".html")),"UTF-8")
       feedbackMenuFile.write(output)
       feedbackMenuFile.close
+
+      val tipOutput = engine.layout("src/main/resources/toolbartooltips.mustache",Map("skipbacktooltip" -> skipbacktooltip,"skipforwardtooltip" -> skipforwardtooltip))
+      val tipFile = new OutputStreamWriter(new FileOutputStream(new File(feedbackMenuDir,al + "-toolbarTooltips.json")),"UTF-8")
+      tipFile.write(tipOutput)
+      tipFile.close()
     }
   }
 
@@ -737,8 +799,14 @@ object DialangExporter extends App {
         alDir.mkdir()
       }
 
+      val backtooltip = db.getTranslation("Caption_BacktoFeedback",al)
+
+      val tipOutput = engine.layout("src/main/resources/toolbartooltips.mustache",Map("backtooltip" -> backtooltip))
+      val tipFile = new OutputStreamWriter(new FileOutputStream(new File(saFeedbackDir,al + "-toolbarTooltips.json")),"UTF-8")
+      tipFile.write(tipOutput)
+      tipFile.close()
+
       val title = db.getTranslation("Title_SelfAssessFeedback",al)
-      val prevtooltip = db.getTranslation("Caption_BacktoFeedback",al)
       val aboutSAText = db.getTranslation("FeedbackOption_AboutSelfAssess",al)
       val overEst = db.getTranslation("SelfAssessFeedback_OverEst_Par2",al)
       val underEst = db.getTranslation("SelfAssessFeedback_UnderEst_Par2",al)
@@ -762,8 +830,7 @@ object DialangExporter extends App {
                       "title" -> title,
                       "partOne" -> partOne,
                       "partTwo" -> partTwo,
-                      "aboutSAText" -> aboutSAText,
-                      "prevtooltip" -> prevtooltip)
+                      "aboutSAText" -> aboutSAText)
           val output = engine.layout("src/main/resources/safeedback.mustache",map)
           val saFeedbackFile = new OutputStreamWriter(new FileOutputStream(new File(itemLevelDir,saLevel + ".html")),"UTF-8")
           saFeedbackFile.write(output)
@@ -784,13 +851,19 @@ object DialangExporter extends App {
 
     for(al <- adminLanguages) { 
 
+      val backtooltip = db.getTranslation("Caption_BacktoWelcome",al)
+
+      val tipOutput = engine.layout("src/main/resources/toolbartooltips.mustache",Map("backtooltip" -> backtooltip))
+      val tipFile = new OutputStreamWriter(new FileOutputStream(new File(testresultsDir,al + "-toolbarTooltips.json")),"UTF-8")
+      tipFile.write(tipOutput)
+      tipFile.close()
+
       val alDir = new File(testresultsDir,al)
       if(!alDir.isDirectory) {
         alDir.mkdir()
       }
 
       val title = db.getTranslation("Title_DIALANGTestResults",al)
-      val prevtooltip = db.getTranslation("Caption_BacktoWelcome",al)
 
       for(skill <- db.saSkills) {
 
@@ -809,8 +882,7 @@ object DialangExporter extends App {
           val map = Map("al" -> al,
                       "title" -> title,
                       "text" -> text,
-                      "itemLevel" -> itemLevel,
-                      "prevtooltip" -> prevtooltip) ++ explanTexts
+                      "itemLevel" -> itemLevel) ++ explanTexts
           val output = engine.layout("src/main/resources/testresults.mustache",map)
           val testresultsFile = new OutputStreamWriter(new FileOutputStream(new File(skillDir,itemLevel + ".html")),"UTF-8")
           testresultsFile.write(output)
@@ -831,7 +903,7 @@ object DialangExporter extends App {
 
       val title = db.getTranslation("Title_ItemReview",al)
       val text = db.getTranslation("ItemReview_Text",al)
-      val prevtooltip = db.getTranslation("Caption_BacktoFeedback",al)
+      val backtooltip = db.getTranslation("Caption_BacktoFeedback",al)
       val subskills = {
           val tmp = new ListBuffer[Map[String,String]]
           db.getSubSkills(al).foreach(t => {
@@ -839,11 +911,16 @@ object DialangExporter extends App {
           })
           tmp.toList
         }
-      val map = Map("title" -> title,"text" -> text,"prevtooltip" -> prevtooltip,"subskills" -> subskills)
+      val map = Map("title" -> title,"text" -> text,"subskills" -> subskills)
       val output = engine.layout("src/main/resources/itemreviewwrapper.mustache",map)
       val itemreviewFile = new OutputStreamWriter(new FileOutputStream(new File(itemreviewDir,al + ".html")),"UTF-8")
       itemreviewFile.write(output)
       itemreviewFile.close()
+
+      val tipOutput = engine.layout("src/main/resources/toolbartooltips.mustache",Map("backtooltip" -> backtooltip))
+      val tipFile = new OutputStreamWriter(new FileOutputStream(new File(itemreviewDir,al + "-toolbarTooltips.json")),"UTF-8")
+      tipFile.write(tipOutput)
+      tipFile.close()
     }
   }
 }

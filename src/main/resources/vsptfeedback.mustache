@@ -1,37 +1,6 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-    <head>
-        <meta http-equiv="content-type" content="text/html; charset=utf-8">
-        <meta name="google" value="notranslate">
-        <link rel="stylesheet" type="text/css" href="../../../css/dialang.css" media="all"/>
-        <link rel="stylesheet" type="text/css" href="../../../css/smoothness/jquery-ui-1.9.2.custom.min.css" media="all"/>
-        <script type="text/javascript" src="../../../js/jquery-1.8.3.js"></script>
-        <script type="text/javascript" src="../../../js/jquery-ui-1.9.2.custom.min.js"></script>
-        <style>
-            .ui-tabs-vertical { width: 36.6em; }
-            .ui-tabs-vertical .ui-tabs-nav { padding: .2em .1em .2em .2em; float: left; width: 8em; }
-            .ui-tabs-vertical .ui-tabs-nav li { clear: left; width: 100%; border-bottom-width: 1px !important; border-right-width: 0 !important; margin: 0 -1px .2em 0; }
-            .ui-tabs-vertical .ui-tabs-nav li a { display:block; }
-            .ui-tabs-vertical .ui-tabs-nav li.ui-tabs-active { padding-bottom: 0; padding-right: .1em; border-right-width: 1px; border-right-width: 1px; }
-            .ui-tabs-vertical .ui-tabs-panel { padding: 1em; float: right; width: 24.1em;}
-        </style>
-        <script type="text/javascript">
-            var activeTab = {{activeTab}};
-        </script>
-    </head>
-    <body>
-        <div id="container">
-            <div id="topbar">
-                <div id="navbar">
-                    <button id="skipback" disabled><img src="../../../images/skipb.gif"/></button>
-                    <button id="back" disabled><img src="../../../images/prev.gif"/></button>
-                    <button id="next" title="{{nexttooltip}}"><img src="../../../images/next.gif"/></button>
-                    <button id="skipforward" disabled><img src="../../../images/skipf.gif"/></button>
-                    <button id="help"><img src="../../../images/help.gif" height="23px;"/></button>
-                </div>  <!-- /navbar -->
-                <div id="logo"><img src="../../../images/Logo.gif"/></div> 
-            </div> <!-- /topbar -->
-            <div id="content">
+                <script type="text/javascript">
+                    var activeTab = {{activeTab}};
+                </script>
                 <h1 id="vsptfeedback-title">{{title}}</h1>
                 <div id="vsptfeedback-text">{{yourscore}}<span id="score"><span></div>
                 <div class="bottom-margin"></div>
@@ -63,10 +32,4 @@
                         <p>{{levelv1}}</p>
                     </div>
                 </div> <!-- /tabs -->
-            </div> <!-- /content -->
-            <div class="bottom-margin"></div>
-        </div> <!-- /container -->
-        <script type="text/javascript" src="../../../js/dialang.js"></script>
-        <script type="text/javascript" src="../../../js/vsptfeedback.js"></script>
-    </body>
-</html>
+                <div class="bottom-margin"></div>

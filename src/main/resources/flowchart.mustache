@@ -1,21 +1,28 @@
-{
-    "skipback":       "",
-    "back":           "{{prevtooltip}}",
-    "next":           "{{nexttooltip}}",
-    "skipforward":    "",
-    "help":           "{{help}}",
-    "welcomeTitle":   "{{{welcomeTitle}}}",
-    "welcomeText":    "{{{welcomeText}}}",
-    "procedureTitle": "{{{procedureTitle}}}",
-    "procedureText":  "{{{procedureText}}}",
-    "stage1Title":    "{{stage1Title}}",
-    "stage1":         "{{stage1}}",
-    "stage2Title":    "{{stage2Title}}",
-    "stage2":         "{{stage2}}",
-    "stage3Title":    "{{stage3Title}}",
-    "stage3":         "{{stage3}}",
-    "stage4Title":    "{{stage4Title}}",
-    "stage4":         "{{stage4}}",
-    "stage5Title":    "{{stage5Title}}",
-    "stage5":         "{{stage5}}"
-}
+                <h1 id="welcome-title">{{{welcomeTitle}}}</h1>
+                <p id="welcome-text">{{{welcomeText}}}</p>
+                <div id="procedure-title">{{{procedureTitle}}}</div>
+                <p id="procedure-text">{{{procedureText}}}</p>
+                <map name="flowchartmap">
+                    <area shape="rect" coords="20,0,104,126" href="#" onclick="dialang.launchFlowchartDialog('1');" title="{{stage1Title}}" alt="{{stage1}}">
+                    <area shape="rect" coords="110,0,200,126" href="#" onclick="dialang.launchFlowchartDialog('2');" title="{{stage2Title}}" alt="{{stage2}}">
+                    <area shape="rect" coords="206,0,290,126" href="#" onclick="dialang.launchFlowchartDialog('3');" title="{{stage3Title}}" alt="{{stage3}}">
+                    <area shape="rect" coords="296,0,386,126" href="#" onclick="dialang.launchFlowchartDialog('4');" title="{{stage4Title}}" alt="{{stage4}}">
+                    <area shape="rect" coords="392,0,482,126" href="#" onclick="dialang.launchFlowchartDialog('5');" title="{{stage5Title}}" alt="{{stage5}}">
+                </map>
+                <div><img src="/dialang-content/images/flowchart.gif" usemap="#flowchartmap"/></div> 
+                <div class="bottom-margin"></div>
+                <div id="dialog1" class="dialog" title="{{stage1Title}}">
+                    <p>{{{stage1}}}</p>
+                </div>
+                <div id="dialog2" class="dialog" title="{{stage2Title}}">
+                    <p>{{{stage2}}}</p>
+                </div>
+                <div id="dialog3" class="dialog" title="{{stage3Title}}">
+                    <p>{{{stage3}}}</p>
+                </div>
+                <div id="dialog4" class="dialog" title="{{stage4Title}}">
+                    <p>{{{stage4}}}</p>
+                </div>
+                <div id="dialog5" class="dialog" title="{{stage5Title}}">
+                    <p>{{{stage5}}}</p>
+                </div>

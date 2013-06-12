@@ -24,7 +24,9 @@ object DialangExporter extends App {
 
   val adminLanguages = db.getAdminLanguageLocales
 
+  /*
   exportAls()
+  exportHelpDialogs(adminLanguages)
   exportLegendPages(adminLanguages)
   exportFlowchartPages(adminLanguages)
   exportTLSPages(adminLanguages)
@@ -40,6 +42,8 @@ object DialangExporter extends App {
   exportSAFeedbackPages(adminLanguages)
   exportTestResultPages(adminLanguages)
   exportItemReviewPages(adminLanguages)
+  */
+  exportAboutSAPages(adminLanguages)
 
   db.cleanup()
 
@@ -51,6 +55,56 @@ object DialangExporter extends App {
     val alsFile = new OutputStreamWriter(new FileOutputStream(new File(websiteDir,"als.html")),"UTF-8")
     alsFile.write(output)
     alsFile.close()
+  }
+
+  def exportHelpDialogs(adminLanguages:List[String]) {
+
+    val helpDir = new File(websiteDir,"help")
+    if(!helpDir.isDirectory) helpDir.mkdirs()
+
+    for(al <- adminLanguages) { 
+      val key = db.getTranslation("Title_Key",al)
+      val next = db.getTranslation("Caption_ContinueNext",al)
+      val back = db.getTranslation("Caption_BackPrevious",al)
+      val skipf = db.getTranslation("Caption_SkipNextSection",al)
+      val skipb = db.getTranslation("Caption_SkipPreviousSection",al)
+      val yes = db.getTranslation("Caption_Yes",al)
+      val no = db.getTranslation("Caption_No",al)
+      val help = db.getTranslation("Caption_Help",al)
+      val smiley = db.getTranslation("CaptionInstantOnOff",al)
+      val keyboard = db.getTranslation("Caption_AdditionalCharacters",al)
+      val speaker = db.getTranslation("Caption_PlaySound",al)
+      val aboutTitle = db.getTranslation("Title_AboutDIALANG",al)
+      val crDialang = db.getTranslation("Bits_CopyrightDIALANG",al)
+      val crLancaster = db.getTranslation("Bits_CopyrightLancaster",al)
+      val vsptTitle = db.getTranslation("Title_Placement",al)
+      val vsptText = db.getTranslation("Help_Texts_Placement",al)
+      val saTitle = db.getTranslation("Title_SelfAssess",al)
+      val saText = db.getTranslation("Help_Texts_SelfAssess",al)
+      val map = Map("key" -> key,
+                      "next" -> next,
+                      "back" -> back,
+                      "skipf" -> skipf,
+                      "skipb" -> skipb,
+                      "yes" -> yes,
+                      "no" -> no,
+                      "help" -> help,
+                      "smiley" -> smiley,
+                      "keyboard" -> keyboard,
+                      "speaker" -> speaker,
+                      "aboutTitle" -> aboutTitle,
+                      "crDialang" -> crDialang,
+                      "crLancaster" -> crLancaster,
+                      "vsptTitle" -> vsptTitle,
+                      "vsptText" -> vsptText,
+                      "saTitle" -> saTitle,
+                      "saText" -> saText)
+
+      val output = engine.layout("src/main/resources/helpdialog.mustache",map)
+      val helpFile = new OutputStreamWriter(new FileOutputStream(new File(helpDir,al + ".html")),"UTF-8")
+      helpFile.write(output)
+      helpFile.close
+    }
   }
 
   def exportLegendPages(adminLanguages:List[String]) {
@@ -280,8 +334,8 @@ object DialangExporter extends App {
         alDir.mkdirs()
       }
 
-      val submit = db.getTranslation("Caption_SubmitAnswers",al)
       val title = db.getTranslation("Title_Placement",al)
+      val submit = db.getTranslation("Caption_SubmitAnswers",al)
       val yes = db.getTranslation("Caption_Yes",al)
       val no = db.getTranslation("Caption_No",al)
       val confirmSend = db.getTranslation("Dialogues_Submit",al)
@@ -922,5 +976,318 @@ object DialangExporter extends App {
       tipFile.write(tipOutput)
       tipFile.close()
     }
+  }
+
+  def exportAboutSAPages(adminLanguages:List[String]) {
+
+    val aboutSADir = new File(websiteDir,"aboutsa")
+    if(!aboutSADir.isDirectory) {
+        aboutSADir.mkdirs()
+    }
+
+    for(al <- adminLanguages) {
+
+      val backtooltip = db.getTranslation("Caption_BacktoFeedback",al)
+      val tipOutput = engine.layout("src/main/resources/toolbartooltips.mustache",Map("backtooltip" -> backtooltip))
+      val tipFile = new OutputStreamWriter(new FileOutputStream(new File(aboutSADir,al + "-toolbarTooltips.json")),"UTF-8")
+      tipFile.write(tipOutput)
+      tipFile.close()
+
+      val alDir = new File(aboutSADir,al)
+      if(!alDir.isDirectory) {
+        alDir.mkdir()
+      }
+
+      val title = db.getTranslation("FeedbackOption_AboutSelfAssess",al)
+      val mainHeader = db.getTranslation("Explanatory_Main_Header",al)
+      val subHeader = db.getTranslation("Explanatory_Main_SubHeader",al)
+
+      val howOften = db.getTranslation("Explanatory_Main_Menu_HowOften",al)
+      val how = db.getTranslation("Explanatory_Main_Menu_Skills",al)
+      val situationsDiffer = db.getTranslation("Explanatory_Main_Menu_Situations",al)
+      val otherLearners = db.getTranslation("Explanatory_Main_Menu_OtherLearners",al)
+      val otherTests = db.getTranslation("Explanatory_Main_Menu_OtherTests",al)
+      val yourTargets = db.getTranslation("Explanatory_Main_Menu_Targets",al)
+      val realLife = db.getTranslation("Explanatory_Main_Menu_RealLife",al)
+      val otherReasons = db.getTranslation("Explanatory_Main_Menu_OtherReasons",al)
+
+      val map = Map("title" -> title,
+                      "mainHeader" -> mainHeader,
+                      "subHeader" -> subHeader,
+                      "howOften" -> howOften,
+                      "how" -> how,
+                      "situationsDiffer" -> situationsDiffer,
+                      "otherLearners" -> otherLearners,
+                      "otherTests" -> otherTests,
+                      "yourTargets" -> yourTargets,
+                      "realLife" -> realLife,
+                      "otherReasons" -> otherReasons)
+      val indexOutput = engine.layout("src/main/resources/aboutsashell.mustache",map)
+      val aboutSAIndex = new OutputStreamWriter(new FileOutputStream(new File(alDir,"index.html")),"UTF-8")
+      aboutSAIndex.write(indexOutput)
+      aboutSAIndex.close()
+
+      val main = db.getTranslation("Explanatory_Main_Text",al)
+      val mainWriter = new OutputStreamWriter(new FileOutputStream(new File(alDir,"main.html")),"UTF-8")
+      mainWriter.write(main)
+      mainWriter.close()
+
+      doHowOften(al,alDir)
+      doHow(al,alDir)
+      doSituations(al,alDir)
+      doOtherLearners(al,alDir)
+      doOtherTests(al,alDir)
+      doYourTargets(al,alDir)
+      doRealLife(al,alDir)
+      doOtherReasons(al,alDir)
+    }
+  }
+
+  private def doHowOften(al:String,alDir:File) {
+
+    val title = db.getTranslation("Explanatory_Main_Menu_HowOften",al)
+    val howoften1 = db.getTranslation("ExpHowOften_Par1",al)
+    val infrequently = db.getTranslation("ExpHowOften_Bullet1",al)
+    val longtime = db.getTranslation("ExpHowOften_Bullet2",al)
+    val howoften2 = db.getTranslation("ExpHowOften_Par2",al)
+    val howOftenMap = Map("title" -> title,
+                            "howoften1" -> howoften1,
+                            "bullet1" -> infrequently,
+                            "bullet2" -> longtime,
+                            "howoften2" -> howoften2
+                            )
+    val howoftenOutput = engine.layout("src/main/resources/howoften.mustache",howOftenMap)
+    val howOftenWriter = new OutputStreamWriter(new FileOutputStream(new File(alDir,"howoften.html")),"UTF-8")
+    howOftenWriter.write(howoftenOutput)
+    howOftenWriter.close()
+
+    val infrequentlyMap = Map("title" -> infrequently,
+                            "part1" -> db.getTranslation("ExpInfrequently_Par1",al),
+                            "part2" -> db.getTranslation("ExpInfrequently_Par2",al)
+                            )
+    val infrequentlyOutput = engine.layout("src/main/resources/twoparts.mustache",infrequentlyMap)
+    val infrequentlyWriter = new OutputStreamWriter(new FileOutputStream(new File(alDir,"infrequently.html")),"UTF-8")
+    infrequentlyWriter.write(infrequentlyOutput)
+    infrequentlyWriter.close()
+
+    val longtime1 = db.getTranslation("ExpLongTime_Par1",al)
+    val longtime2 = db.getTranslation("ExpLongTime_Par2",al)
+    val longtimeMap = Map("title" -> longtime,
+                            "part1" -> longtime1,
+                            "part2" -> longtime2
+                            )
+    val longtimeOutput = engine.layout("src/main/resources/twoparts.mustache",longtimeMap)
+    val longtimeWriter = new OutputStreamWriter(new FileOutputStream(new File(alDir,"longtime.html")),"UTF-8")
+    longtimeWriter.write(longtimeOutput)
+    longtimeWriter.close()
+  }
+
+  private def doHow(al:String,alDir:File) {
+
+    val howMap = Map("title" -> db.getTranslation("ExpSomeSkills_Head",al),
+                            "part1" -> db.getTranslation("ExpSomeSkills_Par1",al),
+                            "part2" -> db.getTranslation("ExpSomeSkills_Par2",al)
+                            )
+    val howOutput = engine.layout("src/main/resources/twoparts.mustache",howMap)
+    val howWriter = new OutputStreamWriter(new FileOutputStream(new File(alDir,"how.html")),"UTF-8")
+    howWriter.write(howOutput)
+    howWriter.close()
+
+    val overestimateMap = Map("title" -> db.getTranslation("ExpOverestimate_Head",al),
+                            "part1" -> db.getTranslation("ExpOverestimate_Par1",al),
+                            "part2" -> db.getTranslation("ExpOverestimate_Par2",al)
+                            )
+    val overestimateOutput = engine.layout("src/main/resources/twoparts.mustache",overestimateMap)
+    val overestimateWriter = new OutputStreamWriter(new FileOutputStream(new File(alDir,"overestimate.html")),"UTF-8")
+    overestimateWriter.write(overestimateOutput)
+    overestimateWriter.close()
+
+    val underestimateMap = Map("title" -> db.getTranslation("ExpUnderestimate_Head",al),
+                            "part1" -> db.getTranslation("ExpUnderestimate_Par1",al)
+                            )
+    val underestimateOutput = engine.layout("src/main/resources/onepart.mustache",underestimateMap)
+    val underestimateWriter = new OutputStreamWriter(new FileOutputStream(new File(alDir,"underestimate.html")),"UTF-8")
+    underestimateWriter.write(underestimateOutput)
+    underestimateWriter.close()
+  }
+
+  private def doSituations(al:String,alDir:File) {
+
+    val situtationsMap = Map("title" -> db.getTranslation("ExpSituation_Head",al),
+                      "bullet1" -> db.getTranslation("ExpSituation_Bullet1",al),
+                      "bullet2" -> db.getTranslation("ExpSituation_Bullet2",al),
+                      "bullet3" -> db.getTranslation("ExpSituation_Bullet3",al)
+                    )
+    val situtationsOutput = engine.layout("src/main/resources/situations.mustache",situtationsMap)
+    val situtationsWriter = new OutputStreamWriter(new FileOutputStream(new File(alDir,"situations.html")),"UTF-8")
+    situtationsWriter.write(situtationsOutput)
+    situtationsWriter.close()
+  }
+
+  private def doOtherLearners(al:String,alDir:File) {
+
+    val map = Map("title" -> db.getTranslation("ExpCompareOthers_Head",al),
+                      "part1" -> db.getTranslation("ExpCompareOthers_Par1",al),
+                      "part2" -> db.getTranslation("ExpCompareOthers_Par2",al)
+                    )
+    val output = engine.layout("src/main/resources/twoparts.mustache",map)
+    val writer = new OutputStreamWriter(new FileOutputStream(new File(alDir,"otherlearners.html")),"UTF-8")
+    writer.write(output)
+    writer.close()
+  }
+
+  private def doOtherTests(al:String,alDir:File) {
+
+    val map = Map("title" -> db.getTranslation("ExpOtherTests_Head",al),
+                    "part1" -> db.getTranslation("ExpOtherTests_Par1",al),
+                    "bullet1" -> db.getTranslation("ExpOtherTests_Bullet1",al),
+                    "bullet2" -> db.getTranslation("ExpOtherTests_Bullet2",al),
+                    "bullet3" -> db.getTranslation("ExpOtherTests_Bullet3",al),
+                    "bullet4" -> db.getTranslation("ExpOtherTests_Bullet4",al),
+                    "part2" -> db.getTranslation("ExpOtherTests_Par2",al)
+                    )
+    val output = engine.layout("src/main/resources/othertests.mustache",map)
+    val writer = new OutputStreamWriter(new FileOutputStream(new File(alDir,"othertests.html")),"UTF-8")
+    writer.write(output)
+    writer.close()
+
+    val dtMap = Map("title" -> db.getTranslation("ExpDiffTests_Head",al),
+                    "part1" -> db.getTranslation("ExpDiffTests_Par1",al),
+                    "part2" -> db.getTranslation("ExpDiffTests_Par2",al),
+                    "part3" -> db.getTranslation("ExpDiffTests_Par3",al),
+                    "part4" -> db.getTranslation("ExpDiffTests_Par4",al),
+                    "part5" -> db.getTranslation("ExpDiffTests_Par5",al)
+                    )
+    val dtOutput = engine.layout("src/main/resources/differenttests.mustache",dtMap)
+    val dtWriter = new OutputStreamWriter(new FileOutputStream(new File(alDir,"differenttests.html")),"UTF-8")
+    dtWriter.write(dtOutput)
+    dtWriter.close()
+
+    val sMap = Map("title" -> db.getTranslation("ExpSchoolTests_Head",al),
+                    "part1" -> db.getTranslation("ExpSchoolTests_Par1",al),
+                    "part2" -> db.getTranslation("ExpSchoolTests_Par2",al)
+                    )
+    val sOutput = engine.layout("src/main/resources/twoparts.mustache",sMap)
+    val sWriter = new OutputStreamWriter(new FileOutputStream(new File(alDir,"schooltests.html")),"UTF-8")
+    sWriter.write(sOutput)
+    sWriter.close()
+
+    val wMap = Map("title" -> db.getTranslation("ExpWorkTests_Head",al),
+                    "part1" -> db.getTranslation("ExpWorkTests_Par1",al)
+                    )
+    val wOutput = engine.layout("src/main/resources/onepart.mustache",wMap)
+    val wWriter = new OutputStreamWriter(new FileOutputStream(new File(alDir,"worktests.html")),"UTF-8")
+    wWriter.write(wOutput)
+    wWriter.close()
+
+    val iMap = Map("title" -> db.getTranslation("ExpIntTests_Head",al),
+                    "part1" -> db.getTranslation("ExpIntTests_Par1",al),
+                    "part2" -> db.getTranslation("ExpIntTests_Par2",al)
+                    )
+    val iOutput = engine.layout("src/main/resources/twoparts.mustache",iMap)
+    val iWriter = new OutputStreamWriter(new FileOutputStream(new File(alDir,"internationaltests.html")),"UTF-8")
+    iWriter.write(iOutput)
+    iWriter.close()
+  }
+
+  private def doYourTargets(al:String,alDir:File) {
+
+    val map = Map("title1" -> db.getTranslation("ExpTargets_Head1",al),
+                    "part1" -> db.getTranslation("ExpTargets_Par1",al),
+                    "part2" -> db.getTranslation("ExpTargets_Par2",al),
+                    "title2" -> db.getTranslation("ExpTargets_Head2",al),
+                    "part3" -> db.getTranslation("ExpTargets_Par3",al),
+                    "part4" -> db.getTranslation("ExpTargets_Par4",al)
+                    )
+    val output = engine.layout("src/main/resources/yourtargets.mustache",map)
+    val writer = new OutputStreamWriter(new FileOutputStream(new File(alDir,"yourtargets.html")),"UTF-8")
+    writer.write(output)
+    writer.close()
+  }
+
+  private def doRealLife(al:String,alDir:File) {
+
+    val map = Map("title" -> db.getTranslation("ExpRealLife_Head",al),
+                    "part1" -> db.getTranslation("ExpRealLife_Par1",al),
+                    "part2" -> db.getTranslation("ExpRealLife_Par2",al),
+                    "bullet1" -> db.getTranslation("ExpRealLife_Bullet1",al),
+                    "bullet2" -> db.getTranslation("ExpRealLife_Bullet2",al),
+                    "bullet3" -> db.getTranslation("ExpRealLife_Bullet3",al),
+                    "bullet4" -> db.getTranslation("ExpRealLife_Bullet4",al),
+                    "bullet5" -> db.getTranslation("ExpRealLife_Bullet5",al),
+                    "bullet6" -> db.getTranslation("ExpRealLife_Bullet6",al)
+                    )
+    val output = engine.layout("src/main/resources/reallife.mustache",map)
+    val writer = new OutputStreamWriter(new FileOutputStream(new File(alDir,"reallife.html")),"UTF-8")
+    writer.write(output)
+    writer.close()
+
+    val aMap = Map("title" -> db.getTranslation("ExpAnxiety_Head",al),
+                    "part1" -> db.getTranslation("ExpAnxiety_Par1",al),
+                    "part2" -> db.getTranslation("ExpAnxiety_Par2",al)
+                    )
+    val aOutput = engine.layout("src/main/resources/twoparts.mustache",aMap)
+    val aWriter = new OutputStreamWriter(new FileOutputStream(new File(alDir,"anxiety.html")),"UTF-8")
+    aWriter.write(aOutput)
+    aWriter.close()
+
+    val tMap = Map("title" -> db.getTranslation("ExpTimeAllowed_Head",al),
+                    "part1" -> db.getTranslation("ExpTimeAllowed_Par1",al),
+                    "part2" -> db.getTranslation("ExpTimeAllowed_Par2",al),
+                    "part3" -> db.getTranslation("ExpTimeAllowed_Par3",al)
+                    )
+    val tOutput = engine.layout("src/main/resources/threeparts.mustache",tMap)
+    val tWriter = new OutputStreamWriter(new FileOutputStream(new File(alDir,"timeallowed.html")),"UTF-8")
+    tWriter.write(tOutput)
+    tWriter.close()
+
+    val sMap = Map("title" -> db.getTranslation("ExpSupport_Head",al),
+                    "part1" -> db.getTranslation("ExpSupport_Par1",al)
+                    )
+    val sOutput = engine.layout("src/main/resources/onepart.mustache",sMap)
+    val sWriter = new OutputStreamWriter(new FileOutputStream(new File(alDir,"support.html")),"UTF-8")
+    sWriter.write(sOutput)
+    sWriter.close()
+
+    val nMap = Map("title" -> db.getTranslation("ExpNumber_Head",al),
+                    "part1" -> db.getTranslation("ExpNumber_Par1",al)
+                    )
+    val nOutput = engine.layout("src/main/resources/onepart.mustache",nMap)
+    val nWriter = new OutputStreamWriter(new FileOutputStream(new File(alDir,"number.html")),"UTF-8")
+    nWriter.write(nOutput)
+    nWriter.close()
+
+    val fMap = Map("title" -> db.getTranslation("ExpFamiliarity_Head",al),
+                    "part1" -> db.getTranslation("ExpFamiliarity_Par1",al)
+                    )
+    val fOutput = engine.layout("src/main/resources/onepart.mustache",fMap)
+    val fWriter = new OutputStreamWriter(new FileOutputStream(new File(alDir,"familiarity.html")),"UTF-8")
+    fWriter.write(fOutput)
+    fWriter.close()
+
+    val mMap = Map("title" -> db.getTranslation("ExpMedium_Head",al),
+                    "part1" -> db.getTranslation("ExpMedium_Par1",al)
+                    )
+    val mOutput = engine.layout("src/main/resources/onepart.mustache",mMap)
+    val mWriter = new OutputStreamWriter(new FileOutputStream(new File(alDir,"medium.html")),"UTF-8")
+    mWriter.write(mOutput)
+    mWriter.close()
+  }
+
+  private def doOtherReasons(al:String,alDir:File) {
+
+    val map = Map("title1" -> db.getTranslation("ExpOtherReasons_Head1",al),
+                    "part1" -> db.getTranslation("ExpOtherReasons_Par1",al),
+                    "bullet1" -> db.getTranslation("ExpOtherReasons_Bullet1",al),
+                    "bullet2" -> db.getTranslation("ExpOtherReasons_Bullet2",al),
+                    "part2" -> db.getTranslation("ExpOtherReasons_Par2",al),
+                    "title2" -> db.getTranslation("ExpOtherReasons_Head2",al),
+                    "part3" -> db.getTranslation("ExpTargets_Par3",al),
+                    "part4" -> db.getTranslation("ExpTargets_Par4",al)
+                    )
+    val output = engine.layout("src/main/resources/otherreasons.mustache",map)
+    val writer = new OutputStreamWriter(new FileOutputStream(new File(alDir,"otherreasons.html")),"UTF-8")
+    writer.write(output)
+    writer.close()
   }
 }

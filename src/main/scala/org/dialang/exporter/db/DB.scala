@@ -156,14 +156,14 @@ class DB {
     }
   }
 
-  def getTestLanguageCodes = {
+  def getTestLanguageCodes:List[Tuple2[String,String]] = {
     var st:Statement = null
     try {
       st = conn.createStatement
-      val rs = st.executeQuery("SELECT locale FROM test_languages")
-      val list = new ListBuffer[String]
+      val rs = st.executeQuery("SELECT locale,two_letter_code FROM test_languages")
+      val list = new ListBuffer[Tuple2[String,String]]
       while(rs.next) {
-        list += rs.getString("locale")
+        list += ((rs.getString("locale"),rs.getString("two_letter_code")))
       }
       rs.close
       list.toList

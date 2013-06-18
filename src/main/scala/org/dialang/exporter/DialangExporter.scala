@@ -24,7 +24,6 @@ object DialangExporter extends App {
 
   val adminLanguages = db.getAdminLanguageLocales
 
-  /*
   exportAls()
   exportHelpDialogs(adminLanguages)
   exportLegendPages(adminLanguages)
@@ -42,8 +41,8 @@ object DialangExporter extends App {
   exportSAFeedbackPages(adminLanguages)
   exportTestResultPages(adminLanguages)
   exportItemReviewPages(adminLanguages)
-  */
-  exportAboutSAPages(adminLanguages)
+  exportExplfbPages(adminLanguages)
+  exportAdvfbPages(adminLanguages)
 
   db.cleanup()
 
@@ -350,7 +349,7 @@ object DialangExporter extends App {
       val warningText = db.getTranslation("Dialogues_SkipPlacement",al)
 
       for(tl <- testLanguages) { 
-        val wordList = db.getVSPTWords(tl)
+        val wordList = db.getVSPTWords(tl._1)
 
         val tabList = new ListBuffer[Map[String,String]]
         val words = new ListBuffer[Map[String,String]]
@@ -978,7 +977,7 @@ object DialangExporter extends App {
     }
   }
 
-  def exportAboutSAPages(adminLanguages:List[String]) {
+  def exportExplfbPages(adminLanguages:List[String]) {
 
     val aboutSADir = new File(websiteDir,"aboutsa")
     if(!aboutSADir.isDirectory) {
@@ -1289,5 +1288,349 @@ object DialangExporter extends App {
     val writer = new OutputStreamWriter(new FileOutputStream(new File(alDir,"otherreasons.html")),"UTF-8")
     writer.write(output)
     writer.close()
+  }
+
+  def exportAdvfbPages(adminLanguages:List[String]) {
+
+    val advfbDir = new File(websiteDir,"advfb")
+    if(!advfbDir.isDirectory) {
+        advfbDir.mkdirs()
+    }
+
+    for(al <- adminLanguages) {
+
+      val backtooltip = db.getTranslation("Caption_BacktoFeedback",al)
+      val tipOutput = engine.layout("src/main/resources/toolbartooltips.mustache",Map("backtooltip" -> backtooltip))
+      val tipFile = new OutputStreamWriter(new FileOutputStream(new File(advfbDir,al + "-toolbarTooltips.json")),"UTF-8")
+      tipFile.write(tipOutput)
+      tipFile.close()
+
+      val alDir = new File(advfbDir,al)
+      if(!alDir.isDirectory) {
+        alDir.mkdir()
+      }
+
+      val chooselevel = db.getTranslation("Caption_ChooseLevel",al)
+      val howtoimprove = db.getTranslation("Caption_HowtoImprove",al)
+      val shellOutput = engine.layout("src/main/resources/advfbshell.mustache",Map("chooselevel" -> chooselevel,"howtoimprove" -> howtoimprove))
+      val shellWriter = new OutputStreamWriter(new FileOutputStream(new File(alDir,"index.html")),"UTF-8")
+      shellWriter.write(shellOutput)
+      shellWriter.close()
+
+      val a1Header = db.getTranslation("AdvisoryTable_Intro_#A1",al)
+      val a2Header = db.getTranslation("AdvisoryTable_Intro_#A2",al)
+      val b1Header = db.getTranslation("AdvisoryTable_Intro_#B1",al)
+      val b2Header = db.getTranslation("AdvisoryTable_Intro_#B2",al)
+      val c1Header = db.getTranslation("AdvisoryTable_Intro_#C1",al)
+      val c2Header = db.getTranslation("AdvisoryTable_Intro_#C2",al)
+
+      for(skill <- db.saSkills) {
+
+        val skillDir = new File(alDir,skill.toLowerCase)
+        if(!skillDir.isDirectory) {
+          skillDir.mkdir()
+        }
+
+        val a1Map = Map(
+            "header" -> a1Header,
+            "row1heading" -> db.getTranslation("AdvisoryTable_Row1_Heading_#" + skill,al),
+            "row1texta1" -> db.getTranslation("AdvisoryTable_Row1_Text_#" + skill + "_#A1",al),
+            "row1texta2" -> db.getTranslation("AdvisoryTable_Row1_Text_#" + skill + "_#A2",al),
+            "row2heading" -> db.getTranslation("AdvisoryTable_Row2_Heading_#" + skill,al),
+            "row2texta1" -> db.getTranslation("AdvisoryTable_Row2_Text_#" + skill + "_#A1",al),
+            "row2texta2" -> db.getTranslation("AdvisoryTable_Row2_Text_#" + skill + "_#A2",al),
+            "row3heading" -> db.getTranslation("AdvisoryTable_Row3_Heading",al),
+            "row3texta1" -> db.getTranslation("AdvisoryTable_Row3_Text_#" + skill + "_#A1",al),
+            "row3texta2" -> db.getTranslation("AdvisoryTable_Row3_Text_#" + skill + "_#A2",al))
+        val a1Output = engine.layout("src/main/resources/advfba1.mustache",a1Map)
+        val a1Writer = new OutputStreamWriter(new FileOutputStream(new File(skillDir,"A1.html")),"UTF-8")
+        a1Writer.write(a1Output)
+        a1Writer.close()
+
+        val a2Map = Map(
+            "header" -> a2Header,
+            "row1heading" -> db.getTranslation("AdvisoryTable_Row1_Heading_#" + skill,al),
+            "row1texta1" -> db.getTranslation("AdvisoryTable_Row1_Text_#" + skill + "_#A1",al),
+            "row1texta2" -> db.getTranslation("AdvisoryTable_Row1_Text_#" + skill + "_#A2",al),
+            "row1textb1" -> db.getTranslation("AdvisoryTable_Row1_Text_#" + skill + "_#B1",al),
+            "row2heading" -> db.getTranslation("AdvisoryTable_Row2_Heading_#" + skill,al),
+            "row2texta1" -> db.getTranslation("AdvisoryTable_Row2_Text_#" + skill + "_#A1",al),
+            "row2texta2" -> db.getTranslation("AdvisoryTable_Row2_Text_#" + skill + "_#A2",al),
+            "row2textb1" -> db.getTranslation("AdvisoryTable_Row2_Text_#" + skill + "_#B1",al),
+            "row3heading" -> db.getTranslation("AdvisoryTable_Row3_Heading",al),
+            "row3texta1" -> db.getTranslation("AdvisoryTable_Row3_Text_#" + skill + "_#A1",al),
+            "row3texta2" -> db.getTranslation("AdvisoryTable_Row3_Text_#" + skill + "_#A2",al),
+            "row3textb1" -> db.getTranslation("AdvisoryTable_Row3_Text_#" + skill + "_#B1",al))
+        val a2Output = engine.layout("src/main/resources/advfba2.mustache",a2Map)
+        val a2Writer = new OutputStreamWriter(new FileOutputStream(new File(skillDir,"A2.html")),"UTF-8")
+        a2Writer.write(a2Output)
+        a2Writer.close()
+
+        val b1Map = Map(
+            "header" -> b1Header,
+            "row1heading" -> db.getTranslation("AdvisoryTable_Row1_Heading_#" + skill,al),
+            "row1texta2" -> db.getTranslation("AdvisoryTable_Row1_Text_#" + skill + "_#A2",al),
+            "row1textb1" -> db.getTranslation("AdvisoryTable_Row1_Text_#" + skill + "_#B1",al),
+            "row1textb2" -> db.getTranslation("AdvisoryTable_Row1_Text_#" + skill + "_#B2",al),
+            "row2heading" -> db.getTranslation("AdvisoryTable_Row2_Heading_#" + skill,al),
+            "row2texta2" -> db.getTranslation("AdvisoryTable_Row2_Text_#" + skill + "_#A2",al),
+            "row2textb1" -> db.getTranslation("AdvisoryTable_Row2_Text_#" + skill + "_#B1",al),
+            "row2textb2" -> db.getTranslation("AdvisoryTable_Row2_Text_#" + skill + "_#B2",al),
+            "row3heading" -> db.getTranslation("AdvisoryTable_Row3_Heading",al),
+            "row3texta2" -> db.getTranslation("AdvisoryTable_Row3_Text_#" + skill + "_#A2",al),
+            "row3textb1" -> db.getTranslation("AdvisoryTable_Row3_Text_#" + skill + "_#B1",al),
+            "row3textb2" -> db.getTranslation("AdvisoryTable_Row3_Text_#" + skill + "_#B2",al))
+        val b1Output = engine.layout("src/main/resources/advfbb1.mustache",b1Map)
+        val b1Writer = new OutputStreamWriter(new FileOutputStream(new File(skillDir,"B1.html")),"UTF-8")
+        b1Writer.write(b1Output)
+        b1Writer.close()
+
+        val b2Map = Map(
+            "header" -> b2Header,
+            "row1heading" -> db.getTranslation("AdvisoryTable_Row1_Heading_#" + skill,al),
+            "row1textb1" -> db.getTranslation("AdvisoryTable_Row1_Text_#" + skill + "_#B1",al),
+            "row1textb2" -> db.getTranslation("AdvisoryTable_Row1_Text_#" + skill + "_#B2",al),
+            "row1textc1" -> db.getTranslation("AdvisoryTable_Row1_Text_#" + skill + "_#C1",al),
+            "row2heading" -> db.getTranslation("AdvisoryTable_Row2_Heading_#" + skill,al),
+            "row2textb1" -> db.getTranslation("AdvisoryTable_Row2_Text_#" + skill + "_#B1",al),
+            "row2textb2" -> db.getTranslation("AdvisoryTable_Row2_Text_#" + skill + "_#B2",al),
+            "row2textc2" -> db.getTranslation("AdvisoryTable_Row2_Text_#" + skill + "_#C1",al),
+            "row3heading" -> db.getTranslation("AdvisoryTable_Row3_Heading",al),
+            "row3textb1" -> db.getTranslation("AdvisoryTable_Row3_Text_#" + skill + "_#B1",al),
+            "row3textb2" -> db.getTranslation("AdvisoryTable_Row3_Text_#" + skill + "_#B2",al),
+            "row3textc1" -> db.getTranslation("AdvisoryTable_Row3_Text_#" + skill + "_#C1",al))
+        val b2Output = engine.layout("src/main/resources/advfbb2.mustache",b2Map)
+        val b2Writer = new OutputStreamWriter(new FileOutputStream(new File(skillDir,"B2.html")),"UTF-8")
+        b2Writer.write(b2Output)
+        b2Writer.close()
+
+        val c1Map = Map(
+            "header" -> c1Header,
+            "row1heading" -> db.getTranslation("AdvisoryTable_Row1_Heading_#" + skill,al),
+            "row1textb2" -> db.getTranslation("AdvisoryTable_Row1_Text_#" + skill + "_#B2",al),
+            "row1textc1" -> db.getTranslation("AdvisoryTable_Row1_Text_#" + skill + "_#C1",al),
+            "row1textc2" -> db.getTranslation("AdvisoryTable_Row1_Text_#" + skill + "_#C2",al),
+            "row2heading" -> db.getTranslation("AdvisoryTable_Row2_Heading_#" + skill,al),
+            "row2textb2" -> db.getTranslation("AdvisoryTable_Row2_Text_#" + skill + "_#B2",al),
+            "row2textc1" -> db.getTranslation("AdvisoryTable_Row2_Text_#" + skill + "_#C1",al),
+            "row2textc2" -> db.getTranslation("AdvisoryTable_Row2_Text_#" + skill + "_#C2",al),
+            "row3heading" -> db.getTranslation("AdvisoryTable_Row3_Heading",al),
+            "row3textb2" -> db.getTranslation("AdvisoryTable_Row3_Text_#" + skill + "_#B2",al),
+            "row3textc1" -> db.getTranslation("AdvisoryTable_Row3_Text_#" + skill + "_#C1",al),
+            "row3textc2" -> db.getTranslation("AdvisoryTable_Row3_Text_#" + skill + "_#C2",al))
+        val c1Output = engine.layout("src/main/resources/advfbc1.mustache",c1Map)
+        val c1Writer = new OutputStreamWriter(new FileOutputStream(new File(skillDir,"C1.html")),"UTF-8")
+        c1Writer.write(c1Output)
+        c1Writer.close()
+
+        val c2Map = Map(
+            "header" -> c2Header,
+            "row1heading" -> db.getTranslation("AdvisoryTable_Row1_Heading_#" + skill,al),
+            "row1textc1" -> db.getTranslation("AdvisoryTable_Row1_Text_#" + skill + "_#C1",al),
+            "row1textc2" -> db.getTranslation("AdvisoryTable_Row1_Text_#" + skill + "_#C2",al),
+            "row2heading" -> db.getTranslation("AdvisoryTable_Row2_Heading_#" + skill,al),
+            "row2textc1" -> db.getTranslation("AdvisoryTable_Row2_Text_#" + skill + "_#C1",al),
+            "row2textc2" -> db.getTranslation("AdvisoryTable_Row2_Text_#" + skill + "_#C2",al),
+            "row3heading" -> db.getTranslation("AdvisoryTable_Row3_Heading",al),
+            "row3textc1" -> db.getTranslation("AdvisoryTable_Row3_Text_#" + skill + "_#C1",al),
+            "row3textc2" -> db.getTranslation("AdvisoryTable_Row3_Text_#" + skill + "_#C2",al))
+        val c2Output = engine.layout("src/main/resources/advfbc2.mustache",c2Map)
+        val c2Writer = new OutputStreamWriter(new FileOutputStream(new File(skillDir,"C2.html")),"UTF-8")
+        c2Writer.write(c2Output)
+        c2Writer.close()
+
+        for(t <- db.getTestLanguageCodes) {
+          val tl = t._1
+          val twoLetterCode = t._2
+
+          val tlDir = new File(skillDir,t._1)
+          if(!tlDir.isDirectory) {
+            tlDir.mkdir()
+          }
+
+          if(skill == "Reading") {
+            val a1Map = Map(
+              "header" -> db.getTranslation("AdvisoryTips_Intro_#A1",al),
+              "item1" -> db.getTranslation("AdvisoryTips_Bullet_#Reading_#A1_#Item1_#" + twoLetterCode,al),
+              "item2" -> db.getTranslation("AdvisoryTips_Bullet_#Reading_#A1_#Item2_#" + twoLetterCode,al),
+              "item3" -> db.getTranslation("AdvisoryTips_Bullet_#Reading_#A1_#Item3",al),
+              "item4" -> db.getTranslation("AdvisoryTips_Bullet_#Reading_#A1_#Item4",al),
+              "item5" -> db.getTranslation("AdvisoryTips_Bullet_#Reading_#A1_#Item5_#" + twoLetterCode,al),
+              "item6" -> db.getTranslation("AdvisoryTips_Bullet_#Reading_#A1_#Item6_#" + twoLetterCode,al))
+            val a1Output = engine.layout("src/main/resources/advfb6itemadvice.mustache",a1Map)
+            val a1Writer = new OutputStreamWriter(new FileOutputStream(new File(tlDir,"A1.html")),"UTF-8")
+            a1Writer.write(a1Output)
+            a1Writer.close()
+
+            val a2Map = Map(
+              "header" -> db.getTranslation("AdvisoryTips_Intro_#A2",al),
+              "item1" -> db.getTranslation("AdvisoryTips_Bullet_#Reading_#A2_#Item1_#" + twoLetterCode,al),
+              "item2" -> db.getTranslation("AdvisoryTips_Bullet_#Reading_#A2_#Item2_#" + twoLetterCode,al),
+              "item3" -> db.getTranslation("AdvisoryTips_Bullet_#Reading_#A2_#Item3",al),
+              "item4" -> db.getTranslation("AdvisoryTips_Bullet_#Reading_#A2_#Item4_#" + twoLetterCode,al))
+            val a2Output = engine.layout("src/main/resources/advfb4itemadvice.mustache",a2Map)
+            val a2Writer = new OutputStreamWriter(new FileOutputStream(new File(tlDir,"A2.html")),"UTF-8")
+            a2Writer.write(a2Output)
+            a2Writer.close()
+
+            val b1Map = Map(
+              "header" -> db.getTranslation("AdvisoryTips_Intro_#B1",al),
+              "item1" -> db.getTranslation("AdvisoryTips_Bullet_#Reading_#B1_#Item1_#" + twoLetterCode,al),
+              "item2" -> db.getTranslation("AdvisoryTips_Bullet_#Reading_#B1_#Item2",al),
+              "item3" -> db.getTranslation("AdvisoryTips_Bullet_#Reading_#B1_#Item3",al),
+              "item4" -> db.getTranslation("AdvisoryTips_Bullet_#Reading_#B1_#Item4",al))
+            val b1Output = engine.layout("src/main/resources/advfb4itemadvice.mustache",b1Map)
+            val b1Writer = new OutputStreamWriter(new FileOutputStream(new File(tlDir,"B1.html")),"UTF-8")
+            b1Writer.write(b1Output)
+            b1Writer.close()
+
+            val b2Map = Map(
+              "header" -> db.getTranslation("AdvisoryTips_Intro_#B2",al),
+              "item1" -> db.getTranslation("AdvisoryTips_Bullet_#Reading_#B2_#Item1",al),
+              "item2" -> db.getTranslation("AdvisoryTips_Bullet_#Reading_#B2_#Item2_#" + twoLetterCode,al),
+              "item3" -> db.getTranslation("AdvisoryTips_Bullet_#Reading_#B2_#Item3",al),
+              "item4" -> db.getTranslation("AdvisoryTips_Bullet_#Reading_#B2_#Item4",al))
+            val b2Output = engine.layout("src/main/resources/advfb4itemadvice.mustache",b2Map)
+            val b2Writer = new OutputStreamWriter(new FileOutputStream(new File(tlDir,"B2.html")),"UTF-8")
+            b2Writer.write(b2Output)
+            b2Writer.close()
+
+            val c1Map = Map(
+              "header" -> db.getTranslation("AdvisoryTips_Intro_#C1",al),
+              "item1" -> db.getTranslation("AdvisoryTips_Bullet_#Reading_#C1_#Item1",al),
+              "item2" -> db.getTranslation("AdvisoryTips_Bullet_#Reading_#C1_#Item2",al),
+              "item3" -> db.getTranslation("AdvisoryTips_Bullet_#Reading_#C1_#Item3",al),
+              "item4" -> db.getTranslation("AdvisoryTips_Bullet_#Reading_#C1_#Item4_#" + twoLetterCode,al),
+              "item5" -> db.getTranslation("AdvisoryTips_Bullet_#Reading_#C1_#Item5_#" + twoLetterCode,al))
+            val c1Output = engine.layout("src/main/resources/advfb5itemadvice.mustache",c1Map)
+            val c1Writer = new OutputStreamWriter(new FileOutputStream(new File(tlDir,"C1.html")),"UTF-8")
+            c1Writer.write(c1Output)
+            c1Writer.close()
+          } // Reading
+          else if (skill == "Writing") {
+            val a1Map = Map(
+              "header" -> db.getTranslation("AdvisoryTips_Intro_#A1",al),
+              "item1" -> db.getTranslation("AdvisoryTips_Bullet_#Writing_#A1_#Item1_#" + twoLetterCode,al),
+              "item2" -> db.getTranslation("AdvisoryTips_Bullet_#Writing_#A1_#Item2_#" + twoLetterCode,al),
+              "item3" -> db.getTranslation("AdvisoryTips_Bullet_#Writing_#A1_#Item3_#" + twoLetterCode,al),
+              "item4" -> db.getTranslation("AdvisoryTips_Bullet_#Writing_#A1_#Item4",al),
+              "item5" -> db.getTranslation("AdvisoryTips_Bullet_#Writing_#A1_#Item5_#" + twoLetterCode,al))
+            val a1Output = engine.layout("src/main/resources/advfb5itemadvice.mustache",a1Map)
+            val a1Writer = new OutputStreamWriter(new FileOutputStream(new File(tlDir,"A1.html")),"UTF-8")
+            a1Writer.write(a1Output)
+            a1Writer.close()
+
+            val a2Map = Map(
+              "header" -> db.getTranslation("AdvisoryTips_Intro_#A2",al),
+              "item1" -> db.getTranslation("AdvisoryTips_Bullet_#Writing_#A2_#Item1",al),
+              "item2" -> db.getTranslation("AdvisoryTips_Bullet_#Writing_#A2_#Item2_#" + twoLetterCode,al),
+              "item3" -> db.getTranslation("AdvisoryTips_Bullet_#Writing_#A2_#Item3",al),
+              "item4" -> db.getTranslation("AdvisoryTips_Bullet_#Writing_#A2_#Item4_#" + twoLetterCode,al),
+              "item5" -> db.getTranslation("AdvisoryTips_Bullet_#Writing_#A2_#Item5_#" + twoLetterCode,al))
+            val a2Output = engine.layout("src/main/resources/advfb5itemadvice.mustache",a2Map)
+            val a2Writer = new OutputStreamWriter(new FileOutputStream(new File(tlDir,"A2.html")),"UTF-8")
+            a2Writer.write(a2Output)
+            a2Writer.close()
+
+            val b1Map = Map(
+              "header" -> db.getTranslation("AdvisoryTips_Intro_#B1",al),
+              "item1" -> db.getTranslation("AdvisoryTips_Bullet_#Writing_#B1_#Item1",al),
+              "item2" -> db.getTranslation("AdvisoryTips_Bullet_#Writing_#B1_#Item2",al),
+              "item3" -> db.getTranslation("AdvisoryTips_Bullet_#Writing_#B1_#Item3",al),
+              "item4" -> db.getTranslation("AdvisoryTips_Bullet_#Writing_#B1_#Item4",al))
+            val b1Output = engine.layout("src/main/resources/advfb4itemadvice.mustache",b1Map)
+            val b1Writer = new OutputStreamWriter(new FileOutputStream(new File(tlDir,"B1.html")),"UTF-8")
+            b1Writer.write(b1Output)
+            b1Writer.close()
+
+            val b2Map = Map(
+              "header" -> db.getTranslation("AdvisoryTips_Intro_#B2",al),
+              "item1" -> db.getTranslation("AdvisoryTips_Bullet_#Writing_#B2_#Item1",al),
+              "item2" -> db.getTranslation("AdvisoryTips_Bullet_#Writing_#B2_#Item2",al),
+              "item3" -> db.getTranslation("AdvisoryTips_Bullet_#Writing_#B2_#Item3",al),
+              "item4" -> db.getTranslation("AdvisoryTips_Bullet_#Writing_#B2_#Item4",al))
+            val b2Output = engine.layout("src/main/resources/advfb4itemadvice.mustache",b2Map)
+            val b2Writer = new OutputStreamWriter(new FileOutputStream(new File(tlDir,"B2.html")),"UTF-8")
+            b2Writer.write(b2Output)
+            b2Writer.close()
+
+            val c1Map = Map(
+              "header" -> db.getTranslation("AdvisoryTips_Intro_#C1",al),
+              "item1" -> db.getTranslation("AdvisoryTips_Bullet_#Writing_#C1_#Item1",al),
+              "item2" -> db.getTranslation("AdvisoryTips_Bullet_#Writing_#C1_#Item2",al),
+              "item3" -> db.getTranslation("AdvisoryTips_Bullet_#Writing_#C1_#Item3",al),
+              "item4" -> db.getTranslation("AdvisoryTips_Bullet_#Writing_#C1_#Item4",al),
+              "item5" -> db.getTranslation("AdvisoryTips_Bullet_#Writing_#C1_#Item5",al))
+            val c1Output = engine.layout("src/main/resources/advfb5itemadvice.mustache",c1Map)
+            val c1Writer = new OutputStreamWriter(new FileOutputStream(new File(tlDir,"C1.html")),"UTF-8")
+            c1Writer.write(c1Output)
+            c1Writer.close()
+          } // Writing
+          else if (skill == "Listening") {
+            val dontUnderstand = "'" + db.getTranslation("Utterances_DontUnderstand",tl) + "'"
+            val pleaseRepeat = "'" + db.getTranslation("Utterances_PleaseRepeat",tl) + "'"
+            val sayAgain = "'" + db.getTranslation("Utterances_SayAgain",tl) + "'"
+            val speakSlowly = "'" + db.getTranslation("Utterances_SpeakSlowly",tl) + "'"
+            val item4 = db.getTranslation("AdvisoryTips_Bullet_#Listening_#A1_#Item4",al)
+                .replaceFirst("<utterance>Utterances_DontUnderstand</utterance>",dontUnderstand)
+                .replaceFirst("<utterance>Utterances_PleaseRepeat</utterance>",pleaseRepeat)
+                .replaceFirst("<utterance>Utterances_SayAgain</utterance>",sayAgain)
+                .replaceFirst("<utterance>Utterances_SpeakSlowly</utterance>",speakSlowly)
+            val a1Map = Map(
+              "header" -> db.getTranslation("AdvisoryTips_Intro_#A1",al),
+              "item1" -> db.getTranslation("AdvisoryTips_Bullet_#Listening_#A1_#Item1",al),
+              "item2" -> db.getTranslation("AdvisoryTips_Bullet_#Listening_#A1_#Item2_#" + twoLetterCode,al),
+              "item3" -> db.getTranslation("AdvisoryTips_Bullet_#Listening_#A1_#Item3",al),
+              "item4" -> item4)
+            val a1Output = engine.layout("src/main/resources/advfb4itemadvice.mustache",a1Map)
+            val a1Writer = new OutputStreamWriter(new FileOutputStream(new File(tlDir,"A1.html")),"UTF-8")
+            a1Writer.write(a1Output)
+            a1Writer.close()
+
+            val a2Map = Map(
+              "header" -> db.getTranslation("AdvisoryTips_Intro_#A2",al),
+              "item1" -> db.getTranslation("AdvisoryTips_Bullet_#Listening_#A2_#Item1",al),
+              "item2" -> db.getTranslation("AdvisoryTips_Bullet_#Listening_#A2_#Item2",al),
+              "item3" -> db.getTranslation("AdvisoryTips_Bullet_#Listening_#A2_#Item3_#" + twoLetterCode,al),
+              "item4" -> db.getTranslation("AdvisoryTips_Bullet_#Listening_#A2_#Item4",al))
+            val a2Output = engine.layout("src/main/resources/advfb4itemadvice.mustache",a2Map)
+            val a2Writer = new OutputStreamWriter(new FileOutputStream(new File(tlDir,"A2.html")),"UTF-8")
+            a2Writer.write(a2Output)
+            a2Writer.close()
+
+            val b1Map = Map(
+              "header" -> db.getTranslation("AdvisoryTips_Intro_#B1",al),
+              "item1" -> db.getTranslation("AdvisoryTips_Bullet_#Listening_#B1_#Item1_#" + twoLetterCode,al),
+              "item2" -> db.getTranslation("AdvisoryTips_Bullet_#Listening_#B1_#Item2_#" + twoLetterCode,al),
+              "item3" -> db.getTranslation("AdvisoryTips_Bullet_#Listening_#B1_#Item3_#" + twoLetterCode,al),
+              "item4" -> db.getTranslation("AdvisoryTips_Bullet_#Listening_#B1_#Item4",al))
+            val b1Output = engine.layout("src/main/resources/advfb4itemadvice.mustache",b1Map)
+            val b1Writer = new OutputStreamWriter(new FileOutputStream(new File(tlDir,"B1.html")),"UTF-8")
+            b1Writer.write(b1Output)
+            b1Writer.close()
+
+            val b2Map = Map(
+              "header" -> db.getTranslation("AdvisoryTips_Intro_#B2",al),
+              "item1" -> db.getTranslation("AdvisoryTips_Bullet_#Listening_#B2_#Item1_#" + twoLetterCode,al),
+              "item2" -> db.getTranslation("AdvisoryTips_Bullet_#Listening_#B2_#Item2",al),
+              "item3" -> db.getTranslation("AdvisoryTips_Bullet_#Listening_#B2_#Item3",al))
+            val b2Output = engine.layout("src/main/resources/advfb3itemadvice.mustache",b2Map)
+            val b2Writer = new OutputStreamWriter(new FileOutputStream(new File(tlDir,"B2.html")),"UTF-8")
+            b2Writer.write(b2Output)
+            b2Writer.close()
+
+            val c1Map = Map(
+              "header" -> db.getTranslation("AdvisoryTips_Intro_#C1",al),
+              "item1" -> db.getTranslation("AdvisoryTips_Bullet_#Listening_#C1_#Item1_#" + twoLetterCode,al),
+              "item2" -> db.getTranslation("AdvisoryTips_Bullet_#Listening_#C1_#Item2_#" + twoLetterCode,al))
+            val c1Output = engine.layout("src/main/resources/advfb2itemadvice.mustache",c1Map)
+            val c1Writer = new OutputStreamWriter(new FileOutputStream(new File(tlDir,"C1.html")),"UTF-8")
+            c1Writer.write(c1Output)
+            c1Writer.close()
+          } // Listening
+
+        } // tl
+      }
+    }
   }
 }

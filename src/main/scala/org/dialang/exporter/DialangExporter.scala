@@ -23,7 +23,7 @@ object DialangExporter extends App {
   }
 
   val adminLanguages = db.getAdminLanguageLocales
-
+  /*
   exportAls()
   exportHelpDialogs(adminLanguages)
   exportLegendPages(adminLanguages)
@@ -35,7 +35,9 @@ object DialangExporter extends App {
   exportSAIntroPages(adminLanguages)
   exportSAPages(adminLanguages)
   exportTestIntroPages(adminLanguages)
+  */
   exportBasketPages(adminLanguages)
+  /*
   exportEndOfTestPages(adminLanguages)
   exportFeedbackMenuPages(adminLanguages)
   exportSAFeedbackPages(adminLanguages)
@@ -43,6 +45,7 @@ object DialangExporter extends App {
   exportItemReviewPages(adminLanguages)
   exportExplfbPages(adminLanguages)
   exportAdvfbPages(adminLanguages)
+  */
 
   db.cleanup()
 
@@ -644,18 +647,19 @@ object DialangExporter extends App {
       val skill = basket.skill
       val basketPrompt = basket.prompt
 
-      val responseMarkup = basketType match {
+      val (responseMarkup,numberOfItems) = basketType match {
           case "mcq" => {
             val item = db.getItemsForBasket(basketId).head
             val answers = db.getAnswersForItem(item.id)
-            engine.layout("src/main/resources/mcqresponse.mustache",Map("itemtext" -> item.text,"itemId" -> item.id.toString,"positionInBasket" -> item.positionInBasket.toString, "answers" -> answers))
+            val map = Map("itemtext" -> item.text,"itemId" -> item.id.toString,"positionInBasket" -> item.positionInBasket.toString, "answers" -> answers)
+            (engine.layout("src/main/resources/mcqresponse.mustache",map),1)
           }
           case "shortanswer" => {
             val items = db.getItemsForBasket(basketId)
             val itemList = items.map(item => {
                 Map("id" -> item.id.toString,"text" -> item.text,"positionInBasket" -> item.positionInBasket.toString)
               })
-            engine.layout("src/main/resources/saresponse.mustache",Map("basketPrompt" -> basketPrompt,"items" -> itemList))
+            (engine.layout("src/main/resources/saresponse.mustache",Map("basketPrompt" -> basketPrompt,"items" -> itemList)),items.length)
           }
           case "gaptext" => {
             val gapText = basket.gaptext
@@ -673,7 +677,7 @@ object DialangExporter extends App {
               gapMarkup = gapMarkup.replace("<" + itemNumber + ">","<input type=\"text\" name=\"" + item.get("id").get + "-response\" />")
             }
 
-            engine.layout("src/main/resources/gtresponse.mustache",Map("basketPrompt" -> basketPrompt,"items" -> items,"markup" -> gapMarkup))
+            (engine.layout("src/main/resources/gtresponse.mustache",Map("basketPrompt" -> basketPrompt,"items" -> items,"markup" -> gapMarkup)),items.length)
           }
           case "gapdrop" => {
             val gapText = basket.gaptext
@@ -698,7 +702,7 @@ object DialangExporter extends App {
               gapMarkup = gapMarkup.replace("<" + itemNumber + ">",select)
             }
 
-            engine.layout("src/main/resources/gdresponse.mustache",Map("basketPrompt" -> basketPrompt,"items" -> items,"markup" -> gapMarkup))
+            (engine.layout("src/main/resources/gdresponse.mustache",Map("basketPrompt" -> basketPrompt,"items" -> items,"markup" -> gapMarkup)),items.length)
           }
           case "tabbedpane" => {
 
@@ -717,7 +721,7 @@ object DialangExporter extends App {
                         "answers" -> answers)
               })
 
-            engine.layout("src/main/resources/tabbedpaneresponse.mustache",Map("childBaskets" -> childBaskets))
+            (engine.layout("src/main/resources/tabbedpaneresponse.mustache",Map("childBaskets" -> childBaskets)),childBaskets.length)
           }
           case _ => {
             engine.layout("src/main/resources/mcqresponse.mustache",Map("blah" -> "blah"))
@@ -751,7 +755,8 @@ object DialangExporter extends App {
                         "correctAnswerTitle" -> correctAnswerTitle,
                         "correctAnswersTitle" -> correctAnswersTitle,
                         "mediaMarkup" -> mediaMarkup,
-                        "responseMarkup" -> responseMarkup)
+                        "responseMarkup" -> responseMarkup,
+                        "numberOfItems" -> numberOfItems)
           val output = engine.layout("src/main/resources/basket.mustache",map)
           val basketFile = new OutputStreamWriter(new FileOutputStream(new File(alDir,basketId + ".html")),"UTF-8")
           basketFile.write(output)

@@ -23,6 +23,7 @@ object DialangExporter extends App {
   }
 
   val adminLanguages = db.getAdminLanguageLocales
+  /*
   exportAls()
   exportHelpDialogs(adminLanguages)
   exportLegendPages(adminLanguages)
@@ -34,7 +35,9 @@ object DialangExporter extends App {
   exportSAIntroPages(adminLanguages)
   exportSAPages(adminLanguages)
   exportTestIntroPages(adminLanguages)
+  */
   exportBasketPages(adminLanguages)
+  /*
   exportEndOfTestPages(adminLanguages)
   exportFeedbackMenuPages(adminLanguages)
   exportSAFeedbackPages(adminLanguages)
@@ -42,6 +45,7 @@ object DialangExporter extends App {
   exportItemReviewPages(adminLanguages)
   exportExplfbPages(adminLanguages)
   exportAdvfbPages(adminLanguages)
+  */
 
   db.cleanup()
 
@@ -623,18 +627,18 @@ object DialangExporter extends App {
     db.getBaskets.foreach(basket => {
 
       // Render the media markup independently of al
-      val mediaMarkup = basket.mediatype match { 
+      val (mediaMarkup,rubricMediaType) = basket.mediatype match { 
           case "text/html" => {
-            engine.layout("src/main/resources/textmedia.mustache",Map("markup" -> basket.textmedia))
+            (engine.layout("src/main/resources/textmedia.mustache",Map("markup" -> basket.textmedia)),"Text")
           }
           case "audio/mpeg" => {
-            engine.layout("src/main/resources/audiomedia.mustache",Map("filename" -> basket.filemedia))
+            (engine.layout("src/main/resources/audiomedia.mustache",Map("filename" -> basket.filemedia)),"Sound")
           }
           case "image/jpeg" => {
-            engine.layout("src/main/resources/imagemedia.mustache",Map("filename" -> basket.filemedia))
+            (engine.layout("src/main/resources/imagemedia.mustache",Map("filename" -> basket.filemedia)),"Image")
           }
           case "none" => {
-            ""
+            ("","NoMedia")
           }
         }
 
@@ -731,7 +735,7 @@ object DialangExporter extends App {
             alDir.mkdirs()
           }
 
-          val rubricText = db.getTranslation("LangTest_Rubric#" + typeMap.get(basketType).get + "#Text",al)
+          val rubricText = db.getTranslation("LangTest_Rubric#" + typeMap.get(basketType).get + "#" + rubricMediaType,al)
 
           // Confirmation dialog texts.
           val warningText = db.getTranslation("Dialogues_SkipLangTest",al)

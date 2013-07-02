@@ -34,10 +34,10 @@ object DialangExporter extends App {
   exportVSPTFeedbackPages(adminLanguages)
   exportSAIntroPages(adminLanguages)
   exportSAPages(adminLanguages)
-  exportTestIntroPages(adminLanguages)
   */
-  exportBasketPages(adminLanguages)
+  exportTestIntroPages(adminLanguages)
   /*
+  exportBasketPages(adminLanguages)
   exportEndOfTestPages(adminLanguages)
   exportFeedbackMenuPages(adminLanguages)
   exportSAFeedbackPages(adminLanguages)

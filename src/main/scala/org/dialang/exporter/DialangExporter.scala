@@ -23,7 +23,6 @@ object DialangExporter extends App {
   }
 
   val adminLanguages = db.getAdminLanguageLocales
-  /*
   exportAls()
   exportHelpDialogs(adminLanguages)
   exportLegendPages(adminLanguages)
@@ -34,9 +33,7 @@ object DialangExporter extends App {
   exportVSPTFeedbackPages(adminLanguages)
   exportSAIntroPages(adminLanguages)
   exportSAPages(adminLanguages)
-  */
   exportTestIntroPages(adminLanguages)
-  /*
   exportBasketPages(adminLanguages)
   exportEndOfTestPages(adminLanguages)
   exportFeedbackMenuPages(adminLanguages)
@@ -45,7 +42,6 @@ object DialangExporter extends App {
   exportItemReviewPages(adminLanguages)
   exportExplfbPages(adminLanguages)
   exportAdvfbPages(adminLanguages)
-  */
 
   db.cleanup()
 
@@ -923,7 +919,7 @@ object DialangExporter extends App {
 
       val title = db.getTranslation("Title_DIALANGTestResults",al)
 
-      for(skill <- db.saSkills) {
+      for(skill <- db.testSkills) {
 
         val skillDir = new File(alDir,skill.toLowerCase)
         if(!skillDir.isDirectory) {
@@ -1329,7 +1325,7 @@ object DialangExporter extends App {
       val c1Header = db.getTranslation("AdvisoryTable_Intro_#C1",al)
       val c2Header = db.getTranslation("AdvisoryTable_Intro_#C2",al)
 
-      for(skill <- db.saSkills) {
+      for(skill <- db.advfbSkills) {
 
         val skillDir = new File(alDir,skill.toLowerCase)
         if(!skillDir.isDirectory) {

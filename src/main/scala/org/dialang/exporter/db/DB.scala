@@ -16,6 +16,10 @@ class DB {
 
   val saSkills = List("Reading","Writing","Listening")
 
+  val testSkills = List("Reading","Writing","Listening","Structures","Vocabulary")
+
+  val advfbSkills = List("Reading","Writing","Listening")
+
   // TODO: This should not be needed. All db access should happen in here.
   def getConnection = conn
 
@@ -132,7 +136,7 @@ class DB {
     }
   }
 
-  def getTestLanguagePrompts(adminLanguageCode:String) = {
+  def getTestLanguagePrompts(adminLanguageCode:String):Map[String,String] = {
     var st:Statement = null
     try {
       st = conn.createStatement

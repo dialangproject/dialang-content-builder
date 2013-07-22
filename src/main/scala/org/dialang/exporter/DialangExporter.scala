@@ -381,6 +381,7 @@ object DialangExporter extends App {
         }
 
         val map = Map( "al" -> al,
+                        "title" -> title,
                         "isCorrect" -> ((compoundId:String) => {
                             val parts = compoundId.split("_")
                             val id = parts(0)
@@ -400,7 +401,6 @@ object DialangExporter extends App {
                             }
                           }),
                         "tl" -> tl,
-                        "title" -> title,
                         "warningText" -> warningText,
                         "yes" -> yes,
                         "no" -> no,
@@ -409,7 +409,7 @@ object DialangExporter extends App {
                         "words" -> words,
                         "tab" -> tabList.toList )
         val output = engine.layout("src/main/resources/vspt.mustache",map)
-        val vsptFile = new OutputStreamWriter(new FileOutputStream(new File(alDir,tl + ".html")),"UTF-8")
+        val vsptFile = new OutputStreamWriter(new FileOutputStream(new File(alDir,tl._1 + ".html")),"UTF-8")
         vsptFile.write(output)
         vsptFile.close
       }

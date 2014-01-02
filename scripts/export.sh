@@ -1,6 +1,6 @@
 #!/bin/sh
 
-outputdir="/Users/fisha/git/dialang-content/"
+outputdir="/Users/fisha/git/dialang/dialang-content/"
 
 scala -classpath target/classes\
 :/Users/fisha/.m2/repository/org/fusesource/scalate/scalate-core_2.10/1.6.1/scalate-core_2.10-1.6.1.jar\

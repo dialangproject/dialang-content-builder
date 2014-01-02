@@ -5,7 +5,7 @@ import java.sql.{DriverManager,Connection,SQLException,Statement}
 import scala.collection.JavaConversions._
 import scala.collection.mutable.{ListBuffer,HashMap,ArrayBuffer}
 
-import org.dialang.common.model.Item
+import org.dialang.common.model.{Item, ScoredItem}
 
 class DB {
 
@@ -282,10 +282,10 @@ class DB {
       st = conn.createStatement
       val rs = st.executeQuery("SELECT i.*,bi.position FROM baskets b,basket_item bi,items i WHERE b.id = " + basketId + " AND b.id = bi.basket_id AND bi.item_id = i.id ORDER BY position")
 
-      val list = new ListBuffer[Item]
+      val list = new ListBuffer[ScoredItem]
 
       while(rs.next) {
-        val item = new Item(rs)
+        val item = new ScoredItem(new Item(rs))
         item.positionInBasket = rs.getInt("position")
         list += item
       }

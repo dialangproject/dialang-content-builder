@@ -23,6 +23,7 @@ object DialangExporter extends App {
   }
 
   val adminLanguages = db.getAdminLanguageLocales
+  /*
   exportAls()
   exportHelpDialogs(adminLanguages)
   exportLegendPages(adminLanguages)
@@ -37,11 +38,14 @@ object DialangExporter extends App {
   exportBasketPages(adminLanguages)
   exportEndOfTestPages(adminLanguages)
   exportFeedbackMenuPages(adminLanguages)
+  */
   exportSAFeedbackPages(adminLanguages)
+  /*
   exportTestResultPages(adminLanguages)
   exportItemReviewPages(adminLanguages)
   exportExplfbPages(adminLanguages)
   exportAdvfbPages(adminLanguages)
+  */
 
   db.cleanup()
 
@@ -863,6 +867,7 @@ object DialangExporter extends App {
       val title = db.getTranslation("Title_SelfAssessFeedback",al)
       val aboutSAText = db.getTranslation("FeedbackOption_AboutSelfAssess",al)
       val overEst = db.getTranslation("SelfAssessFeedback_OverEst_Par2",al)
+      val accurate = db.getTranslation("SelfAssessFeedback_Match_Par2",al)
       val underEst = db.getTranslation("SelfAssessFeedback_UnderEst_Par2",al)
 
       levels.foreach(itemLevel => {
@@ -871,10 +876,19 @@ object DialangExporter extends App {
           itemLevelDir.mkdir()
         }
         levels.foreach(saLevel => {
-          val partOne = db.getTranslationLike("SelfAssessFeedback%Par1#" + itemLevel + "#" + saLevel,al)
+          val partOne = {
+              if (saLevel != itemLevel) {
+                db.getTranslationLike("SelfAssessFeedback%Par1#" + itemLevel + "#" + saLevel, al)
+              } else {
+                db.getTranslation("SelfAssessFeedback_Match_Par1#" + itemLevel, al)
+              }
+            }
+
           val partTwo = {
-              if(saLevel > itemLevel) {
+              if (saLevel > itemLevel) {
                 overEst
+              } else if (saLevel == itemLevel) {
+                accurate
               } else {
                 underEst
               }

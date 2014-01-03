@@ -8,6 +8,7 @@
 
                 </script>
                 <h1>{{{title}}}</h1>
+                <img src="/dialang-content/images/true.gif"/> = {{yes}} <img src="/dialang-content/images/false.gif"/> = No
                 <form id="vsptform" action="/scorevspt" method="POST">
                     <input type="hidden" name="al" value="{{al}}"/>
                     <input type="hidden" name="tl" value="{{tl}}"/>
@@ -39,7 +40,7 @@
                             {{/tab}}
                         </tbody>
                     </table>
-                    <img src="/dialang-content/images/true.gif"/> = {{yes}} <img src="/dialang-content/images/false.gif"/> = No <input id="send-button" type="button" value="{{submit}}" disabled/>
+                    <input id="send-button" type="button" value="{{submit}}" disabled/>
                 </form>
                 <div id="confirm-send-dialog" class="dialang-dialog" title="{{confirmationTitle}}">
                     <p>{{confirmsendquestion}}</p>

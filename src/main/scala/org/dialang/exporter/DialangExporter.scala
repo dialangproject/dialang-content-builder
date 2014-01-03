@@ -23,7 +23,6 @@ object DialangExporter extends App {
   }
 
   val adminLanguages = db.getAdminLanguageLocales
-  /*
   exportAls()
   exportHelpDialogs(adminLanguages)
   exportLegendPages(adminLanguages)
@@ -38,14 +37,11 @@ object DialangExporter extends App {
   exportBasketPages(adminLanguages)
   exportEndOfTestPages(adminLanguages)
   exportFeedbackMenuPages(adminLanguages)
-  */
   exportSAFeedbackPages(adminLanguages)
-  /*
   exportTestResultPages(adminLanguages)
   exportItemReviewPages(adminLanguages)
   exportExplfbPages(adminLanguages)
   exportAdvfbPages(adminLanguages)
-  */
 
   db.cleanup()
 

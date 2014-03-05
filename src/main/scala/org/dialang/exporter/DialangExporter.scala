@@ -809,8 +809,7 @@ object DialangExporter extends App {
       val yes = db.getTranslation("Caption_Yes",al)
       val no = db.getTranslation("Caption_No",al)
       val quit = db.getTranslation("Caption_Quit",al)
-      val skipbacktooltip = db.getTranslation("Caption_ChooseAnotherTest",al)
-      val skipforwardtooltip = skipbacktooltip
+      val skipforwardtooltip = db.getTranslation("Caption_ChooseAnotherTest",al)
       val map = Map("al" -> al,
                       "title" -> title,
                       "text" -> text,
@@ -831,7 +830,7 @@ object DialangExporter extends App {
       feedbackMenuFile.write(output)
       feedbackMenuFile.close
 
-      val tipOutput = engine.layout("src/main/resources/toolbartooltips.mustache",Map("skipbacktooltip" -> skipbacktooltip,"skipforwardtooltip" -> skipforwardtooltip))
+      val tipOutput = engine.layout("src/main/resources/toolbartooltips.mustache",Map("skipbacktooltip" -> "","skipforwardtooltip" -> skipforwardtooltip))
       val tipFile = new OutputStreamWriter(new FileOutputStream(new File(feedbackMenuDir,al + "-toolbarTooltips.json")),"UTF-8")
       tipFile.write(tipOutput)
       tipFile.close()

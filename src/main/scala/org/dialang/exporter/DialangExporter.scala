@@ -18,11 +18,12 @@ object DialangExporter extends App {
   val engine = new TemplateEngine
   val websiteDir = new File(args(0))
 
-  if(!websiteDir.exists) {
+  if (!websiteDir.exists) {
     websiteDir.mkdirs();
   }
 
   val adminLanguages = db.getAdminLanguageLocales
+
   exportAls()
   exportHelpDialogs(adminLanguages)
   exportLegendPages(adminLanguages)
@@ -49,26 +50,26 @@ object DialangExporter extends App {
 
   def exportAls() {
     
-    val output = engine.layout("src/main/resources/als.mustache",db.getAdminLanguages)
-    val alsFile = new OutputStreamWriter(new FileOutputStream(new File(websiteDir,"als.html")),"UTF-8")
+    val output = engine.layout("src/main/resources/als.mustache", db.getAdminLanguages)
+    val alsFile = new OutputStreamWriter(new FileOutputStream(new File(websiteDir, "als.html")), "UTF-8")
     alsFile.write(output)
     alsFile.close()
   }
 
   def exportHelpDialogs(adminLanguages:List[String]) {
 
-    val helpDir = new File(websiteDir,"help")
-    if(!helpDir.isDirectory) helpDir.mkdirs()
+    val helpDir = new File(websiteDir, "help")
+    if (!helpDir.isDirectory) helpDir.mkdirs()
 
-    for(al <- adminLanguages) { 
-      val key = db.getTranslation("Title_Key",al)
-      val next = db.getTranslation("Caption_ContinueNext",al)
-      val back = db.getTranslation("Caption_BackPrevious",al)
-      val skipf = db.getTranslation("Caption_SkipNextSection",al)
-      val skipb = db.getTranslation("Caption_SkipPreviousSection",al)
-      val yes = db.getTranslation("Caption_Yes",al)
-      val no = db.getTranslation("Caption_No",al)
-      val help = db.getTranslation("Caption_Help",al)
+    for (al <- adminLanguages) { 
+      val key = db.getTranslation("Title_Key", al)
+      val next = db.getTranslation("Caption_ContinueNext", al)
+      val back = db.getTranslation("Caption_BackPrevious", al)
+      val skipf = db.getTranslation("Caption_SkipNextSection", al)
+      val skipb = db.getTranslation("Caption_SkipPreviousSection", al)
+      val yes = db.getTranslation("Caption_Yes", al)
+      val no = db.getTranslation("Caption_No", al)
+      val help = db.getTranslation("Caption_Help", al)
       val smiley = db.getTranslation("CaptionInstantOnOff",al)
       val keyboard = db.getTranslation("Caption_AdditionalCharacters",al)
       val speaker = db.getTranslation("Caption_PlaySound",al)
@@ -108,11 +109,11 @@ object DialangExporter extends App {
   def exportLegendPages(adminLanguages:List[String]) {
 
     val legendDir = new File(websiteDir,"legend")
-    if(!legendDir.isDirectory) {
+    if (!legendDir.isDirectory) {
         legendDir.mkdirs()
     }
 
-    for(al <- adminLanguages) { 
+    for (al <- adminLanguages) { 
       val key = db.getTranslation("Title_Key",al)
       val welcome = db.getTranslation("Title_WelcomeDIALANG",al)
       val next = db.getTranslation("Caption_ContinueNext",al)
@@ -158,11 +159,11 @@ object DialangExporter extends App {
   def exportFlowchartPages(adminLanguages:List[String]) {
 
     val flowchartDir = new File(websiteDir,"flowchart")
-    if(!flowchartDir.isDirectory) {
+    if (!flowchartDir.isDirectory) {
         flowchartDir.mkdirs()
     }
 
-    for(al <- adminLanguages) { 
+    for (al <- adminLanguages) { 
       val welcomeTitle = db.getTranslation("Title_WelcomeDIALANG",al)
       val welcomeText = db.getTranslation("Welcome_Intro_Text",al)
       val procedureTitle = db.getTranslation("Title_ProcedureCAPS",al)
@@ -212,11 +213,11 @@ object DialangExporter extends App {
   def exportTLSPages(adminLanguages:List[String]) {
 
     val tlsDir = new File(websiteDir,"tls")
-    if(!tlsDir.isDirectory) {
+    if (!tlsDir.isDirectory) {
         tlsDir.mkdirs()
     }
 
-    for(al <- adminLanguages) { 
+    for (al <- adminLanguages) { 
       val skipbacktooltip = db.getTranslation("Caption_BacktoALS",al)
       val backtooltip = db.getTranslation("Caption_BacktoWelcome",al)
       val tlsTitle = db.getTranslation("Title_ChooseTest",al)
@@ -244,7 +245,7 @@ object DialangExporter extends App {
 
       var testRows = new ListBuffer[Map[String,String]]
       tlsMap.zipWithIndex.foreach(t => {
-        if(t._2 < (tlsMap.size - 2)) {
+        if (t._2 < (tlsMap.size - 2)) {
             testRows += Map("languageName" -> t._1._2,"languageCode" -> t._1._1)
         } else {
             testRows += Map("languageName" -> t._1._2,"languageCode" -> t._1._1,"last" -> "true")
@@ -286,11 +287,11 @@ object DialangExporter extends App {
   def exportVSPTIntroPages(adminLanguages:List[String]) {
 
     val vsptIntroDir = new File(websiteDir,"vsptintro")
-    if(!vsptIntroDir.isDirectory) vsptIntroDir.mkdirs()
+    if (!vsptIntroDir.isDirectory) vsptIntroDir.mkdirs()
 
     val testLanguages = db.getTestLanguageCodes
 
-    for(al <- adminLanguages) { 
+    for (al <- adminLanguages) { 
       val backtooltip = db.getTranslation("Caption_BacktoChooseTest",al)
       val nexttooltip = db.getTranslation("Caption_StartPlacement",al)
       val skipforwardtooltip = db.getTranslation("Caption_SkipPlacement",al)
@@ -326,9 +327,9 @@ object DialangExporter extends App {
   def exportVSPTPages(adminLanguages:List[String]) {
     val vsptDir = new File(websiteDir,"vspt")
     val testLanguages = db.getTestLanguageCodes
-    for(al <- adminLanguages) { 
+    for (al <- adminLanguages) { 
       val alDir = new File(vsptDir,al)
-      if(!alDir.isDirectory) {
+      if (!alDir.isDirectory) {
         alDir.mkdirs()
       }
 
@@ -347,7 +348,7 @@ object DialangExporter extends App {
       // Confirmation dialog texts.
       val warningText = db.getTranslation("Dialogues_SkipPlacement",al)
 
-      for(tl <- testLanguages) { 
+      for (tl <- testLanguages) { 
         val wordList = db.getVSPTWords(tl._1)
 
         val tabList = new ListBuffer[Map[String,String]]
@@ -386,14 +387,14 @@ object DialangExporter extends App {
                             val parts = compoundId.split("_")
                             val id = parts(0)
                             val response = parts(1)
-                            if(validMap.get(id).get) {
-                              if(response == "valid") {
+                            if (validMap.get(id).get) {
+                              if (response == "valid") {
                                 "correct"
                               } else {
                                 "incorrect"
                               }
                             } else {
-                              if(response == "invalid") {
+                              if (response == "invalid") {
                                 "correct"
                               } else {
                                 "incorrect"
@@ -423,9 +424,9 @@ object DialangExporter extends App {
     // We use this to select the correct jquery-ui tab for the level.
     val levelTabMap = Map("V1" -> 5,"V2" -> 4,"V3" -> 3,"V4" -> 2, "V5" -> 1,"V6" -> 0)
 
-    for(al <- adminLanguages) { 
+    for (al <- adminLanguages) { 
       val alDir = new File(vsptfeedbackDir,al)
-      if(!alDir.isDirectory) {
+      if (!alDir.isDirectory) {
         alDir.mkdirs()
       }
       val title = db.getTranslation("Title_PlacementFeedback",al)
@@ -445,7 +446,7 @@ object DialangExporter extends App {
       val levelv2 = db.getTranslation("PlacementFeedback_Text#V2",al)
       val levelv1 = db.getTranslation("PlacementFeedback_Text#V1",al)
 
-      for(level <- levels) { 
+      for (level <- levels) { 
         val text = db.getTranslation("PlacementFeedback_Text#" + level,al)
         val map = Map( "al" -> al,
                         "title" -> title,
@@ -471,9 +472,9 @@ object DialangExporter extends App {
 
     val saIntroDir = new File(websiteDir,"saintro")
 
-    for(al <- adminLanguages) { 
+    for (al <- adminLanguages) { 
       val alDir = new File(saIntroDir,al)
-      if(!alDir.isDirectory) {
+      if (!alDir.isDirectory) {
         alDir.mkdirs()
       }
 
@@ -491,7 +492,7 @@ object DialangExporter extends App {
       tipFile.write(tipOutput)
       tipFile.close()
 
-      for(skill <- db.saSkills) {
+      for (skill <- db.saSkills) {
 
         val title = db.getTranslation("Title_SelfAssess#" + skill,al)
 
@@ -514,9 +515,9 @@ object DialangExporter extends App {
 
     val saDir = new File(websiteDir,"sa")
 
-    for(al <- adminLanguages) { 
+    for (al <- adminLanguages) { 
       val alDir = new File(saDir,al)
-      if(!alDir.isDirectory) {
+      if (!alDir.isDirectory) {
         alDir.mkdirs()
       }
 
@@ -534,7 +535,7 @@ object DialangExporter extends App {
       tipFile.write(tipOutput)
       tipFile.close()
 
-      for(skill <- db.saSkills) {
+      for (skill <- db.saSkills) {
         val statements = db.getSAStatements(al,skill.toLowerCase)
 
         val title = db.getTranslation("Title_SelfAssess#" + skill,al)
@@ -557,11 +558,11 @@ object DialangExporter extends App {
   def exportTestIntroPages(adminLanguages:List[String]) {
 
     val testIntroDir = new File(websiteDir,"testintro")
-    if(!testIntroDir.isDirectory) {
+    if (!testIntroDir.isDirectory) {
         testIntroDir.mkdirs()
     }
 
-    for(al <- adminLanguages) { 
+    for (al <- adminLanguages) { 
       val nexttooltip = db.getTranslation("Caption_StartTest",al)
       val skipforwardtooltip = db.getTranslation("Caption_SkipLangTest",al)
       val title = db.getTranslation("Title_DIALANGLangTest",al)
@@ -605,11 +606,11 @@ object DialangExporter extends App {
                         "tabbedpane" -> "TabbedMCQ" )
 
     val basketDir = new File(websiteDir,"baskets")
-    if(!basketDir.isDirectory) {
+    if (!basketDir.isDirectory) {
         basketDir.mkdirs()
     }
 
-    for(al <- adminLanguages) {
+    for (al <- adminLanguages) {
       val nexttooltip = db.getTranslation("Caption_Next",al)
       val skipforwardtooltip = db.getTranslation("Caption_QuitLangTest",al)
       val tipOutput = engine.layout("src/main/resources/toolbartooltips.mustache",Map("nexttooltip" -> nexttooltip,"skipforwardtooltip" -> skipforwardtooltip))
@@ -724,10 +725,10 @@ object DialangExporter extends App {
           }
         }
 
-        for(al <- adminLanguages) {
+        for (al <- adminLanguages) {
 
           val alDir = new File(basketDir,al)
-          if(!alDir.isDirectory) {
+          if (!alDir.isDirectory) {
             alDir.mkdirs()
           }
 
@@ -766,11 +767,11 @@ object DialangExporter extends App {
   def exportEndOfTestPages(adminLanguages:List[String]) {
 
     val endOfTestDir = new File(websiteDir,"endoftest")
-    if(!endOfTestDir.isDirectory) {
+    if (!endOfTestDir.isDirectory) {
         endOfTestDir.mkdirs()
     }
 
-    for(al <- adminLanguages) { 
+    for (al <- adminLanguages) { 
         val title = db.getTranslation("Title_LangTestEnd",al)
         val text = db.getTranslation("LangTestEnd_Text",al)
         val nexttooltip = db.getTranslation("Caption_Feedback",al)
@@ -790,11 +791,11 @@ object DialangExporter extends App {
   def exportFeedbackMenuPages(adminLanguages:List[String]) {
 
     val feedbackMenuDir = new File(websiteDir,"feedbackmenu")
-    if(!feedbackMenuDir.isDirectory) {
+    if (!feedbackMenuDir.isDirectory) {
         feedbackMenuDir.mkdirs()
     }
 
-    for(al <- adminLanguages) { 
+    for (al <- adminLanguages) { 
       val title = db.getTranslation("Title_FeedbackMenu",al)
       val text = db.getTranslation("FeedbackMenu_Text",al)
       val resultsTitle = db.getTranslation("Title_Results",al)
@@ -840,15 +841,15 @@ object DialangExporter extends App {
   def exportSAFeedbackPages(adminLanguages:List[String]) {
 
     val saFeedbackDir = new File(websiteDir,"safeedback")
-    if(!saFeedbackDir.isDirectory) {
+    if (!saFeedbackDir.isDirectory) {
         saFeedbackDir.mkdirs()
     }
 
     val levels = db.getItemLevels
 
-    for(al <- adminLanguages) { 
+    for (al <- adminLanguages) { 
       val alDir = new File(saFeedbackDir,al)
-      if(!alDir.isDirectory) {
+      if (!alDir.isDirectory) {
         alDir.mkdir()
       }
 
@@ -867,7 +868,7 @@ object DialangExporter extends App {
 
       levels.foreach(itemLevel => {
         val itemLevelDir = new File(alDir,itemLevel)
-        if(!itemLevelDir.isDirectory) {
+        if (!itemLevelDir.isDirectory) {
           itemLevelDir.mkdir()
         }
         levels.foreach(saLevel => {
@@ -906,13 +907,13 @@ object DialangExporter extends App {
   def exportTestResultPages(adminLanguages:List[String]) {
 
     val testresultsDir = new File(websiteDir,"testresults")
-    if(!testresultsDir.isDirectory) {
+    if (!testresultsDir.isDirectory) {
         testresultsDir.mkdirs()
     }
 
     val levels = db.getItemLevels
 
-    for(al <- adminLanguages) { 
+    for (al <- adminLanguages) { 
 
       val backtooltip = db.getTranslation("Caption_BacktoWelcome",al)
 
@@ -922,16 +923,16 @@ object DialangExporter extends App {
       tipFile.close()
 
       val alDir = new File(testresultsDir,al)
-      if(!alDir.isDirectory) {
+      if (!alDir.isDirectory) {
         alDir.mkdir()
       }
 
       val title = db.getTranslation("Title_DIALANGTestResults",al)
 
-      for(skill <- db.testSkills) {
+      for (skill <- db.testSkills) {
 
         val skillDir = new File(alDir,skill.toLowerCase)
-        if(!skillDir.isDirectory) {
+        if (!skillDir.isDirectory) {
           skillDir.mkdir()
         }
 
@@ -958,11 +959,11 @@ object DialangExporter extends App {
   def exportItemReviewPages(adminLanguages:List[String]) {
 
     val itemreviewDir = new File(websiteDir,"itemreview")
-    if(!itemreviewDir.isDirectory) {
+    if (!itemreviewDir.isDirectory) {
         itemreviewDir.mkdirs()
     }
 
-    for(al <- adminLanguages) { 
+    for (al <- adminLanguages) { 
 
       val title = db.getTranslation("Title_ItemReview",al)
       val text = db.getTranslation("ItemReview_Text",al)
@@ -990,11 +991,11 @@ object DialangExporter extends App {
   def exportExplfbPages(adminLanguages:List[String]) {
 
     val aboutSADir = new File(websiteDir,"aboutsa")
-    if(!aboutSADir.isDirectory) {
+    if (!aboutSADir.isDirectory) {
         aboutSADir.mkdirs()
     }
 
-    for(al <- adminLanguages) {
+    for (al <- adminLanguages) {
 
       val backtooltip = db.getTranslation("Caption_BacktoFeedback",al)
       val tipOutput = engine.layout("src/main/resources/toolbartooltips.mustache",Map("backtooltip" -> backtooltip))
@@ -1003,7 +1004,7 @@ object DialangExporter extends App {
       tipFile.close()
 
       val alDir = new File(aboutSADir,al)
-      if(!alDir.isDirectory) {
+      if (!alDir.isDirectory) {
         alDir.mkdir()
       }
 
@@ -1303,11 +1304,11 @@ object DialangExporter extends App {
   def exportAdvfbPages(adminLanguages:List[String]) {
 
     val advfbDir = new File(websiteDir,"advfb")
-    if(!advfbDir.isDirectory) {
+    if (!advfbDir.isDirectory) {
         advfbDir.mkdirs()
     }
 
-    for(al <- adminLanguages) {
+    for (al <- adminLanguages) {
 
       val backtooltip = db.getTranslation("Caption_BacktoFeedback",al)
       val tipOutput = engine.layout("src/main/resources/toolbartooltips.mustache",Map("backtooltip" -> backtooltip))
@@ -1316,7 +1317,7 @@ object DialangExporter extends App {
       tipFile.close()
 
       val alDir = new File(advfbDir,al)
-      if(!alDir.isDirectory) {
+      if (!alDir.isDirectory) {
         alDir.mkdir()
       }
 
@@ -1334,10 +1335,10 @@ object DialangExporter extends App {
       val c1Header = db.getTranslation("AdvisoryTable_Intro_#C1",al)
       val c2Header = db.getTranslation("AdvisoryTable_Intro_#C2",al)
 
-      for(skill <- db.advfbSkills) {
+      for (skill <- db.advfbSkills) {
 
         val skillDir = new File(alDir,skill.toLowerCase)
-        if(!skillDir.isDirectory) {
+        if (!skillDir.isDirectory) {
           skillDir.mkdir()
         }
 
@@ -1449,16 +1450,16 @@ object DialangExporter extends App {
         c2Writer.write(c2Output)
         c2Writer.close()
 
-        for(t <- db.getTestLanguageCodes) {
+        for (t <- db.getTestLanguageCodes) {
           val tl = t._1
           val twoLetterCode = t._2
 
           val tlDir = new File(skillDir,t._1)
-          if(!tlDir.isDirectory) {
+          if (!tlDir.isDirectory) {
             tlDir.mkdir()
           }
 
-          if(skill == "Reading") {
+          if (skill == "Reading") {
             val a1Map = Map(
               "header" -> db.getTranslation("AdvisoryTips_Intro_#A1",al),
               "item1" -> db.getTranslation("AdvisoryTips_Bullet_#Reading_#A1_#Item1_#" + twoLetterCode,al),

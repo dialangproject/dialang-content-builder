@@ -6,6 +6,6 @@ then
     exit 0
 fi
 
-scala -classpath target/classes\
+scala -classpath build/classes/main\
 :/Users/fisha/.m2/repository/postgresql/postgresql/9.1-901.jdbc4/postgresql-9.1-901.jdbc4.jar \
 org.dialang.exporter.DisplayTextsDumper $1

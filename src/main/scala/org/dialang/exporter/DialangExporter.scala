@@ -536,7 +536,7 @@ object DialangExporter extends App {
       tipFile.close()
 
       for (skill <- db.saSkills) {
-        val statements = db.getSAStatements(al,skill.toLowerCase)
+        val statements = db.getSAStatements(al, skill.toLowerCase)
 
         val title = db.getTranslation("Title_SelfAssess#" + skill,al)
         val map = Map("al" -> al,

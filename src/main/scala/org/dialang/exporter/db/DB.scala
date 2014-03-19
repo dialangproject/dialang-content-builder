@@ -24,7 +24,7 @@ class DB {
   def getConnection = conn
 
   def cleanup() {
-    if(conn != null) {
+    if (conn != null) {
       conn.close()
     }
   }
@@ -35,13 +35,13 @@ class DB {
       st = conn.createStatement
       val rs = st.executeQuery("SELECT locale FROM admin_languages")
       val locales = new ListBuffer[String]
-      while(rs.next) {
+      while (rs.next) {
         locales += rs.getString("locale")
       }
       rs.close
       locales.toList
     } finally {
-      if(st != null) {
+      if (st != null) {
         try {
           st.close
         } catch { case e:SQLException => }
@@ -56,7 +56,7 @@ class DB {
       val rs = st.executeQuery("SELECT * FROM admin_languages")
       val map = new HashMap[String,Any]
       val languages = new ListBuffer[Map[String,String]]
-      while(rs.next) {
+      while (rs.next) {
         languages += Map("locale" -> rs.getString("locale"),"description" -> rs.getString("description"))
       }
       map += ("languages" -> languages)
@@ -64,7 +64,7 @@ class DB {
       rs.close
       map.toMap
     } finally {
-      if(st != null) {
+      if (st != null) {
         try {
           st.close
         } catch { case e:SQLException => }
@@ -78,13 +78,13 @@ class DB {
       st = conn.createStatement
       var rs = st.executeQuery("SELECT value FROM display_texts WHERE key = '" + key + "' and locale = '" + language + "'")
       var translation = ""
-      if(rs.next) {
+      if (rs.next) {
         translation = rs.getString("value")
       }
       rs.close
       translation
     } finally {
-      if(st != null) {
+      if (st != null) {
         try {
           st.close
         } catch { case e:SQLException => }
@@ -98,13 +98,13 @@ class DB {
       st = conn.createStatement
       var rs = st.executeQuery("SELECT value FROM display_texts WHERE key LIKE '" + key + "' and locale = '" + language + "'")
       var translation = ""
-      if(rs.next) {
+      if (rs.next) {
         translation = rs.getString("value")
       }
       rs.close
       translation
     } finally {
-      if(st != null) {
+      if (st != null) {
         try {
           st.close
         } catch { case e:SQLException => }
@@ -118,7 +118,7 @@ class DB {
       st = conn.createStatement
       val rs = st.executeQuery("SELECT * FROM display_texts WHERE key like 'Subskill#%' and locale = '" + adminLanguageCode + "'")
       val map = new HashMap[String,String]
-      while(rs.next) {
+      while (rs.next) {
         val subskillDescription = rs.getString("value")
         val vk = rs.getString("key")
         val subskillCode = vk.substring(vk.indexOf("#") + 1)
@@ -128,7 +128,7 @@ class DB {
       rs.close()
       map.toMap
     } finally {
-      if(st != null) {
+      if (st != null) {
         try {
           st.close()
         } catch { case e:SQLException => }
@@ -142,7 +142,7 @@ class DB {
       st = conn.createStatement
       val rs = st.executeQuery("SELECT * FROM display_texts WHERE key like 'ChooseTest_Language%' and locale = '" + adminLanguageCode + "'")
       val map = new HashMap[String,String]
-      while(rs.next) {
+      while (rs.next) {
         val languageDescription = rs.getString("value")
         val vk = rs.getString("key")
         val languageCode = vk.substring(vk.indexOf("#") + 1)
@@ -152,7 +152,7 @@ class DB {
       rs.close
       map.toMap
     } finally {
-      if(st != null) {
+      if (st != null) {
         try {
           st.close
         } catch { case e:SQLException => }
@@ -166,13 +166,13 @@ class DB {
       st = conn.createStatement
       val rs = st.executeQuery("SELECT locale,two_letter_code FROM test_languages")
       val list = new ListBuffer[Tuple2[String,String]]
-      while(rs.next) {
+      while (rs.next) {
         list += ((rs.getString("locale"),rs.getString("two_letter_code")))
       }
       rs.close
       list.toList
     } finally {
-      if(st != null) {
+      if (st != null) {
         try {
           st.close
         } catch { case e:SQLException => }
@@ -187,7 +187,7 @@ class DB {
       val rs = st.executeQuery("SELECT word,words.word_id AS id,valid FROM vsp_test_word,words WHERE locale = '" + tl + "' AND vsp_test_word.word_id = words.word_id")
 
       val list = new ListBuffer[(String,String,Boolean)]
-      while(rs.next) {
+      while (rs.next) {
         list += ((rs.getString("word"),rs.getString("id"),rs.getBoolean("valid")))
       }
 
@@ -195,7 +195,7 @@ class DB {
 
       list.toList
     } finally {
-      if(st != null) {
+      if (st != null) {
         try {
           st.close
         } catch { case e:SQLException => }
@@ -204,14 +204,15 @@ class DB {
   }
 
   def getSAStatements(al: String, skill: String) = {
+
     var st:Statement = null
     try {
       st = conn.createStatement
-      val rs = st.executeQuery("SELECT * FROM sa_statements WHERE locale = '" + al + "' AND skill = '" + skill + "'")
+      val rs = st.executeQuery("SELECT * FROM sa_statements WHERE locale = '" + al + "' AND skill = '" + skill + "' ORDER BY wid")
 
       val list = new ListBuffer[Map[String,String]]
-      while(rs.next) {
-        list += Map("wid" -> rs.getString("wid"),"statement" -> rs.getString("statement"))
+      while (rs.next) {
+        list += Map("wid" -> rs.getString("wid"), "statement" -> rs.getString("statement"))
       }
 
       rs.close()
@@ -219,7 +220,7 @@ class DB {
 
       list.toList
     } finally {
-      if(st != null) {
+      if (st != null) {
         try {
           st.close
         } catch { case e:SQLException => }
@@ -236,7 +237,7 @@ class DB {
 
       val list = new ListBuffer[Basket]
 
-      while(rs.next) {
+      while (rs.next) {
         list += new Basket(rs)
       }
 
@@ -244,7 +245,7 @@ class DB {
 
       list.toList
     } finally {
-      if(st != null) {
+      if (st != null) {
         try {
           st.close
         } catch { case e:SQLException => }
@@ -260,7 +261,7 @@ class DB {
 
       val list = new ListBuffer[Basket]
 
-      while(rs.next) {
+      while (rs.next) {
         list += new Basket(rs)
       }
 
@@ -268,7 +269,7 @@ class DB {
 
       list.toList
     } finally {
-      if(st != null) {
+      if (st != null) {
         try {
           st.close
         } catch { case e:SQLException => }
@@ -284,7 +285,7 @@ class DB {
 
       val list = new ListBuffer[ScoredItem]
 
-      while(rs.next) {
+      while (rs.next) {
         val item = new ScoredItem(new Item(rs))
         item.positionInBasket = rs.getInt("position")
         list += item
@@ -295,7 +296,7 @@ class DB {
 
       list.toList
     } finally {
-      if(st != null) {
+      if (st != null) {
         try {
           st.close
         } catch { case e:SQLException => }
@@ -311,7 +312,7 @@ class DB {
 
       val list = new ListBuffer[Map[String,String]]
 
-      while(rs.next) {
+      while (rs.next) {
         list += Map( "answerId" -> rs.getInt("id").toString,
                     "item_id" -> rs.getInt("item_id").toString,
                     "text" -> rs.getString("text"),
@@ -322,7 +323,7 @@ class DB {
 
       list.toList
     } finally {
-      if(st != null) {
+      if (st != null) {
         try {
           st.close
         } catch { case e:SQLException => }
@@ -339,7 +340,7 @@ class DB {
 
       val list = new ListBuffer[String]
 
-      while(rs.next) {
+      while (rs.next) {
         list += rs.getString(1)
       }
 
@@ -347,7 +348,7 @@ class DB {
 
       list.toList
     } finally {
-      if(st != null) {
+      if (st != null) {
         try {
           st.close
         } catch { case e:SQLException => }
@@ -364,7 +365,7 @@ class DB {
 
       val list = new ListBuffer[String]
 
-      while(rs.next) {
+      while (rs.next) {
         list += rs.getString(1)
       }
 
@@ -372,7 +373,7 @@ class DB {
 
       list.toList
     } finally {
-      if(st != null) {
+      if (st != null) {
         try {
           st.close
         } catch { case e:SQLException => }

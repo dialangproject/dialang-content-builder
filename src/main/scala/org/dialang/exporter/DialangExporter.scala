@@ -324,7 +324,8 @@ object DialangExporter extends App {
     }
   }
 
-  def exportVSPTPages(adminLanguages:List[String]) {
+  def exportVSPTPages(adminLanguages: List[String]) {
+
     val vsptDir = new File(websiteDir,"vspt")
     val testLanguages = db.getTestLanguageCodes
     for (al <- adminLanguages) { 
@@ -417,54 +418,47 @@ object DialangExporter extends App {
     }
   }
 
-  def exportVSPTFeedbackPages(adminLanguages:List[String]) {
-    val vsptfeedbackDir = new File(websiteDir,"vsptfeedback")
+  def exportVSPTFeedbackPages(adminLanguages: List[String]) {
+
+    val vsptFeedbackDir = new File(websiteDir, "vsptfeedback")
+    if (!vsptFeedbackDir.isDirectory) {
+      vsptFeedbackDir.mkdir()
+    }
+
     val levels = db.getVSPLevels
 
-    // We use this to select the correct jquery-ui tab for the level.
-    val levelTabMap = Map("V1" -> 5,"V2" -> 4,"V3" -> 3,"V4" -> 2, "V5" -> 1,"V6" -> 0)
-
     for (al <- adminLanguages) { 
-      val alDir = new File(vsptfeedbackDir,al)
-      if (!alDir.isDirectory) {
-        alDir.mkdirs()
-      }
-      val title = db.getTranslation("Title_PlacementFeedback",al)
-      val yourscore = db.getTranslation("PlacementFeedback_YourScore",al)
-      val backtooltip = db.getTranslation("Caption_BacktoFeedback",al)
-      val nexttooltip = db.getTranslation("Caption_GotoNext",al)
+      val title = db.getTranslation("Title_PlacementFeedback", al)
+      val yourscore = db.getTranslation("PlacementFeedback_YourScore", al)
+      val backtooltip = db.getTranslation("Caption_BacktoFeedback", al)
+      val nexttooltip = db.getTranslation("Caption_GotoNext", al)
 
-      val tipOutput = engine.layout("src/main/resources/toolbartooltips.mustache",Map("backtooltip" -> backtooltip,"nexttooltip" -> nexttooltip))
-      val tipFile = new OutputStreamWriter(new FileOutputStream(new File(vsptfeedbackDir,al + "-toolbarTooltips.json")),"UTF-8")
+      val tipOutput = engine.layout("src/main/resources/toolbartooltips.mustache", Map("backtooltip" -> backtooltip, "nexttooltip" -> nexttooltip))
+      val tipFile = new OutputStreamWriter(new FileOutputStream(new File(vsptFeedbackDir, al + "-toolbarTooltips.json")), "UTF-8")
       tipFile.write(tipOutput)
       tipFile.close()
 
-      val levelv6 = db.getTranslation("PlacementFeedback_Text#V6",al)
-      val levelv5 = db.getTranslation("PlacementFeedback_Text#V5",al)
-      val levelv4 = db.getTranslation("PlacementFeedback_Text#V4",al)
-      val levelv3 = db.getTranslation("PlacementFeedback_Text#V3",al)
-      val levelv2 = db.getTranslation("PlacementFeedback_Text#V2",al)
-      val levelv1 = db.getTranslation("PlacementFeedback_Text#V1",al)
+      val levelv6 = db.getTranslation("PlacementFeedback_Text#V6", al)
+      val levelv5 = db.getTranslation("PlacementFeedback_Text#V5", al)
+      val levelv4 = db.getTranslation("PlacementFeedback_Text#V4", al)
+      val levelv3 = db.getTranslation("PlacementFeedback_Text#V3", al)
+      val levelv2 = db.getTranslation("PlacementFeedback_Text#V2", al)
+      val levelv1 = db.getTranslation("PlacementFeedback_Text#V1", al)
 
-      for (level <- levels) { 
-        val text = db.getTranslation("PlacementFeedback_Text#" + level,al)
-        val map = Map( "al" -> al,
-                        "title" -> title,
-                        "yourscore" -> yourscore,
-                        "levelv6" -> levelv6,
-                        "levelv5" -> levelv5,
-                        "levelv4" -> levelv4,
-                        "levelv3" -> levelv3,
-                        "levelv2" -> levelv2,
-                        "levelv1" -> levelv1,
-                        "activeTab" -> levelTabMap.get(level),
-                        "nexttooltip" -> nexttooltip,
-                        "text" -> text )
-        val output = engine.layout("src/main/resources/vsptfeedback.mustache",map)
-        val vsptfeedbackFile = new OutputStreamWriter(new FileOutputStream(new File(alDir,level + ".html")),"UTF-8")
-        vsptfeedbackFile.write(output)
-        vsptfeedbackFile.close
-      }
+      val map = Map( "al" -> al,
+                      "title" -> title,
+                      "yourscore" -> yourscore,
+                      "levelv6" -> levelv6,
+                      "levelv5" -> levelv5,
+                      "levelv4" -> levelv4,
+                      "levelv3" -> levelv3,
+                      "levelv2" -> levelv2,
+                      "levelv1" -> levelv1,
+                      "nexttooltip" -> nexttooltip)
+      val output = engine.layout("src/main/resources/vsptfeedback.mustache", map)
+      val vsptfeedbackFile = new OutputStreamWriter(new FileOutputStream(new File(vsptFeedbackDir, al + ".html")),"UTF-8")
+      vsptfeedbackFile.write(output)
+      vsptfeedbackFile.close
     }
   }
 

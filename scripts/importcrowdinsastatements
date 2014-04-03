@@ -1,0 +1,54 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+use DBI;
+use DBD::Pg;
+use Getopt::Long;
+use XML::Simple;
+
+my $locale = undef;
+GetOptions("locale=s" => \$locale);
+
+my $locale_mappings = {
+        'cmn_cn' => 'zh-CN',
+        'dan_dk' => 'da',
+        'nld_nl' => 'nl',
+        'fin_fi' => 'fi',
+        'fra_fr' => 'fr',
+        'deu_de' => 'de',
+        'isl_is' => 'is',
+        'gle_ie' => 'ga-IE',
+        'ita_it' => 'it',
+        'nor_no' => 'no',
+        'por_pt' => 'pt-PT',
+        'spa_es' => 'es-ES',
+        'swe_se' => 'sv-SE'
+    };
+
+if (defined($locale) && !exists($locale_mappings->{$locale})) {
+    print("'$locale' is not a supported locale\n");
+    exit 0;
+}
+
+my @skills = ('reading', 'writing', 'listening');
+
+my $xmlparser = new XML::Simple(KeyAttr => 'name');
+
+my $dbh = DBI->connect("dbi:Pg:dbname=DIALANG", 'dialangadmin', 'dialangadmin', {AutoCommit => 1});
+
+my $sth = $dbh->prepare("UPDATE sa_statements SET statement = ? WHERE locale = ? AND skill = ? AND wid = ?");
+
+if (defined($locale)) {
+    my $crowdin_locale = $locale_mappings->{$locale};
+    foreach my $skill (@skills) {
+        my $filename = "../crowdin-translations/$crowdin_locale/SA Statements/$skill.xml";
+        my $data = $xmlparser->XMLin($filename);
+        my $statements = $data->{'string'};
+        foreach my $wid (keys(%$statements)) {
+            my $statement = $statements->{$wid}->{'content'};
+            #print "$wid => " . $statements->{$wid}->{'content'} . "\n";
+            $sth->execute($statement, $locale, $skill, $wid);
+        }
+    }
+}

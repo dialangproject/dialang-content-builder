@@ -1,0 +1,67 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+use Getopt::Long;
+use LWP::UserAgent;
+use Archive::Extract;
+
+my $locale = undef;
+my $help = undef;
+
+GetOptions("locale=s" => \$locale,"help" => \$help);
+
+if (defined($help)) {
+    print "Usage: gettranslationsfromcrowdin [--locale=eng_gb]\n";
+    exit 0;
+}
+
+my $locale_mappings = {
+        'cmn_cn' => 'zh-CN',
+        'dan_dk' => 'da',
+        'deu_de' => 'de',
+        'ell_gr' => 'el',
+        'fin_fi' => 'fi',
+        'fra_fr' => 'fr',
+        'gle_ie' => 'ga-IE',
+        'isl_is' => 'is',
+        'ita_it' => 'it',
+        'nld_nl' => 'nl',
+        'nor_no' => 'no',
+        'por_pt' => 'pt-PT',
+        'spa_es' => 'es-ES',
+        'swe_se' => 'sv-SE'
+    };
+
+if (defined($locale)) {
+    if (!exists($locale_mappings->{$locale})) {
+        print "Invalid locale supplied. Locales in the format 'eng_gb' are needed\n";
+        exit 0;
+    } else {
+        # Convert the locale into a Crowdin locale
+        $locale = $locale_mappings->{$locale};
+    }
+} else {
+    $locale = 'all';
+}
+
+my $ua = LWP::UserAgent->new;
+
+my $url = "http://api.crowdin.net/api/project/DIALANG/export?key=7e060f546f2e7595b12d71b6141e1ad5";
+$ua->get($url);
+
+$url = "http://api.crowdin.net/api/project/DIALANG/download/$locale.zip?key=7e060f546f2e7595b12d71b6141e1ad5";
+my $response = $ua->get($url);
+
+my $zipfile = "../crowdin-translations/$locale-translations.zip";
+open(ALL, ">$zipfile");
+print ALL $response->content;
+close(ALL);
+
+my $x = Archive::Extract->new( archive => $zipfile );
+
+if ($locale eq 'all') {
+    $x->extract( to => "../crowdin-translations" );
+} else {
+    $x->extract( to => "../crowdin-translations/$locale" );
+}

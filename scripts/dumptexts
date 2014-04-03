@@ -1,11 +1,61 @@
-#!/bin/sh
+#!/usr/bin/perl -w
 
-if [ $# -ne 1 ]
-then
-    echo "Usage: dumptexts eng_gb"
-    exit 0
-fi
+use strict;
+use DBI;
+use DBD::Pg;
+use Getopt::Long;
+use LWP::UserAgent;
 
-scala -classpath build/classes/main\
-:/Users/fisha/.m2/repository/postgresql/postgresql/9.1-901.jdbc4/postgresql-9.1-901.jdbc4.jar \
-org.dialang.exporter.DisplayTextsDumper $1
+my $locale = undef;
+
+GetOptions("locale=s" => \$locale);
+
+unless (defined($locale)) {
+    print "Usage: uploadcrowdintexts --locale=eng_gb\n";
+    exit 0;
+}
+
+my $dbh = DBI->connect("dbi:Pg:dbname=DIALANG", 'dialangadmin', 'dialangadmin', {AutoCommit => 0});
+my $texts = $dbh->selectall_hashref("SELECT * FROM display_texts WHERE locale = '$locale'", 'key');
+$dbh->disconnect;
+
+my $xml = qq(<?xml version="1.0" encoding="utf-8"?>\n);
+$xml .= "<resources>\n";
+
+foreach my $key (keys(%$texts)) {
+    $xml .= qq(\t<string name="$key">) . $texts->{$key}->{value} . "</string>\n"
+}
+$xml .= "</resources>\n";
+
+my $filename = "admin_texts.$locale.xml";
+
+open(TEXTS, ">$filename");
+print TEXTS $xml;
+close(TEXTS);
+
+exit 0;
+
+my $ua = LWP::UserAgent->new;
+
+my $data = {
+        'language' => $locale,
+        'auto_improve_imported' => 1
+    };
+
+my $url = "http://api.crowdin.net/api/project/DIALANG/upload-translation?key=7e060f546f2e7595b12d71b6141e1ad5";
+
+my $response = $ua->post($url,
+                    Content_Type => 'form-data',
+                    Content => [
+                        'language' => $locale,
+                        'auto_improve_imported' => 1,
+                        Filedata => [
+                            undef,
+                            'admin_texts.xml',
+                            Content_Type => 'text/xml',
+                            Content => $xml
+                        ],
+                        submit => 'Submit'
+                    ]);
+
+print $response->content;

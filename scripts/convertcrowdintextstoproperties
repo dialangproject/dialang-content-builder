@@ -1,0 +1,62 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+use DBI;
+use DBD::Pg;
+use Getopt::Long;
+use XML::Simple;
+
+my $locale = undef;
+GetOptions("locale=s" => \$locale);
+
+my $locale_mappings = {
+        'cmn_cn' => 'zh-CN',
+        'dan_dk' => 'da',
+        'deu_de' => 'de',
+        'ell_gr' => 'el',
+        'fin_fi' => 'fi',
+        'fra_fr' => 'fr',
+        'gle_ie' => 'ga-IE',
+        'isl_is' => 'is',
+        'ita_it' => 'it',
+        'nld_nl' => 'nl',
+        'nor_no' => 'no',
+        'por_pt' => 'pt-PT',
+        'spa_es' => 'es-ES',
+        'swe_se' => 'sv-SE'
+    };
+
+if (defined($locale)) {
+    if (!exists($locale_mappings->{$locale})) {
+        print("'$locale' is not a supported locale\n");
+        exit 0;
+    }
+}
+
+my $xmlparser = new XML::Simple;
+
+if (defined($locale)) {
+    do_locale($locale);
+} else {
+    foreach my $locale (keys(%$locale_mappings)) {
+        do_locale($locale);
+    }
+}
+
+sub do_locale {
+
+    my $locale = shift;
+    my $crowdin_locale = $locale_mappings->{$locale};
+    my $inputfilename = "../crowdin-translations/$crowdin_locale/admin_texts.xml";
+    my $outputfilename = "../admin-texts/admintexts_$locale.properties";
+    open(XML, $inputfilename) or die("Failed to open $inputfilename");
+    open(PROPFILE, ">$outputfilename") or die("Failed to open file '$outputfilename'");
+    while (<XML>) {
+        if (m/<string name="([\w_#]*)">(.*)<\/string>/) {
+            print PROPFILE "$1 = $2\n";
+        }
+    }
+    close(PROPFILE);
+    close(XML);
+}

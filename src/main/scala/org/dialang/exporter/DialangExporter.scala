@@ -24,6 +24,7 @@ object DialangExporter extends App {
 
   val adminLanguages = db.getAdminLanguageLocales
 
+  /*
   exportAls()
   exportHelpDialogs(adminLanguages)
   exportLegendPages(adminLanguages)
@@ -33,7 +34,9 @@ object DialangExporter extends App {
   exportVSPTPages(adminLanguages)
   exportVSPTFeedbackPages(adminLanguages)
   exportSAIntroPages(adminLanguages)
+  */
   exportSAPages(adminLanguages)
+  /*
   exportTestIntroPages(adminLanguages)
   exportBasketPages(adminLanguages)
   exportEndOfTestPages(adminLanguages)
@@ -43,6 +46,7 @@ object DialangExporter extends App {
   exportItemReviewPages(adminLanguages)
   exportExplfbPages(adminLanguages)
   exportAdvfbPages(adminLanguages)
+  */
 
   db.cleanup()
 
@@ -1088,12 +1092,12 @@ object DialangExporter extends App {
 
   private def doHow(al:String,alDir:File) {
 
-    val howMap = Map("title" -> db.getTranslation("ExpSomeSkills_Head",al),
-                            "part1" -> db.getTranslation("ExpSomeSkills_Par1",al),
-                            "part2" -> db.getTranslation("ExpSomeSkills_Par2",al)
+    val howMap = Map("title" -> db.getTranslation("ExpSomeSkills_Head", al),
+                            "part1" -> db.getTranslation("ExpSomeSkills_Par1", al),
+                            "part2" -> db.getTranslation("ExpSomeSkills_Par2", al)
                             )
-    val howOutput = engine.layout("src/main/resources/twoparts.mustache",howMap)
-    val howWriter = new OutputStreamWriter(new FileOutputStream(new File(alDir,"how.html")),"UTF-8")
+    val howOutput = engine.layout("src/main/resources/twoparts.mustache", howMap)
+    val howWriter = new OutputStreamWriter(new FileOutputStream(new File(alDir, "how.html")),"UTF-8")
     howWriter.write(howOutput)
     howWriter.close()
 
@@ -1295,7 +1299,7 @@ object DialangExporter extends App {
     writer.close()
   }
 
-  def exportAdvfbPages(adminLanguages:List[String]) {
+  def exportAdvfbPages(adminLanguages: List[String]) {
 
     val advfbDir = new File(websiteDir,"advfb")
     if (!advfbDir.isDirectory) {
@@ -1576,8 +1580,8 @@ object DialangExporter extends App {
             val pleaseRepeat = "'" + db.getTranslation("Utterances_PleaseRepeat",tl) + "'"
             val sayAgain = "'" + db.getTranslation("Utterances_SayAgain",tl) + "'"
             val speakSlowly = "'" + db.getTranslation("Utterances_SpeakSlowly",tl) + "'"
-            val item4 = db.getTranslation("AdvisoryTips_Bullet_#Listening_#A1_#Item4",al)
-                .replaceFirst("<utterance>Utterances_DontUnderstand</utterance>",dontUnderstand)
+            val item4 = db.getTranslation("AdvisoryTips_Bullet_#Listening_#A1_#Item4", al)
+                .replaceFirst("<utterance>Utterances_DontUnderstand</utterance>", dontUnderstand)
                 .replaceFirst("<utterance>Utterances_PleaseRepeat</utterance>",pleaseRepeat)
                 .replaceFirst("<utterance>Utterances_SayAgain</utterance>",sayAgain)
                 .replaceFirst("<utterance>Utterances_SpeakSlowly</utterance>",speakSlowly)

@@ -2,6 +2,9 @@ package org.dialang.exporter.db
 
 import java.sql.{DriverManager,Connection,SQLException,Statement}
 
+import java.io.{FileInputStream, InputStreamReader}
+import java.util.Properties
+
 import scala.collection.JavaConversions._
 import scala.collection.mutable.{ListBuffer,HashMap,ArrayBuffer}
 
@@ -24,10 +27,22 @@ class DB {
   def getConnection = conn
 
   def cleanup() {
+
     if (conn != null) {
       conn.close()
     }
   }
+
+  val adminTexts: Map[String, Properties] = {
+      val builder = Map.newBuilder[String, Properties]
+      for (al <- getAdminLanguageLocales) {
+        // Load the Properties for this locale
+        val props = new Properties
+        props.load(new InputStreamReader(new FileInputStream("admin-texts/admintexts_" + al + ".properties"), "UTF-8"))
+        builder += (al -> props)
+      }
+      builder.result
+    }
 
   def getAdminLanguageLocales = {
     var st:Statement = null
@@ -72,90 +87,72 @@ class DB {
     }
   }
 
-  def getTranslation(key:String,language:String) = {
-    var st:Statement = null
-    try {
-      st = conn.createStatement
-      var rs = st.executeQuery("SELECT value FROM display_texts WHERE key = '" + key + "' and locale = '" + language + "'")
-      var translation = ""
-      if (rs.next) {
-        translation = rs.getString("value")
-      }
-      rs.close
-      translation
-    } finally {
-      if (st != null) {
-        try {
-          st.close
-        } catch { case e:SQLException => }
+  def getTranslation(key: String, language: String) = {
+
+    adminTexts.get(language) match {
+      case Some(p: Properties) => p.getProperty(key)
+      case _ => {
+        // language not found
+        println("Language: '" + language + "' not found.")
+        ""
       }
     }
   }
 
-  def getTranslationLike(key:String,language:String) = {
-    var st:Statement = null
-    try {
-      st = conn.createStatement
-      var rs = st.executeQuery("SELECT value FROM display_texts WHERE key LIKE '" + key + "' and locale = '" + language + "'")
-      var translation = ""
-      if (rs.next) {
-        translation = rs.getString("value")
+  def getTranslationLike(keyExpression: String,language: String) = {
+
+    val parts = keyExpression.split("%")
+
+    adminTexts.get(language) match {
+      case Some(p: Properties) => {
+        p.find(t => t._1.startsWith(parts(0)) && t._1.endsWith(parts(1)) ) match {
+          case Some((k: String, v: String)) => v
+          case _ => {
+            println("No value found for expression: '" + keyExpression + "'.")
+            ""
+          }
+        }
       }
-      rs.close
-      translation
-    } finally {
-      if (st != null) {
-        try {
-          st.close
-        } catch { case e:SQLException => }
+      case _ => {
+        // language not found
+        println("Language: '" + language + "' not found.")
+        ""
       }
     }
   }
 
-  def getSubSkills(adminLanguageCode:String) = {
-    var st:Statement = null
-    try {
-      st = conn.createStatement
-      val rs = st.executeQuery("SELECT * FROM display_texts WHERE key like 'Subskill#%' and locale = '" + adminLanguageCode + "'")
-      val map = new HashMap[String,String]
-      while (rs.next) {
-        val subskillDescription = rs.getString("value")
-        val vk = rs.getString("key")
-        val subskillCode = vk.substring(vk.indexOf("#") + 1)
-        map += (subskillCode.toLowerCase -> subskillDescription)
-      }
+  def getSubSkills(al: String): Map[String,String] = {
 
-      rs.close()
-      map.toMap
-    } finally {
-      if (st != null) {
-        try {
-          st.close()
-        } catch { case e:SQLException => }
+    adminTexts.get(al) match {
+      case Some(p: Properties) => {
+        val matches = p.filter(_._1.startsWith("Subskill#")).toMap
+        matches.map( t => {
+          val subskillCode = t._1.substring(t._1.indexOf("#") + 1).toLowerCase
+          (subskillCode -> t._2)
+        })
+      }
+      case _ => {
+        // language not found
+        println("Language: '" + al + "' not found.")
+        Map()
       }
     }
   }
 
-  def getTestLanguagePrompts(adminLanguageCode:String):Map[String,String] = {
-    var st:Statement = null
-    try {
-      st = conn.createStatement
-      val rs = st.executeQuery("SELECT * FROM display_texts WHERE key like 'ChooseTest_Language%' and locale = '" + adminLanguageCode + "'")
-      val map = new HashMap[String,String]
-      while (rs.next) {
-        val languageDescription = rs.getString("value")
-        val vk = rs.getString("key")
-        val languageCode = vk.substring(vk.indexOf("#") + 1)
-        map += (languageCode.toLowerCase -> languageDescription)
-      }
+  def getTestLanguagePrompts(al: String): Map[String, String] = {
 
-      rs.close
-      map.toMap
-    } finally {
-      if (st != null) {
-        try {
-          st.close
-        } catch { case e:SQLException => }
+    adminTexts.get(al) match {
+      case Some(p: Properties) => {
+        val matches = p.filter(_._1.startsWith("ChooseTest_Language")).toMap
+        matches.map( t => {
+          val languageCode = t._1.substring(t._1.indexOf("#") + 1).toLowerCase
+          (languageCode -> t._2)
+        })
+      }
+      case _ => {
+        // language not found
+        println("Language: '" + al + "' not found.")
+        Map()
       }
     }
   }

@@ -15,6 +15,7 @@ my $locale_mappings = {
         'dan_dk' => 'da',
         'deu_de' => 'de',
         'ell_gr' => 'el',
+        'eng_gb' => 'en',
         'fin_fi' => 'fi',
         'fra_fr' => 'fr',
         'gle_ie' => 'ga-IE',
@@ -52,6 +53,7 @@ sub do_locale {
     my $outputfilename = "../admin-texts/admintexts_$locale.properties";
     open(XML, $inputfilename) or die("Failed to open $inputfilename");
     open(PROPFILE, ">$outputfilename") or die("Failed to open file '$outputfilename'");
+    binmode(PROPFILE);
     while (<XML>) {
         if (m/<string name="([\w_#]*)">(.*)<\/string>/) {
             print PROPFILE "$1 = $2\n";

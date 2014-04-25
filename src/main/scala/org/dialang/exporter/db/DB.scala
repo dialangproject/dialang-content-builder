@@ -75,7 +75,7 @@ class DB {
         languages += Map("locale" -> rs.getString("locale"),"description" -> rs.getString("description"))
       }
       map += ("languages" -> languages)
-      map += ("fundermessage" -> "The DIALANG Project was carried out with the support of the commission of the European Communities within the framework of the SOCRATES programme, LINGUA 2")
+      map += ("fundermessage" -> "The original DIALANG Project was carried out with the support of the commission of the European Communities within the framework of the SOCRATES programme, LINGUA 2")
       rs.close
       map.toMap
     } finally {

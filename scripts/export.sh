@@ -2,7 +2,7 @@
 
 outputdir="/Users/fisha/git/dialang/dialang-web/dialang-content/"
 
-scala -classpath build/classes/main\
+scala -classpath build/libs/dialang-site-builder.jar\
 :/Users/fisha/.m2/repository/org/fusesource/scalate/scalate-core_2.10/1.6.1/scalate-core_2.10-1.6.1.jar\
 :/Users/fisha/.m2/repository/org/fusesource/scalate/scalate-util_2.10/1.6.1/scalate-util_2.10-1.6.1.jar\
 :/Users/fisha/.m2/repository/org/slf4j/slf4j-api/1.6.4/slf4j-api-1.6.4.jar\

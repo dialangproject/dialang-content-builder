@@ -2,6 +2,7 @@
 <div id="prompt">{{{itemtext}}}</div>
 <div id="radios">
     {{#answers}}
-    <input type="radio" name="response" value="{{answerId}}" />{{{text}}}<br />
+    <input type="radio" id="{{answerId}}" name="response" value="{{answerId}}" />
+    <label for="{{answerId}}">{{{text}}}</label><br />
     {{/answers}}
 </div> <!-- /radios -->

@@ -9,7 +9,8 @@
         <div id="prompt">{{{itemtext}}}</div>
         <div id="radios">
             {{#answers}}
-            <input type="radio" basketid="{{basketId}}" name="{{itemId}}-response" value="{{answerId}}" />{{{text}}}<br />
+            <input type="radio" id="{{answerId}}" basketid="{{basketId}}" name="{{itemId}}-response" value="{{answerId}}" />
+            <label for="{{answerId}}">{{{text}}}</label><br />
             {{/answers}}
         </div>
     </div>

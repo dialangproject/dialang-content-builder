@@ -5,6 +5,10 @@ repositories {
     mavenLocal()
 }
 
+tasks.withType(ScalaCompile) {
+    scalaCompileOptions.useAnt = false
+}
+
 dependencies {
     compile 'org.scala-lang:scala-library:2.10.0'
     compile 'org.dialang.common:dialang-common:0.1'

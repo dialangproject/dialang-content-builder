@@ -4,13 +4,18 @@ import org.fusesource.scalate._
 
 import org.dialang.exporter.db.DB
 
-import java.io.{File,FileOutputStream,OutputStreamWriter}
+import java.io.{File,FileOutputStream,FileWriter,OutputStreamWriter}
 import java.util.regex.{Pattern,Matcher}
+import java.util.Properties
 
 import scala.collection.JavaConversions._
-import scala.collection.mutable.{ListBuffer,HashMap,ArrayBuffer}
+import scala.collection.mutable.{ArrayBuffer,HashMap,ListBuffer,StringBuilder}
+
+import org.slf4j.LoggerFactory
 
 object DialangExporter extends App {
+
+  private val logger = LoggerFactory.getLogger(getClass)
 
   Console.setOut(System.out)
 
@@ -24,6 +29,7 @@ object DialangExporter extends App {
 
   val adminLanguages = db.getAdminLanguageLocales
 
+  /*
   exportAls()
   exportHelpDialogs(adminLanguages)
   exportLegendPages(adminLanguages)
@@ -34,8 +40,11 @@ object DialangExporter extends App {
   exportVSPTFeedbackPages(adminLanguages)
   exportSAIntroPages(adminLanguages)
   exportSAPages(adminLanguages)
+  exportKeyboardFragments()
   exportTestIntroPages(adminLanguages)
+  */
   exportBasketPages(adminLanguages)
+  /*
   exportEndOfTestPages(adminLanguages)
   exportFeedbackMenuPages(adminLanguages)
   exportSAFeedbackPages(adminLanguages)
@@ -43,6 +52,7 @@ object DialangExporter extends App {
   exportItemReviewPages(adminLanguages)
   exportExplfbPages(adminLanguages)
   exportAdvfbPages(adminLanguages)
+  */
 
   db.cleanup()
 
@@ -327,7 +337,6 @@ object DialangExporter extends App {
   def exportVSPTPages(adminLanguages: List[String]) {
 
     val vsptDir = new File(websiteDir,"vspt")
-    val testLanguages = db.getTestLanguageCodes
     for (al <- adminLanguages) { 
       val alDir = new File(vsptDir,al)
       if (!alDir.isDirectory) {
@@ -349,7 +358,7 @@ object DialangExporter extends App {
       // Confirmation dialog texts.
       val warningText = db.getTranslation("Dialogues_SkipPlacement",al)
 
-      for (tl <- testLanguages) { 
+      for (tl <- db.getTestLanguageCodes) { 
         val wordList = db.getVSPTWords(tl._1)
 
         val tabList = new ListBuffer[Map[String,String]]
@@ -544,7 +553,7 @@ object DialangExporter extends App {
         val output = engine.layout("src/main/resources/sa.mustache",map)
         val saFile = new OutputStreamWriter(new FileOutputStream(new File(alDir,skill.toLowerCase + ".html")),"UTF-8")
         saFile.write(output)
-        saFile.close
+        saFile.close()
       }
     }
   }
@@ -591,7 +600,27 @@ object DialangExporter extends App {
     }
   }
 
-  def exportBasketPages(adminLanguages:List[String]) {
+  def exportKeyboardFragments() {
+
+    val keyboardDir = new File(websiteDir, "keyboards")
+    if (!keyboardDir.isDirectory) {
+        keyboardDir.mkdirs()
+    }
+
+    // Load the special characters file
+    val specialCharLists = new Properties
+    specialCharLists.load(getClass.getResourceAsStream("/org/dialang/exporter/db/special_chars.properties"))
+
+    for ((locale, csv) <- specialCharLists) {
+      val chars = csv.split(",").map(c => Map("char" -> c))
+      val output = engine.layout("src/main/resources/keyboard.mustache", Map("chars" -> chars))
+      val writer = new FileWriter(new File(keyboardDir, locale + ".html"))
+      writer.write(output)
+      writer.close()
+    }
+  }
+
+  def exportBasketPages(adminLanguages: List[String]) {
 
     val typeMap = Map( "gapdrop" -> "GapDrop",
                         "gaptext" -> "GapText",
@@ -599,16 +628,16 @@ object DialangExporter extends App {
                         "shortanswer" -> "ShortAnswer",
                         "tabbedpane" -> "TabbedMCQ" )
 
-    val basketDir = new File(websiteDir,"baskets")
+    val basketDir = new File(websiteDir, "baskets")
     if (!basketDir.isDirectory) {
         basketDir.mkdirs()
     }
 
     for (al <- adminLanguages) {
-      val nexttooltip = db.getTranslation("Caption_Next",al)
-      val skipforwardtooltip = db.getTranslation("Caption_QuitLangTest",al)
-      val tipOutput = engine.layout("src/main/resources/toolbartooltips.mustache",Map("nexttooltip" -> nexttooltip,"skipforwardtooltip" -> skipforwardtooltip))
-      val tipFile = new OutputStreamWriter(new FileOutputStream(new File(basketDir,al + "-toolbarTooltips.json")),"UTF-8")
+      val nexttooltip = db.getTranslation("Caption_Next", al)
+      val skipforwardtooltip = db.getTranslation("Caption_QuitLangTest", al)
+      val tipOutput = engine.layout("src/main/resources/toolbartooltips.mustache", Map("nexttooltip" -> nexttooltip, "skipforwardtooltip" -> skipforwardtooltip))
+      val tipFile = new OutputStreamWriter(new FileOutputStream(new File(basketDir, al + "-toolbarTooltips.json")), "UTF-8")
       tipFile.write(tipOutput)
       tipFile.close()
     }
@@ -618,18 +647,18 @@ object DialangExporter extends App {
     db.getBaskets.foreach(basket => {
 
       // Render the media markup independently of al
-      val (mediaMarkup,rubricMediaType) = basket.mediatype match { 
+      val (mediaMarkup, rubricMediaType) = basket.mediatype match { 
           case "text/html" => {
-            (engine.layout("src/main/resources/textmedia.mustache",Map("markup" -> basket.textmedia)),"Text")
+            (engine.layout("src/main/resources/textmedia.mustache", Map("markup" -> basket.textmedia)), "Text")
           }
           case "audio/mpeg" => {
-            (engine.layout("src/main/resources/audiomedia.mustache",Map("filename" -> basket.filemedia)),"Sound")
+            (engine.layout("src/main/resources/audiomedia.mustache", Map("filename" -> basket.filemedia)), "Sound")
           }
           case "image/jpeg" => {
-            (engine.layout("src/main/resources/imagemedia.mustache",Map("filename" -> basket.filemedia)),"Image")
+            (engine.layout("src/main/resources/imagemedia.mustache", Map("filename" -> basket.filemedia)), "Image")
           }
           case "none" => {
-            ("","NoMedia")
+            ("", "NoMedia")
           }
         }
 
@@ -680,7 +709,7 @@ object DialangExporter extends App {
 
             val m = itemPlaceholderPattern.matcher(gapText)
 
-            while(m.find()) {
+            while (m.find()) {
               val itemNumber = m.group(1)
               val item = items(itemNumber.toInt)
               val answers = db.getAnswersForItem(item.get("id").get.toInt)
@@ -748,7 +777,7 @@ object DialangExporter extends App {
                         "mediaMarkup" -> mediaMarkup,
                         "responseMarkup" -> responseMarkup,
                         "numberOfItems" -> numberOfItems)
-          val output = engine.layout("src/main/resources/basket.mustache",map)
+          val output = engine.layout("src/main/resources/basket.mustache", map)
           val basketFile = new OutputStreamWriter(new FileOutputStream(new File(alDir,basketId + ".html")),"UTF-8")
           basketFile.write(output)
           basketFile.close
@@ -758,17 +787,17 @@ object DialangExporter extends App {
     }) // basket iterator
   }
 
-  def exportEndOfTestPages(adminLanguages:List[String]) {
+  def exportEndOfTestPages(adminLanguages: List[String]) {
 
-    val endOfTestDir = new File(websiteDir,"endoftest")
+    val endOfTestDir = new File(websiteDir, "endoftest")
     if (!endOfTestDir.isDirectory) {
         endOfTestDir.mkdirs()
     }
 
     for (al <- adminLanguages) { 
-        val title = db.getTranslation("Title_LangTestEnd",al)
-        val text = db.getTranslation("LangTestEnd_Text",al)
-        val nexttooltip = db.getTranslation("Caption_Feedback",al)
+        val title = db.getTranslation("Title_LangTestEnd", al)
+        val text = db.getTranslation("LangTestEnd_Text", al)
+        val nexttooltip = db.getTranslation("Caption_Feedback", al)
 
         val output = engine.layout("src/main/resources/endoftest.mustache",Map("title" -> title,"text" -> text))
         val endOfTestFile = new OutputStreamWriter(new FileOutputStream(new File(endOfTestDir,al + ".html")),"UTF-8")

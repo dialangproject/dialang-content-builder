@@ -10,12 +10,18 @@ import scala.collection.mutable.{ListBuffer,HashMap,ArrayBuffer}
 
 import org.dialang.common.model.{Item, ScoredItem}
 
+import org.slf4j.LoggerFactory
+
 class DB {
+
+  private val logger = LoggerFactory.getLogger(getClass)
 
   Console.setOut(System.err)
 
   Class.forName("org.postgresql.Driver")
   val conn = DriverManager.getConnection("jdbc:postgresql:DIALANG","dialangadmin","dialangadmin")
+
+  val tlForBasketST = conn.prepareStatement("SELECT tl FROM preest_assignments WHERE booklet_id = (SELECT booklet_id FROM booklet_basket WHERE basket_id = ? LIMIT 1)")
 
   val saSkills = List("Reading","Writing","Listening")
 
@@ -354,6 +360,7 @@ class DB {
   }
 
   def getItemLevels = {
+
     var st:Statement = null
     try {
       st = conn.createStatement
@@ -374,6 +381,29 @@ class DB {
         try {
           st.close
         } catch { case e:SQLException => }
+      }
+    }
+  }
+
+  def getTestLanguageForBasket(id: Int): Option[String] = {
+
+    try {
+      tlForBasketST.setInt(1, id)
+      val rs = tlForBasketST.executeQuery
+
+      val tl = {
+          if (rs.next) {
+            Some(rs.getString("tl"))
+          } else {
+            None
+          }
+        }
+      rs.close()
+      tl
+    } catch {
+      case e:Exception => {
+        logger.error("Caught exception while getting test language.", e)
+        None
       }
     }
   }

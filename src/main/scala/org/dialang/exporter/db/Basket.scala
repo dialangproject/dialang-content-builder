@@ -2,7 +2,7 @@ package org.dialang.exporter.db
 
 import java.sql.ResultSet
 
-class Basket(rs:ResultSet) {
+class Basket(rs: ResultSet) {
 
   val id = rs.getInt("id")
   val basketType = rs.getString("type")

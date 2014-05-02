@@ -6,7 +6,7 @@ import org.dialang.exporter.db.DB
 
 import java.io.{File,FileOutputStream,FileWriter,OutputStreamWriter}
 import java.util.regex.{Pattern,Matcher}
-import java.util.Properties
+import java.util.{Date,Properties}
 
 import scala.collection.JavaConversions._
 import scala.collection.mutable.{ArrayBuffer,HashMap,ListBuffer,StringBuilder}
@@ -19,6 +19,8 @@ object DialangExporter extends App {
 
   Console.setOut(System.out)
 
+  val start = (new Date).getTime
+
   val db = new DB
   val engine = new TemplateEngine
   val websiteDir = new File(args(0))
@@ -29,7 +31,6 @@ object DialangExporter extends App {
 
   val adminLanguages = db.getAdminLanguageLocales
 
-  /*
   exportAls()
   exportHelpDialogs(adminLanguages)
   exportLegendPages(adminLanguages)
@@ -42,9 +43,7 @@ object DialangExporter extends App {
   exportSAPages(adminLanguages)
   exportKeyboardFragments()
   exportTestIntroPages(adminLanguages)
-  */
   exportBasketPages(adminLanguages)
-  /*
   exportEndOfTestPages(adminLanguages)
   exportFeedbackMenuPages(adminLanguages)
   exportSAFeedbackPages(adminLanguages)
@@ -52,9 +51,14 @@ object DialangExporter extends App {
   exportItemReviewPages(adminLanguages)
   exportExplfbPages(adminLanguages)
   exportAdvfbPages(adminLanguages)
-  */
 
   db.cleanup()
+
+  val end = (new Date).getTime
+
+  val elapsed = end - start
+
+  println("Export took " + elapsed/1000L + " seconds")
 
   sys.exit()
 
@@ -337,6 +341,12 @@ object DialangExporter extends App {
   def exportVSPTPages(adminLanguages: List[String]) {
 
     val vsptDir = new File(websiteDir,"vspt")
+
+    val testLanguagesAndVSPT: Map[String, List[(String,String,Boolean)]]
+      = (db.getTestLanguageCodes.foldLeft(
+        Map.newBuilder[String, List[(String,String,Boolean)]])
+          ((acc,tl) => acc += ((tl._1, db.getVSPTWords(tl._1))))).result
+
     for (al <- adminLanguages) { 
       val alDir = new File(vsptDir,al)
       if (!alDir.isDirectory) {
@@ -358,8 +368,8 @@ object DialangExporter extends App {
       // Confirmation dialog texts.
       val warningText = db.getTranslation("Dialogues_SkipPlacement",al)
 
-      for (tl <- db.getTestLanguageCodes) { 
-        val wordList = db.getVSPTWords(tl._1)
+      for (tl <- testLanguagesAndVSPT) { 
+        val wordList = tl._2
 
         val tabList = new ListBuffer[Map[String,String]]
         val words = new ListBuffer[Map[String,String]]
@@ -889,12 +899,12 @@ object DialangExporter extends App {
       val accurate = db.getTranslation("SelfAssessFeedback_Match_Par2",al)
       val underEst = db.getTranslation("SelfAssessFeedback_UnderEst_Par2",al)
 
-      levels.foreach(itemLevel => {
+      for (itemLevel <- levels) {
         val itemLevelDir = new File(alDir,itemLevel)
         if (!itemLevelDir.isDirectory) {
           itemLevelDir.mkdir()
         }
-        levels.foreach(saLevel => {
+        for (saLevel <- levels) {
           val partOne = {
               if (saLevel != itemLevel) {
                 db.getTranslationLike("SelfAssessFeedback%Par1#" + itemLevel + "#" + saLevel, al)
@@ -922,8 +932,8 @@ object DialangExporter extends App {
           val saFeedbackFile = new OutputStreamWriter(new FileOutputStream(new File(itemLevelDir,saLevel + ".html")),"UTF-8")
           saFeedbackFile.write(output)
           saFeedbackFile.close
-        })
-      })
+        }
+      }
     }
   }
 
@@ -964,7 +974,7 @@ object DialangExporter extends App {
             ((l + "Explanation",text))
           })
 
-        levels.foreach(itemLevel => {
+        for (itemLevel <- levels) {
           val text = db.getTranslation("TestResults_Text#" + skill + "#" + itemLevel,al)
           val map = Map("al" -> al,
                       "title" -> title,
@@ -974,7 +984,7 @@ object DialangExporter extends App {
           val testresultsFile = new OutputStreamWriter(new FileOutputStream(new File(skillDir,itemLevel + ".html")),"UTF-8")
           testresultsFile.write(output)
           testresultsFile.close()
-        })
+        }
       }
     }
   }
@@ -991,13 +1001,10 @@ object DialangExporter extends App {
       val title = db.getTranslation("Title_ItemReview",al)
       val text = db.getTranslation("ItemReview_Text",al)
       val backtooltip = db.getTranslation("Caption_BacktoFeedback",al)
-      val subskills = {
-          val tmp = new ListBuffer[Map[String,String]]
-          db.getSubSkills(al).foreach(t => {
-              tmp += Map("code" -> t._1,"description" -> t._2)
-          })
-          tmp.toList
-        }
+      val subskills = 
+        (db.getSubSkills(al).foldLeft(List.newBuilder[Map[String,String]])( (acc,curr) => {
+              acc += Map("code" -> curr._1,"description" -> curr._2)
+          })).result
       val map = Map("title" -> title,"text" -> text,"subskills" -> subskills)
       val output = engine.layout("src/main/resources/itemreviewwrapper.mustache",map)
       val itemreviewFile = new OutputStreamWriter(new FileOutputStream(new File(itemreviewDir,al + ".html")),"UTF-8")
@@ -1076,7 +1083,7 @@ object DialangExporter extends App {
     }
   }
 
-  private def doHowOften(al:String,alDir:File) {
+  private def doHowOften(al:String, alDir:File) {
 
     val title = db.getTranslation("Explanatory_Main_Menu_HowOften",al)
     val howoften1 = db.getTranslation("ExpHowOften_Par1",al)
@@ -1331,6 +1338,8 @@ object DialangExporter extends App {
         advfbDir.mkdirs()
     }
 
+    val tls = db.getTestLanguageCodes
+
     for (al <- adminLanguages) {
 
       val backtooltip = db.getTranslation("Caption_BacktoFeedback",al)
@@ -1473,7 +1482,7 @@ object DialangExporter extends App {
         c2Writer.write(c2Output)
         c2Writer.close()
 
-        for (t <- db.getTestLanguageCodes) {
+        for (t <- tls) {
           val tl = t._1
           val twoLetterCode = t._2
 

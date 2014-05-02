@@ -18,29 +18,41 @@
                         <tbody>
                             {{#tab}}
                             <tr>
-                                <td><input class="valid-button word {{#isCorrect}}{{id1}}_valid{{/isCorrect}}" id="{{id1}}_correct" type="radio" name="word:{{id1}}" value="valid"/>
-                                    <label for="{{id1}}_correct"><img src="/images/true.gif"/></label>
-                                    <input class="invalid-button word {{#isCorrect}}{{id1}}_invalid{{/isCorrect}}" id="{{id1}}_incorrect" type="radio" name="word:{{id1}}" value="invalid"/>
-                                    <label for="{{id1}}_incorrect"><img src="/images/false.gif"/></label>
+                                <td><label for="{{id1}}_correct">
+                                        <input class="valid-button word {{#isCorrect}}{{id1}}_valid{{/isCorrect}}" id="{{id1}}_correct" type="radio" name="word:{{id1}}" value="valid"/>
+                                        <img id="{{id1}}_correct_image" src="/images/true.gif" />
+                                    </label>
+                                    <label for="{{id1}}_incorrect">
+                                        <input class="invalid-button word {{#isCorrect}}{{id1}}_invalid{{/isCorrect}}" id="{{id1}}_incorrect" type="radio" name="word:{{id1}}" value="invalid"/>
+                                        <img id="{{id1}}_incorrect_image" src="/images/false.gif" />
+                                    </label>
                                     {{word1}}
                                 </td>
-                                <td><input class="valid-button word {{#isCorrect}}{{id2}}_valid{{/isCorrect}}" id="{{id2}}_correct" type="radio" name="word:{{id2}}" value="valid"/>
-                                    <label for="{{id2}}_correct"><img src="/images/true.gif"/></label>
-                                    <input class="invalid-button word {{#isCorrect}}{{id2}}_invalid{{/isCorrect}}" id="{{id2}}_incorrect" type="radio" name="word:{{id2}}" value="invalid"/>
-                                    <label for="{{id2}}_incorrect"><img src="/images/false.gif"/></label>
+                                <td><label for="{{id2}}_correct">
+                                        <input class="valid-button word {{#isCorrect}}{{id2}}_valid{{/isCorrect}}" id="{{id2}}_correct" type="radio" name="word:{{id2}}" value="valid"/>
+                                        <img id="{{id2}}_correct_image" src="/images/true.gif" />
+                                    </label>
+                                    <label for="{{id2}}_incorrect">
+                                        <input class="invalid-button word {{#isCorrect}}{{id2}}_invalid{{/isCorrect}}" id="{{id2}}_incorrect" type="radio" name="word:{{id2}}" value="invalid"/>
+                                        <img id="{{id2}}_incorrect_image" src="/images/false.gif" />
+                                    </label>
                                     {{word2}}
                                 </td>
-                                <td><input class="valid-button word {{#isCorrect}}{{id3}}_valid{{/isCorrect}}" id="{{id3}}_correct" type="radio" name="word:{{id3}}" value="valid"/>
-                                    <label for="{{id3}}_correct"><img src="/images/true.gif"/></label>
-                                    <input class="invalid-button word {{#isCorrect}}{{id3}}_invalid{{/isCorrect}}" id="{{id3}}_incorrect" type="radio" name="word:{{id3}}" value="invalid"/>
-                                    <label for="{{id3}}_incorrect"><img src="/images/false.gif"/></label>
+                                <td><label for="{{id3}}_correct">
+                                        <input class="valid-button word {{#isCorrect}}{{id3}}_valid{{/isCorrect}}" id="{{id3}}_correct" type="radio" name="word:{{id3}}" value="valid"/>
+                                        <img id="{{id3}}_correct_image" src="/images/true.gif" />
+                                    </label>
+                                    <label for="{{id3}}_incorrect">
+                                        <input class="invalid-button word {{#isCorrect}}{{id3}}_invalid{{/isCorrect}}" id="{{id3}}_incorrect" type="radio" name="word:{{id3}}" value="invalid"/>
+                                        <img id="{{id3}}_incorrect_image" src="/images/false.gif" />
+                                    </label>
                                     {{word3}}
                                 </td>
                             </tr>
                             {{/tab}}
                         </tbody>
                     </table>
-                    <input id="send-button" type="button" value="{{submit}}" disabled/>
+                    <input id="vspt-send-button" type="button" value="{{submit}}" disabled/>
                 </form>
                 <div id="confirm-send-dialog" class="dialang-dialog" title="{{confirmationTitle}}">
                     <p>{{confirmsendquestion}}</p>

@@ -21,7 +21,18 @@ class DB {
   Class.forName("org.postgresql.Driver")
   val conn = DriverManager.getConnection("jdbc:postgresql:DIALANG","dialangadmin","dialangadmin")
 
+  val adminLocalesST= conn.prepareStatement("SELECT locale FROM admin_languages")
+  val adminLanguagesST = conn.prepareStatement("SELECT * FROM admin_languages")
   val tlForBasketST = conn.prepareStatement("SELECT tl FROM preest_assignments WHERE booklet_id = (SELECT booklet_id FROM booklet_basket WHERE basket_id = ? LIMIT 1)")
+  val testLanguagesST = conn.prepareStatement("SELECT locale,two_letter_code FROM test_languages")
+  val vsptWordST = conn.prepareStatement("SELECT word,words.word_id AS id,valid FROM vsp_test_word,words WHERE locale = ? AND vsp_test_word.word_id = words.word_id")
+  val saStatementsST= conn.prepareStatement("SELECT * FROM sa_statements WHERE locale = ? AND skill = ? ORDER BY wid")
+  val basketsST = conn.prepareStatement("SELECT * FROM baskets")
+  val childBasketsST = conn.prepareStatement("SELECT * FROM baskets WHERE parent_testlet_id = ?")
+  val basketItemsST = conn.prepareStatement("SELECT i.*,bi.position FROM baskets b,basket_item bi,items i WHERE b.id = ? AND b.id = bi.basket_id AND bi.item_id = i.id ORDER BY position")
+  val itemAnswersST = conn.prepareStatement("SELECT * FROM answers WHERE item_id = ?")
+  val vspLevelsST = conn.prepareStatement("SELECT level FROM vsp_levels")
+  val itemLevelsST = conn.prepareStatement("SELECT level FROM item_levels")
 
   val saSkills = List("Reading","Writing","Listening")
 
@@ -29,10 +40,22 @@ class DB {
 
   val advfbSkills = List("Reading","Writing","Listening")
 
-  // TODO: This should not be needed. All db access should happen in here.
   def getConnection = conn
 
   def cleanup() {
+
+    adminLocalesST.close()
+    adminLanguagesST.close()
+    tlForBasketST.close()
+    testLanguagesST.close()
+    vsptWordST.close()
+    saStatementsST.close()
+    basketsST.close()
+    childBasketsST.close()
+    basketItemsST.close()
+    itemAnswersST.close()
+    vspLevelsST.close()
+    itemLevelsST.close()
 
     if (conn != null) {
       conn.close()
@@ -51,46 +74,28 @@ class DB {
     }
 
   def getAdminLanguageLocales = {
-    var st:Statement = null
-    try {
-      st = conn.createStatement
-      val rs = st.executeQuery("SELECT locale FROM admin_languages")
-      val locales = new ListBuffer[String]
-      while (rs.next) {
-        locales += rs.getString("locale")
-      }
-      rs.close
-      locales.toList
-    } finally {
-      if (st != null) {
-        try {
-          st.close
-        } catch { case e:SQLException => }
-      }
+
+    val rs = adminLocalesST.executeQuery
+    val locales = new ListBuffer[String]
+    while (rs.next) {
+      locales += rs.getString("locale")
     }
+    rs.close
+    locales.toList
   }
 
   def getAdminLanguages = {
-    var st:Statement = null
-    try {
-      st = conn.createStatement
-      val rs = st.executeQuery("SELECT * FROM admin_languages")
-      val map = new HashMap[String,Any]
-      val languages = new ListBuffer[Map[String,String]]
-      while (rs.next) {
-        languages += Map("locale" -> rs.getString("locale"),"description" -> rs.getString("description"))
-      }
-      map += ("languages" -> languages)
-      map += ("fundermessage" -> "The original DIALANG Project was carried out with the support of the commission of the European Communities within the framework of the SOCRATES programme, LINGUA 2")
-      rs.close
-      map.toMap
-    } finally {
-      if (st != null) {
-        try {
-          st.close
-        } catch { case e:SQLException => }
-      }
+
+    val rs = adminLanguagesST.executeQuery
+    val map = new HashMap[String,Any]
+    val languages = new ListBuffer[Map[String,String]]
+    while (rs.next) {
+      languages += Map("locale" -> rs.getString("locale"),"description" -> rs.getString("description"))
     }
+    map += ("languages" -> languages)
+    map += ("fundermessage" -> "The original DIALANG Project was carried out with the support of the commission of the European Communities within the framework of the SOCRATES programme, LINGUA 2")
+    rs.close
+    map.toMap
   }
 
   def getTranslation(key: String, language: String) = {
@@ -163,226 +168,145 @@ class DB {
     }
   }
 
-  def getTestLanguageCodes:List[Tuple2[String,String]] = {
-    var st:Statement = null
-    try {
-      st = conn.createStatement
-      val rs = st.executeQuery("SELECT locale,two_letter_code FROM test_languages")
-      val list = new ListBuffer[Tuple2[String,String]]
-      while (rs.next) {
-        list += ((rs.getString("locale"),rs.getString("two_letter_code")))
-      }
-      rs.close
-      list.toList
-    } finally {
-      if (st != null) {
-        try {
-          st.close
-        } catch { case e:SQLException => }
-      }
+  def getTestLanguageCodes: List[(String, String)] = {
+
+    val rs = testLanguagesST.executeQuery
+    val list = new ListBuffer[Tuple2[String, String]]
+    while (rs.next) {
+      list += ((rs.getString("locale"), rs.getString("two_letter_code")))
     }
+    rs.close
+    list.toList
   }
 
-  def getVSPTWords(tl: String) = {
-    var st:Statement = null
-    try {
-      st = conn.createStatement
-      val rs = st.executeQuery("SELECT word,words.word_id AS id,valid FROM vsp_test_word,words WHERE locale = '" + tl + "' AND vsp_test_word.word_id = words.word_id")
+  def getVSPTWords(tl: String): List[(String, String, Boolean)] = {
 
-      val list = new ListBuffer[(String,String,Boolean)]
-      while (rs.next) {
-        list += ((rs.getString("word"),rs.getString("id"),rs.getBoolean("valid")))
-      }
+    vsptWordST.setString(1 , tl)
+    val rs = vsptWordST.executeQuery
 
-      rs.close()
-
-      list.toList
-    } finally {
-      if (st != null) {
-        try {
-          st.close
-        } catch { case e:SQLException => }
-      }
+    val list = new ListBuffer[(String,String,Boolean)]
+    while (rs.next) {
+      list += ((rs.getString("word"),rs.getString("id"),rs.getBoolean("valid")))
     }
+
+    rs.close()
+
+    list.toList
   }
 
   def getSAStatements(al: String, skill: String) = {
 
-    var st:Statement = null
-    try {
-      st = conn.createStatement
-      val rs = st.executeQuery("SELECT * FROM sa_statements WHERE locale = '" + al + "' AND skill = '" + skill + "' ORDER BY wid")
+    saStatementsST.setString(1, al)
+    saStatementsST.setString(2, skill)
+    val rs = saStatementsST.executeQuery
 
-      val list = new ListBuffer[Map[String,String]]
-      while (rs.next) {
-        list += Map("wid" -> rs.getString("wid"), "statement" -> rs.getString("statement"))
-      }
-
-      rs.close()
-      st.close()
-
-      list.toList
-    } finally {
-      if (st != null) {
-        try {
-          st.close
-        } catch { case e:SQLException => }
-      }
+    val list = new ListBuffer[Map[String,String]]
+    while (rs.next) {
+      list += Map("wid" -> rs.getString("wid"), "statement" -> rs.getString("statement"))
     }
+
+    rs.close()
+    list.toList
   }
 
   def getBaskets = {
-    var st:Statement = null
-    try {
-      st = conn.createStatement
-      val rs = st.executeQuery("SELECT * FROM baskets")
-      //val rs = st.executeQuery("SELECT * FROM baskets WHERE type = 'tabbedpane'")
 
-      val list = new ListBuffer[Basket]
+    val rs = basketsST.executeQuery
 
-      while (rs.next) {
-        list += new Basket(rs)
-      }
+    val list = new ListBuffer[Basket]
 
-      rs.close()
-
-      list.toList
-    } finally {
-      if (st != null) {
-        try {
-          st.close
-        } catch { case e:SQLException => }
-      }
+    while (rs.next) {
+      list += new Basket(rs)
     }
+
+    rs.close()
+
+    list.toList
   }
 
-  def getChildBaskets(testletId:Int) = {
-    var st:Statement = null
-    try {
-      st = conn.createStatement
-      val rs = st.executeQuery("SELECT * FROM baskets WHERE parent_testlet_id = " + testletId)
+  def getChildBaskets(testletId: Int) = {
 
-      val list = new ListBuffer[Basket]
+    childBasketsST.setInt(1, testletId)
 
-      while (rs.next) {
-        list += new Basket(rs)
-      }
+    val rs = childBasketsST.executeQuery
 
-      rs.close()
+    val list = new ListBuffer[Basket]
 
-      list.toList
-    } finally {
-      if (st != null) {
-        try {
-          st.close
-        } catch { case e:SQLException => }
-      }
+    while (rs.next) {
+      list += new Basket(rs)
     }
+
+    rs.close()
+
+    list.toList
   }
 
-  def getItemsForBasket(basketId:Int) = {
-    var st:Statement = null
-    try {
-      st = conn.createStatement
-      val rs = st.executeQuery("SELECT i.*,bi.position FROM baskets b,basket_item bi,items i WHERE b.id = " + basketId + " AND b.id = bi.basket_id AND bi.item_id = i.id ORDER BY position")
+  def getItemsForBasket(basketId: Int) = {
 
-      val list = new ListBuffer[ScoredItem]
+    basketItemsST.setInt(1, basketId)
 
-      while (rs.next) {
-        val item = new ScoredItem(new Item(rs))
-        item.positionInBasket = rs.getInt("position")
-        list += item
-      }
+    val rs = basketItemsST.executeQuery
 
-      rs.close()
-      st.close()
+    val list = new ListBuffer[ScoredItem]
 
-      list.toList
-    } finally {
-      if (st != null) {
-        try {
-          st.close
-        } catch { case e:SQLException => }
-      }
+    while (rs.next) {
+      val item = new ScoredItem(new Item(rs))
+      item.positionInBasket = rs.getInt("position")
+      list += item
     }
+
+    rs.close()
+
+    list.toList
   }
 
-  def getAnswersForItem(itemId:Int) = {
-    var st:Statement = null
-    try {
-      st = conn.createStatement
-      val rs = st.executeQuery("SELECT * FROM answers WHERE item_id = " + itemId)
+  def getAnswersForItem(itemId: Int) = {
 
-      val list = new ListBuffer[Map[String,String]]
+    itemAnswersST.setInt(1, itemId)
+    val rs = itemAnswersST.executeQuery
 
-      while (rs.next) {
-        list += Map( "answerId" -> rs.getInt("id").toString,
-                    "item_id" -> rs.getInt("item_id").toString,
-                    "text" -> rs.getString("text"),
-                    "correct" -> rs.getInt("correct").toString )
-      }
+    val list = new ListBuffer[Map[String,String]]
 
-      rs.close()
-
-      list.toList
-    } finally {
-      if (st != null) {
-        try {
-          st.close
-        } catch { case e:SQLException => }
-      }
+    while (rs.next) {
+      list += Map( "answerId" -> rs.getInt("id").toString,
+                  "item_id" -> rs.getInt("item_id").toString,
+                  "text" -> rs.getString("text"),
+                  "correct" -> rs.getInt("correct").toString )
     }
+
+    rs.close()
+
+    list.toList
   }
 
   def getVSPLevels = {
-    var st:Statement = null
-    try {
-      st = conn.createStatement
 
-      val rs = st.executeQuery("SELECT level FROM vsp_levels")
+    val rs = vspLevelsST.executeQuery
 
-      val list = new ListBuffer[String]
+    val list = new ListBuffer[String]
 
-      while (rs.next) {
-        list += rs.getString(1)
-      }
-
-      rs.close()
-
-      list.toList
-    } finally {
-      if (st != null) {
-        try {
-          st.close
-        } catch { case e:SQLException => }
-      }
+    while (rs.next) {
+      list += rs.getString(1)
     }
+
+    rs.close()
+
+    list.toList
   }
 
   def getItemLevels = {
 
-    var st:Statement = null
-    try {
-      st = conn.createStatement
+    val rs = itemLevelsST.executeQuery
 
-      val rs = st.executeQuery("SELECT level FROM item_levels")
+    val list = new ListBuffer[String]
 
-      val list = new ListBuffer[String]
-
-      while (rs.next) {
-        list += rs.getString(1)
-      }
-
-      rs.close()
-
-      list.toList
-    } finally {
-      if (st != null) {
-        try {
-          st.close
-        } catch { case e:SQLException => }
-      }
+    while (rs.next) {
+      list += rs.getString(1)
     }
+
+    rs.close()
+
+    list.toList
   }
 
   def getTestLanguageForBasket(id: Int): Option[String] = {

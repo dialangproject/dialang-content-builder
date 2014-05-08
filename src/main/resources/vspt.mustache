@@ -14,11 +14,10 @@
                     <input type="hidden" name="tl" value="{{tl}}"/>
                     <input type="hidden" id="cheatlevel" name="cheatlevel" value="zero"/>
                     <!--input type="hidden" name="skill" value="{{skill}}"/-->
-                    <table id="vspt-table" cols="3">
-                        <tbody>
+                    <div id="vspt-table">
                             {{#tab}}
-                            <tr>
-                                <td><label for="{{id1}}_correct">
+                            <div>
+                                <div><label for="{{id1}}_correct">
                                         <input class="valid-button word {{#isCorrect}}{{id1}}_valid{{/isCorrect}}" id="{{id1}}_correct" type="radio" name="word:{{id1}}" value="valid"/>
                                         <img id="{{id1}}_correct_image" src="/images/true.gif" />
                                     </label>
@@ -27,8 +26,8 @@
                                         <img id="{{id1}}_incorrect_image" src="/images/false.gif" />
                                     </label>
                                     {{word1}}
-                                </td>
-                                <td><label for="{{id2}}_correct">
+                                </div>
+                                <div><label for="{{id2}}_correct">
                                         <input class="valid-button word {{#isCorrect}}{{id2}}_valid{{/isCorrect}}" id="{{id2}}_correct" type="radio" name="word:{{id2}}" value="valid"/>
                                         <img id="{{id2}}_correct_image" src="/images/true.gif" />
                                     </label>
@@ -37,8 +36,8 @@
                                         <img id="{{id2}}_incorrect_image" src="/images/false.gif" />
                                     </label>
                                     {{word2}}
-                                </td>
-                                <td><label for="{{id3}}_correct">
+                                </div>
+                                <div><label for="{{id3}}_correct">
                                         <input class="valid-button word {{#isCorrect}}{{id3}}_valid{{/isCorrect}}" id="{{id3}}_correct" type="radio" name="word:{{id3}}" value="valid"/>
                                         <img id="{{id3}}_correct_image" src="/images/true.gif" />
                                     </label>
@@ -47,38 +46,37 @@
                                         <img id="{{id3}}_incorrect_image" src="/images/false.gif" />
                                     </label>
                                     {{word3}}
-                                </td>
-                            </tr>
+                                </div>
+                            </div>
                             {{/tab}}
-                        </tbody>
-                    </table>
+                    </div>
                     <input id="vspt-send-button" type="button" value="{{submit}}" disabled/>
                 </form>
                 <div id="confirm-send-dialog" class="dialang-dialog" title="{{confirmationTitle}}">
-                    <p>{{confirmsendquestion}}</p>
-                    <table cols="2">
-                        <tbody>
-                            <tr>
-                                <td align="center"><button id="confirm-send-yes"><img src="/images/yes.gif"/></button></td>
-                                <td align="center"><button id="confirm-send-no"><img src="/images/no.gif" width="58" height="58"/></button></td>
-                            </tr>
-                            <tr>
-                                <td align="center">{{yes}}</td><td align="center">{{no}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="dialang-dialog-content">
+                        <p>{{confirmsendquestion}}</p>
+                        <div id="confirmation-button-table">
+                                <div>
+                                    <div><button id="confirm-send-yes"><img src="/images/yes.gif"/></button></div>
+                                    <div><button id="confirm-send-no"><img src="/images/no.gif" width="58" height="58"/></button></div>
+                                </div>
+                                <div>
+                                    <div>{{yes}}</div><div>{{no}}</div>
+                                </div>
+                        </div>
+                    </div>
                 </div> <!-- /confirm-send-dialog -->
                 <div id="confirm-skip-dialog" class="dialang-dialog" title="{{confirmationTitle}}">
-                    <p>{{{warningText}}}</p>
-                    <table cols="2">
-                        <tbody>
-                            <tr>
-                                <td align="center"><button id="confirm-skip-yes"><img src="/images/yes.gif"/></button></td>
-                                <td align="center"><button id="confirm-skip-no"><img src="/images/no.gif" width="58" height="58"/></button></td>
-                            </tr>
-                            <tr>
-                                <td align="center">{{yes}}</td><td align="center">{{no}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="dialang-dialog-content">
+                        <p>{{{warningText}}}</p>
+                        <div id="confirmation-button-table">
+                            <div>
+                                <div><button id="confirm-skip-yes"><img src="/images/yes.gif"/></button></div>
+                                <div><button id="confirm-skip-no"><img src="/images/no.gif" width="58" height="58"/></button></div>
+                            </div>
+                            <div>
+                                <div>{{yes}}</div><div>{{no}}</div>
+                            </div>
+                        </div>
+                    </div>
                 </div> <!-- /confirm-skip-dialog -->

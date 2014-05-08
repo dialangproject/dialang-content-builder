@@ -55,7 +55,7 @@ sub do_locale {
     open(PROPFILE, ">$outputfilename") or die("Failed to open file '$outputfilename'");
     binmode(PROPFILE);
     while (<XML>) {
-        if (m/<string name="([\w_#]*)">(.*)<\/string>/) {
+        if (m/<string name="([\w_#\.]*)">(.*)<\/string>/) {
             print PROPFILE "$1 = $2\n";
         }
     }

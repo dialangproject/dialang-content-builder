@@ -31,21 +31,24 @@
                 </div>
 
                 <div id="disclaimer-dialog" title="{{disclaimerTitle}}">
-                    <div id="disclaimer-text">{{{disclaimer}}}</div>
-                    <div class="dialog-button-panel"><button id="disclaimer-button"><img src="/images/yes.gif"/></button><br />{{ok}}</div>
+                    <div class="dialang-dialog-content">
+                        <div id="disclaimer-text">{{{disclaimer}}}</div>
+                        <div class="dialog-button-panel"><button id="disclaimer-button"><img src="/images/yes.gif"/></button><br />{{ok}}</div>
+                    </div>
                 </div> <!-- /disclaimer-dialog -->
-                <div id="confirmation-dialog" title="{{confirmationTitle}}" class="dialang-dialog">
-                    <p>{{testChosen}}</p>
-                    <p id="confirmation_langskill"></p>
-                    <table cols="2">
-                        <tbody>
-                            <tr>
-                                <td align="center"><button id="confirmation_yes"><img src="/images/yes.gif"/></button></td>
-                                <td align="center"><button id="confirmation_no"><img src="/images/no.gif" width="58" height="58"/></button></td>
-                            </tr>
-                            <tr>
-                                <td align="center">{{yes}}</td><td align="center">{{no}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+
+                <div id="confirm-dialog" title="{{confirmationTitle}}" class="dialang-dialog">
+                    <div class="dialang-dialog-content">
+                        <p>{{testChosen}}</p>
+                        <p id="confirmation_langskill"></p>
+                        <div id="confirmation-button-table">
+                            <div>
+                                <div align="center"><button id="confirm-yes"><img src="/images/yes.gif"/></button></div>
+                                <div align="center"><button id="confirm-no"><img src="/images/no.gif" width="58" height="58"/></button></div>
+                            </div>
+                            <div>
+                                <div align="center">{{yes}}</div><div align="center">{{no}}</div>
+                            </div>
+                        </div>
+                    </div>
                 </div> <!-- /confirmation-dialog -->

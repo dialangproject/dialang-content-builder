@@ -989,7 +989,7 @@ object DialangExporter extends App {
     }
   }
 
-  def exportItemReviewPages(adminLanguages:List[String]) {
+  def exportItemReviewPages(adminLanguages: List[String]) {
 
     val itemreviewDir = new File(websiteDir,"itemreview")
     if (!itemreviewDir.isDirectory) {

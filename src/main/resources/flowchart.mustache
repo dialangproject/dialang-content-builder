@@ -3,26 +3,26 @@
                 <div id="procedure-title">{{{procedureTitle}}}</div>
                 <p id="procedure-text">{{{procedureText}}}</p>
                 <map name="flowchartmap">
-                    <area shape="rect" coords="20,0,104,126" href="#" onclick="dialang.launchFlowchartDialog('1');" title="{{stage1Title}}" alt="{{stage1}}">
-                    <area shape="rect" coords="110,0,200,126" href="#" onclick="dialang.launchFlowchartDialog('2');" title="{{stage2Title}}" alt="{{stage2}}">
-                    <area shape="rect" coords="206,0,290,126" href="#" onclick="dialang.launchFlowchartDialog('3');" title="{{stage3Title}}" alt="{{stage3}}">
-                    <area shape="rect" coords="296,0,386,126" href="#" onclick="dialang.launchFlowchartDialog('4');" title="{{stage4Title}}" alt="{{stage4}}">
-                    <area shape="rect" coords="392,0,482,126" href="#" onclick="dialang.launchFlowchartDialog('5');" title="{{stage5Title}}" alt="{{stage5}}">
+                    <area shape="rect" coords="20,0,68,41" href="#" onclick="dialang.launchFlowchartDialog('1');" title="{{stage1Title}}" alt="{{stage1}}">
+                    <area shape="rect" coords="83,0,131,41" href="#" onclick="dialang.launchFlowchartDialog('2');" title="{{stage2Title}}" alt="{{stage2}}">
+                    <area shape="rect" coords="148,0,196,41" href="#" onclick="dialang.launchFlowchartDialog('3');" title="{{stage3Title}}" alt="{{stage3}}">
+                    <area shape="rect" coords="213,0,262,41" href="#" onclick="dialang.launchFlowchartDialog('4');" title="{{stage4Title}}" alt="{{stage4}}">
+                    <area shape="rect" coords="281,0,329,41" href="#" onclick="dialang.launchFlowchartDialog('5');" title="{{stage5Title}}" alt="{{stage5}}">
                 </map>
                 <div><img src="/images/flowchart.gif" usemap="#flowchartmap"/></div> 
                 <div class="bottom-margin"></div>
-                <div id="dialog1" class="dialog" title="{{stage1Title}}">
-                    <p>{{{stage1}}}</p>
+                <div id="dialog1" class="dialog flowchart-dialog" title="{{stage1Title}}">
+                    <div class="dialang-dialog-content">{{{stage1}}}</div>
                 </div>
-                <div id="dialog2" class="dialog" title="{{stage2Title}}">
-                    <p>{{{stage2}}}</p>
+                <div id="dialog2" class="dialog flowchart-dialog" title="{{stage2Title}}">
+                    <div class="dialang-dialog-content">{{{stage2}}}</div>
                 </div>
-                <div id="dialog3" class="dialog" title="{{stage3Title}}">
-                    <p>{{{stage3}}}</p>
+                <div id="dialog3" class="dialog flowchart-dialog" title="{{stage3Title}}">
+                    <div class="dialang-dialog-content">{{{stage3}}}</div>
                 </div>
-                <div id="dialog4" class="dialog" title="{{stage4Title}}">
-                    <p>{{{stage4}}}</p>
+                <div id="dialog4" class="dialog flowchart-dialog" title="{{stage4Title}}">
+                    <div class="dialang-dialog-content">{{{stage4}}}</div>
                 </div>
-                <div id="dialog5" class="dialog" title="{{stage5Title}}">
-                    <p>{{{stage5}}}</p>
+                <div id="dialog5" class="dialog flowchart-dialog" title="{{stage5Title}}">
+                    <div class="dialang-dialog-content">{{{stage5}}}</div>
                 </div>

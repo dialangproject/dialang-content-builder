@@ -18,6 +18,7 @@ my $locale_mappings = {
         'fra_fr' => 'fr',
         'deu_de' => 'de',
         'isl_is' => 'is',
+        'ind_id' => 'id',
         'gle_ie' => 'ga-IE',
         'ita_it' => 'it',
         'nor_no' => 'no',
@@ -37,7 +38,9 @@ my $xmlparser = new XML::Simple(KeyAttr => 'name');
 
 my $dbh = DBI->connect("dbi:Pg:dbname=DIALANG", 'dialangadmin', 'dialangadmin', {AutoCommit => 1});
 
-my $sth = $dbh->prepare("UPDATE sa_statements SET statement = ? WHERE locale = ? AND skill = ? AND wid = ?");
+my $insert_sth = $dbh->prepare("INSERT INTO sa_statements (locale,skill,wid,statement) VALUES(?,?,?,?)");
+my $update_sth = $dbh->prepare("UPDATE sa_statements SET statement = ? WHERE locale = ? AND skill = ? AND wid = ?");
+my $exists_sth = $dbh->prepare("SELECT * FROM sa_statements WHERE locale = ? AND skill = ? AND wid = ?");
 
 if (defined($locale)) {
     my $crowdin_locale = $locale_mappings->{$locale};
@@ -48,7 +51,17 @@ if (defined($locale)) {
         foreach my $wid (keys(%$statements)) {
             my $statement = $statements->{$wid}->{'content'};
             #print "$wid => " . $statements->{$wid}->{'content'} . "\n";
-            $sth->execute($statement, $locale, $skill, $wid);
+
+            $exists_sth->execute($locale, $skill, $wid);
+            my @current = $exists_sth->fetchrow_array;
+
+            if (scalar @current > 0) {
+                print "There are current statements for locale '$locale'. They will be updated.\n";
+                $update_sth->execute($statement, $locale, $skill, $wid);
+            } else {
+                print "No current statements for locale '$locale'. They will be inserted.\n";
+                $insert_sth->execute($locale, $skill, $wid, $statement);
+            }
         }
     }
 }

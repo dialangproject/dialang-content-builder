@@ -24,6 +24,7 @@ my $locale_mappings = {
         'fin_fi' => 'fi',
         'fra_fr' => 'fr',
         'gle_ie' => 'ga-IE',
+        'ind_id' => 'id',
         'isl_is' => 'is',
         'ita_it' => 'it',
         'nld_nl' => 'nl',

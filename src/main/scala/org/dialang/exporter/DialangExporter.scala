@@ -842,7 +842,6 @@ object DialangExporter extends App {
       val restartText = db.getTranslation("Dialogues_QuitFeedback",al)
       val yes = db.getTranslation("Caption_Yes",al)
       val no = db.getTranslation("Caption_No",al)
-      val quit = db.getTranslation("Caption_Quit",al)
       val skipforwardtooltip = db.getTranslation("Caption_ChooseAnotherTest",al)
       val map = Map("al" -> al,
                       "title" -> title,
@@ -857,8 +856,7 @@ object DialangExporter extends App {
                       "aboutSAText" -> aboutSAText,
                       "restartText" -> restartText,
                       "yes" -> yes,
-                      "no" -> no,
-                      "quit" -> quit)
+                      "no" -> no)
       val output = engine.layout("src/main/resources/feedbackmenu.mustache",map)
       val feedbackMenuFile = new OutputStreamWriter(new FileOutputStream(new File(feedbackMenuDir,al + ".html")),"UTF-8")
       feedbackMenuFile.write(output)

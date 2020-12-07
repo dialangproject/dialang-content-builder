@@ -7,32 +7,38 @@ use LWP::UserAgent;
 use Archive::Extract;
 
 my $locale = undef;
+my $key = undef;
 my $help = undef;
 
-GetOptions("locale=s" => \$locale,"help" => \$help);
+GetOptions("locale=s" => \$locale, "key=k" => \$key, "help" => \$help);
 
 if (defined($help)) {
-    print "Usage: gettranslationsfromcrowdin [--locale=eng_gb]\n";
-    exit 0;
+    print "Usage: gettranslationsfromcrowdin --key=CROWDIN_KEY [--locale=eng_gb] [--help]\n";
+    exit 0 [--help];
+}
+
+unless(defined($key)) {
+    print "Usage: gettranslationsfromcrowdin --key=CROWDIN_KEY [--locale=eng_gb] [--help]\n";
+    exit 0 [--help];
 }
 
 my $locale_mappings = {
-        'cmn_cn' => 'zh-CN',
-        'dan_dk' => 'da',
-        'deu_de' => 'de',
-        'ell_gr' => 'el',
-        'fin_fi' => 'fi',
-        'fra_fr' => 'fr',
-        'gle_ie' => 'ga-IE',
-        'ind_id' => 'id',
-        'isl_is' => 'is',
-        'ita_it' => 'it',
-        'nld_nl' => 'nl',
-        'nor_no' => 'no',
-        'por_pt' => 'pt-PT',
-        'spa_es' => 'es-ES',
-        'swe_se' => 'sv-SE'
-    };
+    'cmn_cn' => 'zh-CN',
+    'dan_dk' => 'da',
+    'deu_de' => 'de',
+    'ell_gr' => 'el',
+    'fin_fi' => 'fi',
+    'fra_fr' => 'fr',
+    'gle_ie' => 'ga-IE',
+    'ind_id' => 'id',
+    'isl_is' => 'is',
+    'ita_it' => 'it',
+    'nld_nl' => 'nl',
+    'nor_no' => 'no',
+    'por_pt' => 'pt-PT',
+    'spa_es' => 'es-ES',
+    'swe_se' => 'sv-SE'
+};
 
 if (defined($locale)) {
     if (!exists($locale_mappings->{$locale})) {
@@ -48,10 +54,10 @@ if (defined($locale)) {
 
 my $ua = LWP::UserAgent->new;
 
-my $url = "http://api.crowdin.net/api/project/DIALANG/export?key=7e060f546f2e7595b12d71b6141e1ad5";
+my $url = "http://api.crowdin.net/api/project/DIALANG/export?key=$key";
 $ua->get($url);
 
-$url = "http://api.crowdin.net/api/project/DIALANG/download/$locale.zip?key=7e060f546f2e7595b12d71b6141e1ad5";
+$url = "http://api.crowdin.net/api/project/DIALANG/download/$locale.zip?key=$key";
 my $response = $ua->get($url);
 
 my $zipfile = "../crowdin-translations/$locale-translations.zip";

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-outputdir="/srv/dialang/"
+outputdir="/Users/fisha/srv/dialang/"
 
-scala -classpath build/libs/dialang-site-builder-test.jar \
+scala -classpath build/libs/dialang-site-builder.jar \
 org.dialang.exporter.DialangExporter ${outputdir}

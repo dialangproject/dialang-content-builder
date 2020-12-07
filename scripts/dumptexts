@@ -7,15 +7,17 @@ use Getopt::Long;
 use LWP::UserAgent;
 
 my $locale = undef;
+my $key = undef;
+my $dbpass = undef;
 
-GetOptions("locale=s" => \$locale);
+GetOptions("locale=s" => \$locale, "key=k" => \$key, "dbpass=p" => \$dbpass);
 
-unless (defined($locale)) {
-    print "Usage: uploadcrowdintexts --locale=eng_gb\n";
+unless (defined($locale) and defined($key) and defined($dbpass)) {
+    print "Usage: uploadcrowdintexts --locale=eng_gb --key=CROWDIN_KEY --dbpass=DB_PASSWORD\n";
     exit 0;
 }
 
-my $dbh = DBI->connect("dbi:Pg:dbname=DIALANG", 'dialangadmin', 'dialangadmin', {AutoCommit => 0});
+my $dbh = DBI->connect("dbi:Pg:dbname=DIALANG", 'dialangadmin', $dbpass, {AutoCommit => 0});
 my $texts = $dbh->selectall_hashref("SELECT * FROM display_texts WHERE locale = '$locale'", 'key');
 $dbh->disconnect;
 
@@ -42,7 +44,7 @@ my $data = {
         'auto_improve_imported' => 1
     };
 
-my $url = "http://api.crowdin.net/api/project/DIALANG/upload-translation?key=7e060f546f2e7595b12d71b6141e1ad5";
+my $url = "http://api.crowdin.net/api/project/DIALANG/upload-translation?key=$key";
 
 my $response = $ua->post($url,
                     Content_Type => 'form-data',

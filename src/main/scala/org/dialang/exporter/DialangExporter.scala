@@ -8,7 +8,8 @@ import java.io.{File,FileOutputStream,FileWriter,OutputStreamWriter}
 import java.util.regex.{Pattern,Matcher}
 import java.util.{Date,Properties}
 
-import scala.collection.JavaConversions._
+import scala.jdk.CollectionConverters._
+//import scala.collection.JavaConverters._
 import scala.collection.mutable.{ArrayBuffer,HashMap,ListBuffer,StringBuilder}
 
 import org.slf4j.LoggerFactory
@@ -17,7 +18,7 @@ object DialangExporter extends App {
 
   private val logger = LoggerFactory.getLogger(getClass)
 
-  Console.setOut(System.out)
+  //Console.withOut(System.out)
 
   val start = (new Date).getTime
 
@@ -621,7 +622,7 @@ object DialangExporter extends App {
     val specialCharLists = new Properties
     specialCharLists.load(getClass.getResourceAsStream("/org/dialang/exporter/db/special_chars.properties"))
 
-    for ((locale, csv) <- specialCharLists) {
+    for ((locale, csv) <- specialCharLists.asScala) {
       val chars = csv.split(",").map(c => Map("char" -> c))
       val output = engine.layout("src/main/resources/keyboard.mustache", Map("chars" -> chars))
       val writer = new FileWriter(new File(keyboardDir, locale + ".html"))

@@ -5,7 +5,7 @@ import java.sql.{DriverManager,Connection,SQLException,Statement}
 import java.io.{FileInputStream, InputStreamReader}
 import java.util.Properties
 
-import scala.collection.JavaConversions._
+import scala.jdk.CollectionConverters._
 import scala.collection.mutable.{ListBuffer,HashMap,ArrayBuffer}
 
 import org.dialang.common.model.{Item, ScoredItem}
@@ -16,7 +16,7 @@ class DB {
 
   private val logger = LoggerFactory.getLogger(getClass)
 
-  Console.setOut(System.err)
+  //Console.setOut(System.err)
 
   Class.forName("org.postgresql.Driver")
   val conn = DriverManager.getConnection("jdbc:postgresql:DIALANG","dialangadmin","dialangadmin")
@@ -62,13 +62,14 @@ class DB {
     }
   }
 
-  val adminTexts: Map[String, Properties] = {
-      val builder = Map.newBuilder[String, Properties]
+  val adminTexts: Map[String, Map[String, String]] = {
+
+      val builder = Map.newBuilder[String, Map[String,String]]
       for (al <- getAdminLanguageLocales) {
         // Load the Properties for this locale
         val props = new Properties
         props.load(new InputStreamReader(new FileInputStream("admin-texts/admintexts_" + al + ".properties"), "UTF-8"))
-        builder += (al -> props)
+        builder += (al -> props.asScala.toMap)
       }
       builder.result
     }
@@ -87,14 +88,14 @@ class DB {
   def getAdminLanguages = {
 
     val rs = adminLanguagesST.executeQuery
-    val map = new HashMap[String,Any]
     val languages = new ListBuffer[Map[String,String]]
     while (rs.next) {
       languages += Map("locale" -> rs.getString("locale"),"description" -> rs.getString("description"))
     }
-    map += ("languages" -> languages)
-    map += ("fundermessage" -> "The original DIALANG Project was carried out with the support of the commission of the European Communities within the framework of the SOCRATES programme, LINGUA 2")
     rs.close
+    val map = new HashMap[String,Any]
+    map += ("languages" -> languages.toList)
+    map += ("fundermessage" -> "The original DIALANG Project was carried out with the support of the commission of the European Communities within the framework of the SOCRATES programme, LINGUA 2")
     map.toMap
   }
 
@@ -115,7 +116,7 @@ class DB {
     val parts = keyExpression.split("%")
 
     adminTexts.get(language) match {
-      case Some(p: Properties) => {
+      case Some(p: Map[String, String]) => {
         p.find(t => t._1.startsWith(parts(0)) && t._1.endsWith(parts(1)) ) match {
           case Some((k: String, v: String)) => v
           case _ => {
@@ -135,7 +136,7 @@ class DB {
   def getSubSkills(al: String): Map[String,String] = {
 
     adminTexts.get(al) match {
-      case Some(p: Properties) => {
+      case Some(p: Map[String, String]) => {
         val matches = p.filter(_._1.startsWith("Subskill#")).toMap
         matches.map( t => {
           val subskillCode = t._1.substring(t._1.indexOf("#") + 1).toLowerCase
@@ -153,7 +154,7 @@ class DB {
   def getTestLanguagePrompts(al: String): Map[String, String] = {
 
     adminTexts.get(al) match {
-      case Some(p: Properties) => {
+      case Some(p: Map[String, String]) => {
         val matches = p.filter(_._1.startsWith("ChooseTest_Language")).toMap
         matches.map( t => {
           val languageCode = t._1.substring(t._1.indexOf("#") + 1).toLowerCase
@@ -250,7 +251,9 @@ class DB {
     val list = new ListBuffer[ScoredItem]
 
     while (rs.next) {
-      val item = new ScoredItem(new Item(rs))
+      val rsi = new Item(rs)
+      //val item = new ScoredItem(item.id, item.itemType, item.skill, item.subskill, item.text, item.weight)
+      val item = new ScoredItem(rsi.id, rsi.itemType, rsi.skill, rsi.subskill, rsi.text, rsi.weight)
       item.positionInBasket = rs.getInt("position")
       list += item
     }

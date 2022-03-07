@@ -63,7 +63,7 @@ object DialangExporter extends App {
 
   sys.exit()
 
-  def exportAls() {
+  def exportAls(): Unit = {
     
     val output = engine.layout("src/main/resources/als.mustache", db.getAdminLanguages)
     val alsFile = new OutputStreamWriter(new FileOutputStream(new File(websiteDir, "als.html")), "UTF-8")
@@ -71,7 +71,7 @@ object DialangExporter extends App {
     alsFile.close()
   }
 
-  def exportHelpDialogs(adminLanguages:List[String]) {
+  def exportHelpDialogs(adminLanguages: List[String]): Unit = {
 
     val helpDir = new File(websiteDir, "help")
     if (!helpDir.isDirectory) helpDir.mkdirs()
@@ -121,7 +121,7 @@ object DialangExporter extends App {
     }
   }
 
-  def exportLegendPages(adminLanguages:List[String]) {
+  def exportLegendPages(adminLanguages: List[String]): Unit = {
 
     val legendDir = new File(websiteDir,"legend")
     if (!legendDir.isDirectory) {
@@ -171,7 +171,7 @@ object DialangExporter extends App {
     }
   }
 
-  def exportFlowchartPages(adminLanguages:List[String]) {
+  def exportFlowchartPages(adminLanguages: List[String]): Unit = {
 
     val flowchartDir = new File(websiteDir,"flowchart")
     if (!flowchartDir.isDirectory) {
@@ -225,7 +225,7 @@ object DialangExporter extends App {
     }
   }
 
-  def exportTLSPages(adminLanguages:List[String]) {
+  def exportTLSPages(adminLanguages: List[String]): Unit = {
 
     val tlsDir = new File(websiteDir,"tls")
     if (!tlsDir.isDirectory) {
@@ -299,7 +299,7 @@ object DialangExporter extends App {
     }
   }
 
-  def exportVSPTIntroPages(adminLanguages:List[String]) {
+  def exportVSPTIntroPages(adminLanguages: List[String]): Unit = {
 
     val vsptIntroDir = new File(websiteDir,"vsptintro")
     if (!vsptIntroDir.isDirectory) vsptIntroDir.mkdirs()
@@ -339,14 +339,14 @@ object DialangExporter extends App {
     }
   }
 
-  def exportVSPTPages(adminLanguages: List[String]) {
+  def exportVSPTPages(adminLanguages: List[String]): Unit = {
 
     val vsptDir = new File(websiteDir,"vspt")
 
     val testLanguagesAndVSPT: Map[String, List[(String,String,Boolean)]]
       = (db.getTestLanguageCodes.foldLeft(
         Map.newBuilder[String, List[(String,String,Boolean)]])
-          ((acc,tl) => acc += ((tl._1, db.getVSPTWords(tl._1))))).result
+          ((acc,tl) => acc += ((tl._1, db.getVSPTWords(tl._1))))).result()
 
     for (al <- adminLanguages) { 
       val alDir = new File(vsptDir,al)
@@ -379,19 +379,19 @@ object DialangExporter extends App {
 
         val wi = wordList.iterator
         while(wi.hasNext) {
-          var wordTuple = wi.next
+          var wordTuple = wi.next()
           val word1 = wordTuple._1
           val id1 = wordTuple._2
           validMap += (id1 -> wordTuple._3)
           words += Map("id" -> id1)
 
-          wordTuple = wi.next
+          wordTuple = wi.next()
           val word2 = wordTuple._1
           val id2 = wordTuple._2
           validMap += (id2 -> wordTuple._3)
           words += Map("id" -> id2)
 
-          wordTuple = wi.next
+          wordTuple = wi.next()
           val word3 = wordTuple._1
           val id3 = wordTuple._2
           validMap += (id3 -> wordTuple._3)
@@ -438,7 +438,7 @@ object DialangExporter extends App {
     }
   }
 
-  def exportVSPTFeedbackPages(adminLanguages: List[String]) {
+  def exportVSPTFeedbackPages(adminLanguages: List[String]): Unit = {
 
     val vsptFeedbackDir = new File(websiteDir, "vsptfeedback")
     if (!vsptFeedbackDir.isDirectory) {
@@ -482,7 +482,7 @@ object DialangExporter extends App {
     }
   }
 
-  def exportSAIntroPages(adminLanguages:List[String]) {
+  def exportSAIntroPages(adminLanguages:List[String]): Unit = {
 
     val saIntroDir = new File(websiteDir,"saintro")
 
@@ -525,7 +525,7 @@ object DialangExporter extends App {
     }
   }
 
-  def exportSAPages(adminLanguages:List[String]) {
+  def exportSAPages(adminLanguages: List[String]): Unit = {
 
     val saDir = new File(websiteDir,"sa")
 
@@ -569,7 +569,7 @@ object DialangExporter extends App {
     }
   }
 
-  def exportTestIntroPages(adminLanguages:List[String]) {
+  def exportTestIntroPages(adminLanguages: List[String]): Unit = {
 
     val testIntroDir = new File(websiteDir,"testintro")
     if (!testIntroDir.isDirectory) {
@@ -611,7 +611,7 @@ object DialangExporter extends App {
     }
   }
 
-  def exportKeyboardFragments() {
+  def exportKeyboardFragments(): Unit = {
 
     val keyboardDir = new File(websiteDir, "keyboards")
     if (!keyboardDir.isDirectory) {
@@ -631,7 +631,7 @@ object DialangExporter extends App {
     }
   }
 
-  def exportBasketPages(adminLanguages: List[String]) {
+  def exportBasketPages(adminLanguages: List[String]): Unit = {
 
     val typeMap = Map( "gapdrop" -> "GapDrop",
                         "gaptext" -> "GapText",
@@ -789,7 +789,7 @@ object DialangExporter extends App {
                         "responseMarkup" -> responseMarkup,
                         "numberOfItems" -> numberOfItems)
           val output = engine.layout("src/main/resources/basket.mustache", map)
-          val basketFile = new OutputStreamWriter(new FileOutputStream(new File(alDir,basketId + ".html")),"UTF-8")
+          val basketFile = new OutputStreamWriter(new FileOutputStream(new File(alDir,s"${basketId}.html")),"UTF-8")
           basketFile.write(output)
           basketFile.close
 
@@ -798,7 +798,7 @@ object DialangExporter extends App {
     }) // basket iterator
   }
 
-  def exportEndOfTestPages(adminLanguages: List[String]) {
+  def exportEndOfTestPages(adminLanguages: List[String]): Unit = {
 
     val endOfTestDir = new File(websiteDir, "endoftest")
     if (!endOfTestDir.isDirectory) {
@@ -822,7 +822,7 @@ object DialangExporter extends App {
     }
   }
 
-  def exportFeedbackMenuPages(adminLanguages:List[String]) {
+  def exportFeedbackMenuPages(adminLanguages: List[String]): Unit = {
 
     val feedbackMenuDir = new File(websiteDir,"feedbackmenu")
     if (!feedbackMenuDir.isDirectory) {
@@ -870,7 +870,7 @@ object DialangExporter extends App {
     }
   }
 
-  def exportSAFeedbackPages(adminLanguages:List[String]) {
+  def exportSAFeedbackPages(adminLanguages: List[String]): Unit = {
 
     val saFeedbackDir = new File(websiteDir,"safeedback")
     if (!saFeedbackDir.isDirectory) {
@@ -936,7 +936,7 @@ object DialangExporter extends App {
     }
   }
 
-  def exportTestResultPages(adminLanguages:List[String]) {
+  def exportTestResultPages(adminLanguages: List[String]): Unit = {
 
     val testresultsDir = new File(websiteDir,"testresults")
     if (!testresultsDir.isDirectory) {
@@ -988,7 +988,7 @@ object DialangExporter extends App {
     }
   }
 
-  def exportItemReviewPages(adminLanguages: List[String]) {
+  def exportItemReviewPages(adminLanguages: List[String]): Unit = {
 
     val itemreviewDir = new File(websiteDir,"itemreview")
     if (!itemreviewDir.isDirectory) {
@@ -1003,7 +1003,7 @@ object DialangExporter extends App {
       val subskills = 
         (db.getSubSkills(al).foldLeft(List.newBuilder[Map[String,String]])( (acc,curr) => {
               acc += Map("code" -> curr._1,"description" -> curr._2)
-          })).result
+          })).result()
       val map = Map("title" -> title,"text" -> text,"subskills" -> subskills)
       val output = engine.layout("src/main/resources/itemreviewwrapper.mustache",map)
       val itemreviewFile = new OutputStreamWriter(new FileOutputStream(new File(itemreviewDir,al + ".html")),"UTF-8")
@@ -1017,7 +1017,7 @@ object DialangExporter extends App {
     }
   }
 
-  def exportExplfbPages(adminLanguages:List[String]) {
+  def exportExplfbPages(adminLanguages: List[String]): Unit = {
 
     val aboutSADir = new File(websiteDir,"aboutsa")
     if (!aboutSADir.isDirectory) {
@@ -1082,7 +1082,7 @@ object DialangExporter extends App {
     }
   }
 
-  private def doHowOften(al:String, alDir:File) {
+  private def doHowOften(al: String, alDir: File): Unit = {
 
     val title = db.getTranslation("Explanatory_Main_Menu_HowOften",al)
     val howoften1 = db.getTranslation("ExpHowOften_Par1",al)
@@ -1121,7 +1121,7 @@ object DialangExporter extends App {
     longtimeWriter.close()
   }
 
-  private def doHow(al:String,alDir:File) {
+  private def doHow(al: String, alDir: File): Unit = {
 
     val howMap = Map("title" -> db.getTranslation("ExpSomeSkills_Head", al),
                             "part1" -> db.getTranslation("ExpSomeSkills_Par1", al),
@@ -1150,7 +1150,7 @@ object DialangExporter extends App {
     underestimateWriter.close()
   }
 
-  private def doSituations(al:String,alDir:File) {
+  private def doSituations(al: String, alDir: File): Unit = {
 
     val situtationsMap = Map("title" -> db.getTranslation("ExpSituation_Head",al),
                       "bullet1" -> db.getTranslation("ExpSituation_Bullet1",al),
@@ -1163,7 +1163,7 @@ object DialangExporter extends App {
     situtationsWriter.close()
   }
 
-  private def doOtherLearners(al:String,alDir:File) {
+  private def doOtherLearners(al: String, alDir: File): Unit = {
 
     val map = Map("title" -> db.getTranslation("ExpCompareOthers_Head",al),
                       "part1" -> db.getTranslation("ExpCompareOthers_Par1",al),
@@ -1175,7 +1175,7 @@ object DialangExporter extends App {
     writer.close()
   }
 
-  private def doOtherTests(al:String,alDir:File) {
+  private def doOtherTests(al: String, alDir: File): Unit = {
 
     val map = Map("title" -> db.getTranslation("ExpOtherTests_Head",al),
                     "part1" -> db.getTranslation("ExpOtherTests_Par1",al),
@@ -1229,7 +1229,7 @@ object DialangExporter extends App {
     iWriter.close()
   }
 
-  private def doYourTargets(al:String,alDir:File) {
+  private def doYourTargets(al: String, alDir: File): Unit = {
 
     val map = Map("title1" -> db.getTranslation("ExpTargets_Head1",al),
                     "part1" -> db.getTranslation("ExpTargets_Par1",al),
@@ -1244,7 +1244,7 @@ object DialangExporter extends App {
     writer.close()
   }
 
-  private def doRealLife(al:String,alDir:File) {
+  private def doRealLife(al: String, alDir: File): Unit = {
 
     val map = Map("title" -> db.getTranslation("ExpRealLife_Head",al),
                     "part1" -> db.getTranslation("ExpRealLife_Par1",al),
@@ -1313,7 +1313,7 @@ object DialangExporter extends App {
     mWriter.close()
   }
 
-  private def doOtherReasons(al:String,alDir:File) {
+  private def doOtherReasons(al: String, alDir: File): Unit = {
 
     val map = Map("title1" -> db.getTranslation("ExpOtherReasons_Head1",al),
                     "part1" -> db.getTranslation("ExpOtherReasons_Par1",al),
@@ -1330,7 +1330,7 @@ object DialangExporter extends App {
     writer.close()
   }
 
-  def exportAdvfbPages(adminLanguages: List[String]) {
+  def exportAdvfbPages(adminLanguages: List[String]): Unit = {
 
     val advfbDir = new File(websiteDir,"advfb")
     if (!advfbDir.isDirectory) {

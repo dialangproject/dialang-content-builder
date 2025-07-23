@@ -3,3 +3,5 @@ tags
 build
 .gradle
 crowdin-translations
+lib
+bin

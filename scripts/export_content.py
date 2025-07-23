@@ -1,27 +1,36 @@
-package org.dialang.exporter
+import pystache;
+import psycopg2;
+import datetime;
 
-import org.fusesource.scalate._
+start = datetime.datetime.now()
 
-import org.dialang.exporter.db.DB
+conn = psycopg2.connect(
+    database="DIALANG",
+    user="dialangadmin",
+    host="localhost",  # Usually 'localhost'
+    port="5432")
 
-import java.io.{File,FileOutputStream,FileWriter,OutputStreamWriter}
-import java.util.regex.{Pattern,Matcher}
-import java.util.{Date,Properties}
+# Create a cursor object
+cursor = conn.cursor()
 
-import scala.jdk.CollectionConverters._
-//import scala.collection.JavaConverters._
-import scala.collection.mutable.{ArrayBuffer,HashMap,ListBuffer,StringBuilder}
+# Execute a query
+cursor.execute("SELECT * FROM admin_languages")
 
-import org.slf4j.LoggerFactory
+# Fetch the results
+rows = list(cursor.fetchall())
 
-object DialangExporter extends App {
+admin_languages = [{ 'locale': r[0], 'description': r[1] } for r in rows]
 
-  private val logger = LoggerFactory.getLogger(getClass)
+funder_message = 'The original DIALANG Project was carried out with the support of the commission of the European Communities within the framework of the SOCRATES programme, LINGUA 2'
 
-  //Console.withOut(System.out)
+renderer = pystache.Renderer()
+fragment = renderer.render_path('../templates/als.mustache', { 'languages': admin_languages, 'fundermessage': funder_message })
+als_file = renderer.render_path('../templates/shell.mustache', { 'state': 'als', 'renderNavbar': False, 'content': fragment })
 
-  val start = (new Date).getTime
+with open('../../dialang-web/static-site/content/als.html', 'w') as f:
+    print(als_file, file = f)
 
+"""
   val db = new DB
   val engine = new TemplateEngine
   val websiteDir = new File(args(0))
@@ -31,6 +40,7 @@ object DialangExporter extends App {
   }
 
   val adminLanguages = db.getAdminLanguageLocales
+  val adminLocalesST= conn.prepareStatement("SELECT locale FROM admin_languages")
 
   exportAls()
   exportHelpDialogs(adminLanguages)
@@ -1677,3 +1687,4 @@ object DialangExporter extends App {
     }
   }
 }
+"""

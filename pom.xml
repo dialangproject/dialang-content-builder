@@ -12,7 +12,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <scala.version>2.10.0</scala.version>
+        <scala.version>2.13.4</scala.version>
     </properties>
 
   	<organization>
@@ -101,9 +101,9 @@
         </dependency>
 
         <dependency>
-            <groupId>org.fusesource.scalate</groupId>
-            <artifactId>scalate-core_2.10</artifactId>
-            <version>1.6.1</version>
+          <groupId>org.scalatra.scalate</groupId>
+          <artifactId>scalate-core_2.13</artifactId>
+          <version>1.10.1</version>
         </dependency>
 
     </dependencies>

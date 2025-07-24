@@ -5,13 +5,13 @@
     <meta name="google" value="notranslate">
     <link rel="stylesheet" type="text/css" href="/prod/assets/css/dialang.css" media="all"/>
     <link rel="stylesheet" type="text/css" href="/prod/assets/css/smoothness/jquery-ui-1.9.2.custom.min.css" media="all"/>
-    <link rel="stylesheet" type="text/css" href="/prod/lib/keyboard/keyboard.min.css"/>
-    <script src="/prod/lib/jquery-1.11.3.min.js"></script>
-    <script src="/prod/lib/jquery-ui-1.9.2.custom.min.js"></script>
-    <script src="/prod/lib/jquery.form.js"></script>
-    <script src="/prod/lib/keyboard/jquery.keyboard.min.js"></script>
-    <script src="/prod/lib/keyboard/keyboard-layouts-combined.min.js"></script>
-    <script src="/prod/lib/mustache.js"></script>
+    <link rel="stylesheet" type="text/css" href="/prod/assets/lib/keyboard/keyboard.min.css"/>
+    <script src="/prod/assets/lib/jquery-1.11.3.min.js"></script>
+    <script src="/prod/assets/lib/jquery-ui-1.9.2.custom.min.js"></script>
+    <script src="/prod/assets/lib/jquery.form.js"></script>
+    <script src="/prod/assets/lib/keyboard/jquery.keyboard.min.js"></script>
+    <script src="/prod/assets/lib/keyboard/keyboard-layouts-combined.min.js"></script>
+    <script src="/prod/assets/lib/mustache.js"></script>
     <script>
       var dialang = {
         state: '{{state}}',
@@ -52,7 +52,6 @@
   <body>
     <div id="container">
       <div id="topbar">
-        {{#renderNavbar}}
         <div id="navbar">
           <button id="skipback"><img src="/prod/assets/images/skipb.gif"/></button>
           <button id="back"><img src="/prod/assets/images/prev.gif"/></button>
@@ -63,7 +62,6 @@
           <button id="keyboard-button"><img src="/prod/assets/images/keyb.gif" height="23px;"/></button>
           <button id="save-button"><img src="/prod/assets/images/savetodrive.png" height="23px;" disabled="disabled"/></button>
         </div>  <!-- /navbar -->
-        {{/renderNavbar}}
         <div id="logo">
           <div id="progressbar" class="dialang-progressbar"><div id="progressbar-label"></div></div>
           <img src="/prod/assets/images/Logo.gif"/>
@@ -91,9 +89,7 @@
     <script src="/prod/assets/js/dialang.js"></script>
     <script src="/prod/assets/js/dialang_utils.js"></script>
 
-    {{#renderNavbar}}
     <script src="/prod/assets/js/navigation.js"></script>
-    {{/renderNavbar}}
 
   </body>
 </html>

@@ -1,6 +1,9 @@
-import pystache;
-import psycopg2;
-import datetime;
+import pystache
+import psycopg2
+import datetime
+import os
+import configparser
+from pathlib import Path
 
 start = datetime.datetime.now()
 
@@ -10,10 +13,8 @@ conn = psycopg2.connect(
     host="localhost",  # Usually 'localhost'
     port="5432")
 
-# Create a cursor object
 cursor = conn.cursor()
 
-# Execute a query
 cursor.execute("SELECT * FROM admin_languages")
 
 # Fetch the results
@@ -21,14 +22,78 @@ rows = list(cursor.fetchall())
 
 admin_languages = [{ 'locale': r[0], 'description': r[1] } for r in rows]
 
-funder_message = 'The original DIALANG Project was carried out with the support of the commission of the European Communities within the framework of the SOCRATES programme, LINGUA 2'
+cursor.close()
 
-renderer = pystache.Renderer()
-fragment = renderer.render_path('../templates/als.mustache', { 'languages': admin_languages, 'fundermessage': funder_message })
-als_file = renderer.render_path('../templates/shell.mustache', { 'state': 'als', 'renderNavbar': False, 'content': fragment })
+base_dir = '../../dialang-web/static-site/content'
 
-with open('../../dialang-web/static-site/content/als.html', 'w') as f:
-    print(als_file, file = f)
+translations = {}
+
+for language in admin_languages:
+    al = language["locale"]
+    config = configparser.ConfigParser()
+    config.read('../admin-texts/admintexts_' + al + '.properties')
+    translations[al] = config._sections['AdminTexts']
+
+def export_als():
+    renderer = pystache.Renderer()
+    funder_message = 'The original DIALANG Project was carried out with the support of the commission of the European Communities within the framework of the SOCRATES programme, LINGUA 2'
+
+    al_fragment = renderer.render_path('../templates/al.mustache', { 'languages': admin_languages, 'fundermessage': funder_message, 'stage': 'prod' })
+    al_file = renderer.render_path('../templates/shell.mustache', { 'state': 'al', 'content': al_fragment })
+    with open(base_dir + '/al.html', 'w') as f:
+        print(al_file, file = f)
+
+def export_legend():
+
+    Path(base_dir + '/legend').mkdir(exist_ok=True)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM admin_languages")
+
+    for al in [al['locale'] for al in admin_languages]:
+        key = translations[al]['title_key']
+
+        welcome = translations[al]['title_welcomedialang']
+        next = translations[al]['caption_continuenext']
+        back = translations[al]['caption_backprevious']
+        skipf = translations[al]['caption_skipnextsection']
+        skipb = translations[al]['caption_skipprevioussection']
+        yes = translations[al]['caption_yes']
+        no = translations[al]['caption_no']
+        help = translations[al]['caption_help']
+        smiley = translations[al]['captioninstantonoff']
+        keyboard = translations[al]['caption_additionalcharacters']
+        speaker = translations[al]['caption_playsound']
+        backtooltip = translations[al]['caption_backtoals']
+        nexttooltip = translations[al]['caption_continuenext']
+        values = {
+            "key": key,
+            "next": next,
+            "back": back,
+            "welcome": welcome,
+            "skipf": skipf,
+            "skipb": skipb,
+            "yes": yes,
+            "no": no,
+            "help": help,
+            "smiley": smiley,
+            "keyboard": keyboard,
+            "speaker": speaker,
+            "backtooltip": backtooltip,
+            "nexttooltip": nexttooltip,
+            "al": al,
+            "stage": "prod"
+        }
+        renderer = pystache.Renderer()
+        legend_fragment = renderer.render_path('../templates/legend.mustache', values)
+        with open(base_dir + '/legend/' + al + '.html', 'w') as f:
+            print(legend_fragment, file = f)
+
+        tip_output = renderer.render_path('../templates/toolbartooltips.mustache', values)
+        with open(base_dir + '/legend/' + al + '-toolbarTooltips.json', 'w') as f:
+            print(tip_output, file = f)
+
+export_als()
+export_legend()
 
 """
   val db = new DB

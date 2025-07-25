@@ -46,6 +46,7 @@ def export_als():
 def export_legend():
 
     Path(base_dir + '/legend').mkdir(exist_ok=True)
+
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM admin_languages")
 
@@ -83,20 +84,162 @@ def export_legend():
             "al": al,
             "stage": "prod"
         }
+
         renderer = pystache.Renderer()
         legend_fragment = renderer.render_path('../templates/legend.mustache', values)
-        #legend_file = renderer.render_path('../templates/shell.mustache', { 'al': al, 'state': 'legend', 'content': legend_fragment })
         with open(base_dir + '/legend/' + al + '.html', 'w') as f:
             print(legend_fragment, file = f)
 
-        """
         tip_output = renderer.render_path('../templates/toolbartooltips.mustache', values)
         with open(base_dir + '/legend/' + al + '-toolbarTooltips.json', 'w') as f:
             print(tip_output, file = f)
+
+def export_flowchart():
+
+    Path(base_dir + '/flowchart').mkdir(exist_ok=True)
+
+    for al in [al['locale'] for al in admin_languages]:
+        welcomeTitle = translations[al]['title_welcomedialang']
+        welcomeText = translations[al]['welcome_intro_text']
+        procedureTitle = translations[al]['title_procedurecaps']
+        procedureText = translations[al]['welcome_procedure_text']
+        backtooltip = translations[al]['caption_backtowelcome']
+        nexttooltip = translations[al]['caption_gotochoosetest']
+        stage1Title = translations[al]['title_choosetest']
+        stage1 = translations[al]['welcome_chart_choosetest_text']
+        stage2Title = translations[al]['title_placement']
+        stage2 = translations[al]['welcome_chart_placement_text']
+        stage3Title = translations[al]['title_selfassess']
+        stage3 = translations[al]['welcome_chart_selfassess_text']
+        stage4Title = translations[al]['title_langtest']
+        stage4 = translations[al]['welcome_chart_langtest_text']
+        stage5Title = translations[al]['title_feedbackresultsadvice']
+        stage5 = translations[al]['welcome_chart_feedback_text']
+
+        values = {
+            "al": al,
+            "welcomeTitle": welcomeTitle,
+            "welcomeText": welcomeText,
+            "procedureTitle": procedureTitle,
+            "procedureText": procedureText,
+            "stage1Title": stage1Title,
+            "stage1": stage1,
+            "stage2Title": stage2Title,
+            "stage2": stage2,
+            "stage3Title": stage3Title,
+            "stage3": stage3,
+            "stage4Title": stage4Title,
+            "stage4": stage4,
+            "stage5Title": stage5Title,
+            "stage5": stage5,
+            "backtooltip": backtooltip,
+            "nexttooltip": nexttooltip,
+            "stage": "prod"
+        }
+
+        renderer = pystache.Renderer()
+        flowchart_fragment = renderer.render_path('../templates/flowchart.mustache', values)
+        with open(base_dir + '/flowchart/' + al + '.html', 'w') as f:
+            print(flowchart_fragment, file = f)
+
+        tip_output = renderer.render_path('../templates/toolbartooltips.mustache', values)
+        with open(base_dir + '/flowchart/' + al + '-toolbarTooltips.json', 'w') as f:
+            print(tip_output, file = f)
+
+def export_tls():
+
+    Path(base_dir + '/tls').mkdir(exist_ok=True)
+
+    for al in [al['locale'] for al in admin_languages]:
+
+        skipbacktooltip = translations[al]['caption_backtoals']
+        backtooltip = translations[al]['caption_backtowelcome']
+        tlsTitle = translations[al]['title_choosetest']
+        listeningTooltip = translations[al]['choosetest_skill#listening']
+        writingTooltip = translations[al]['choosetest_skill#writing']
+        readingTooltip = translations[al]['choosetest_skill#reading']
+        structuresTooltip = translations[al]['choosetest_skill#structures']
+        vocabularyTooltip = translations[al]['choosetest_skill#vocabulary']
+
+        # For the disclaimer dialog box
+        disclaimerTitle = translations[al]['title_usemisuse']
+        disclaimer = translations[al]['disclaimer_usemisuse']
+
+        # For the test confirmation dialog box
+        testChosen = translations[al]['dialogues_testselected']
+        yes = translations[al]['caption_yes']
+        no = translations[al]['caption_no']
+
+        ok = translations[al]['caption_ok']
+        done = translations[al]['caption_done']
+        available = translations[al]['caption_available']
+        notavailable = translations[al]['caption_notavailable']
+        #tls_map = { k.split('#')[1]: v for k, v in translations[al].items() if k.startswith("choosetest_language") }
+        test_rows = [{ "languageCode": k.split('#')[1], "languageName": v } for k, v in translations[al].items() if k.startswith("choosetest_language") ]
+
         """
+        adminTexts.get(al) match {
+          case Some(p: Map[String, String]) => {
+            val matches = p.filter(_._1.startsWith("ChooseTest_Language")).toMap
+            matches.map( t => {
+              val languageCode = t._1.substring(t._1.indexOf("#") + 1).toLowerCase
+              (languageCode -> t._2)
+            })
+          }
+          case _ => {
+            // language not found
+            println("Language: '" + al + "' not found.")
+            Map()
+          }
+        }
+        tlsMap = db.getTestLanguagePrompts(al)
+
+        var testRows = new ListBuffer[Map[String,String]]
+        tlsMap.zipWithIndex.foreach(t => {
+          if (t._2 < (tlsMap.size - 2)) {
+              testRows += Map("languageName" -> t._1._2,"languageCode" -> t._1._1)
+          } else {
+              testRows += Map("languageName" -> t._1._2,"languageCode" -> t._1._1,"last" -> "true")
+          }
+        })
+        """
+
+        values = {
+            "al": al,
+            "tlsTitle": tlsTitle,
+            "testrows": test_rows,
+            "skipbacktooltip": skipbacktooltip,
+            "backtooltip": backtooltip,
+            "listeningTooltip": listeningTooltip,
+            "writingTooltip": writingTooltip,
+            "disclaimerTitle": disclaimerTitle,
+            "disclaimer": disclaimer,
+            "testChosen": testChosen,
+            "yes": yes,
+            "no": no,
+            "ok": ok,
+            "done": done,
+            "available": available,
+            "notavailable": notavailable,
+            "readingTooltip": readingTooltip,
+            "structuresTooltip": structuresTooltip,
+            "vocabularyTooltip": vocabularyTooltip,
+            "stage": "prod"
+        }
+
+        renderer = pystache.Renderer()
+        tls_fragment = renderer.render_path('../templates/tls.mustache', values)
+        with open(base_dir + '/tls/' + al + '.html', 'w') as f:
+            print(tls_fragment, file = f)
+
+        tip_output = renderer.render_path('../templates/toolbartooltips.mustache', values)
+        with open(base_dir + '/tls/' + al + '-toolbarTooltips.json', 'w') as f:
+            print(tip_output, file = f)
 
 export_als()
 export_legend()
+export_flowchart()
+export_tls()
 
 """
   val db = new DB

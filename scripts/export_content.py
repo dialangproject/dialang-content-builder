@@ -38,10 +38,10 @@ def export_als():
     renderer = pystache.Renderer()
     funder_message = 'The original DIALANG Project was carried out with the support of the commission of the European Communities within the framework of the SOCRATES programme, LINGUA 2'
 
-    al_fragment = renderer.render_path('../templates/al.mustache', { 'languages': admin_languages, 'fundermessage': funder_message, 'stage': 'prod' })
-    al_file = renderer.render_path('../templates/shell.mustache', { 'state': 'al', 'content': al_fragment })
-    with open(base_dir + '/al.html', 'w') as f:
-        print(al_file, file = f)
+    als_fragment = renderer.render_path('../templates/als.mustache', { 'languages': admin_languages, 'fundermessage': funder_message, 'stage': 'prod' })
+    als_file = renderer.render_path('../templates/shell.mustache', { 'state': 'als', 'content': als_fragment })
+    with open(base_dir + '/als.html', 'w') as f:
+        print(als_file, file = f)
 
 def export_legend():
 
@@ -85,12 +85,15 @@ def export_legend():
         }
         renderer = pystache.Renderer()
         legend_fragment = renderer.render_path('../templates/legend.mustache', values)
+        #legend_file = renderer.render_path('../templates/shell.mustache', { 'al': al, 'state': 'legend', 'content': legend_fragment })
         with open(base_dir + '/legend/' + al + '.html', 'w') as f:
             print(legend_fragment, file = f)
 
+        """
         tip_output = renderer.render_path('../templates/toolbartooltips.mustache', values)
         with open(base_dir + '/legend/' + al + '-toolbarTooltips.json', 'w') as f:
             print(tip_output, file = f)
+        """
 
 export_als()
 export_legend()

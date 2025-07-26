@@ -14,14 +14,15 @@ conn = psycopg2.connect(
     port="5432")
 
 cursor = conn.cursor()
-
 cursor.execute("SELECT * FROM admin_languages")
-
-# Fetch the results
 rows = list(cursor.fetchall())
-
 admin_languages = [{ 'locale': r[0], 'description': r[1] } for r in rows]
+cursor.close()
 
+cursor = conn.cursor()
+cursor.execute("SELECT locale,two_letter_code FROM test_languages")
+rows = list(cursor.fetchall())
+test_languages = [{ 'locale': r[0], 'two_letter_code': r[1] } for r in rows]
 cursor.close()
 
 base_dir = '../../dialang-web/static-site/content'
@@ -42,6 +43,57 @@ def export_als():
     als_file = renderer.render_path('../templates/shell.mustache', { 'state': 'als', 'content': als_fragment })
     with open(base_dir + '/als.html', 'w') as f:
         print(als_file, file = f)
+
+def export_help_dialogs():
+
+    Path(base_dir + '/help').mkdir(exist_ok=True)
+
+    for al in [al['locale'] for al in admin_languages]:
+        key = translations[al]['title_key']
+        next = translations[al]['caption_continuenext']
+        back = translations[al]['caption_backprevious']
+        skipf = translations[al]['caption_skipnextsection']
+        skipb = translations[al]['caption_skipprevioussection']
+        yes = translations[al]['caption_yes']
+        no = translations[al]['caption_no']
+        help = translations[al]['caption_help']
+        smiley = translations[al]['captioninstantonoff']
+        keyboard = translations[al]['caption_additionalcharacters']
+        speaker = translations[al]['caption_playsound']
+        aboutTitle = translations[al]['title_aboutdialang']
+        crDialang = translations[al]['bits_copyrightdialang']
+        crLancaster = translations[al]['bits_copyrightlancaster']
+        vsptTitle = translations[al]['title_placement']
+        vsptText = translations[al]['help_texts_placement']
+        saTitle = translations[al]['title_selfassess']
+        saText = translations[al]['help_texts_selfassess']
+
+        values = {
+            "al": al,
+            "key": key,
+            "next": next,
+            "back": back,
+            "skipf": skipf,
+            "skipb": skipb,
+            "yes": yes,
+            "no": no,
+            "help": help,
+            "smiley": smiley,
+            "keyboard": keyboard,
+            "speaker": speaker,
+            "aboutTitle": aboutTitle,
+            "crDialang": crDialang,
+            "crLancaster": crLancaster,
+            "vsptTitle": vsptTitle,
+            "vsptText": vsptText,
+            "saTitle": saTitle,
+            "saText": saText
+        }
+
+        renderer = pystache.Renderer()
+        help_fragment = renderer.render_path('../templates/helpdialog.mustache', values)
+        with open(base_dir + '/help/' + al + '.html', 'w') as f:
+            print(help_fragment, file = f)
 
 def export_legend():
 
@@ -177,33 +229,6 @@ def export_tls():
         #tls_map = { k.split('#')[1]: v for k, v in translations[al].items() if k.startswith("choosetest_language") }
         test_rows = [{ "languageCode": k.split('#')[1], "languageName": v } for k, v in translations[al].items() if k.startswith("choosetest_language") ]
 
-        """
-        adminTexts.get(al) match {
-          case Some(p: Map[String, String]) => {
-            val matches = p.filter(_._1.startsWith("ChooseTest_Language")).toMap
-            matches.map( t => {
-              val languageCode = t._1.substring(t._1.indexOf("#") + 1).toLowerCase
-              (languageCode -> t._2)
-            })
-          }
-          case _ => {
-            // language not found
-            println("Language: '" + al + "' not found.")
-            Map()
-          }
-        }
-        tlsMap = db.getTestLanguagePrompts(al)
-
-        var testRows = new ListBuffer[Map[String,String]]
-        tlsMap.zipWithIndex.foreach(t => {
-          if (t._2 < (tlsMap.size - 2)) {
-              testRows += Map("languageName" -> t._1._2,"languageCode" -> t._1._1)
-          } else {
-              testRows += Map("languageName" -> t._1._2,"languageCode" -> t._1._1,"last" -> "true")
-          }
-        })
-        """
-
         values = {
             "al": al,
             "tlsTitle": tlsTitle,
@@ -236,10 +261,49 @@ def export_tls():
         with open(base_dir + '/tls/' + al + '-toolbarTooltips.json', 'w') as f:
             print(tip_output, file = f)
 
+def export_vsptintro():
+
+    Path(base_dir + '/vsptintro').mkdir(exist_ok=True)
+
+    for al in [al['locale'] for al in admin_languages]:
+        backtooltip = translations[al]['caption_backtochoosetest']
+        nexttooltip = translations[al]['caption_startplacement']
+        skipforwardtooltip = translations[al]['caption_skipplacement']
+        title = translations[al]['title_placement']
+        text = translations[al]['placementintro_text']
+
+        # Confirmation dialog texts.
+        warningText = translations[al]['dialogues_skipplacement']
+        yes = translations[al]['caption_yes']
+        no = translations[al]['caption_no']
+
+        values = {
+            "al": al,
+            "title": title,
+            "text": text,
+            "warningText": warningText,
+            "yes": yes,
+            "no": no,
+            "nexttooltip": nexttooltip,
+            "backtooltip": backtooltip,
+            "skipforwardtooltip": skipforwardtooltip
+        }
+
+        renderer = pystache.Renderer()
+        vsptintro_fragment = renderer.render_path('../templates/vsptintro.mustache', values)
+        with open(base_dir + '/vsptintro/' + al + '.html', 'w') as f:
+            print(vsptintro_fragment, file = f)
+
+        tip_output = renderer.render_path('../templates/toolbartooltips.mustache', values)
+        with open(base_dir + '/vsptintro/' + al + '-toolbarTooltips.json', 'w') as f:
+            print(tip_output, file = f)
+
 export_als()
+export_help_dialogs()
 export_legend()
 export_flowchart()
 export_tls()
+export_vsptintro()
 
 """
   val db = new DB

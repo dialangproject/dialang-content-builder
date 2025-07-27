@@ -302,13 +302,6 @@ def export_vspt():
 
     Path(base_dir + '/vspt').mkdir(exist_ok=True)
 
-    """
-    val testLanguagesAndVSPT: Map[String, List[(String,String,Boolean)]]
-      = (db.getTestLanguageCodes.foldLeft(
-        Map.newBuilder[String, List[(String,String,Boolean)]])
-          ((acc,tl) => acc += ((tl._1, db.getVSPTWords(tl._1))))).result()
-    """
-
     test_languages_and_vspt = {}
     for tl in [tl['locale'] for tl in test_languages]:
         cursor = conn.cursor()
@@ -319,6 +312,7 @@ def export_vspt():
         test_languages_and_vspt[tl] = vspt_words
 
     for al in [al['locale'] for al in admin_languages]:
+
         Path(base_dir + '/vspt/' + al).mkdir(exist_ok=True)
 
         title = translations[al]['title_placement']
@@ -338,10 +332,13 @@ def export_vspt():
 
         for tl, word_list in test_languages_and_vspt.items():
 
+            """
+            if tl != "en_gb":
+                continue
+            """
+
             tab_list = []
             words = []
-
-            valid_map = {}
 
             wi = iter(word_list)
 
@@ -349,32 +346,30 @@ def export_vspt():
 
             while word_tuple is not None:
 
-                word_1 = word_tuple[0]
-                id_1 = word_tuple[1]
-                valid_map[id_1] = word_tuple[2]
-                valid_class_1 = "correct" if word_tuple[2] else "incorrect"
-                invalid_class_1 = "incorrect" if word_tuple[2] else "correct"
+                word_1, id_1, valid_1 = word_tuple
+                valid_class_1 = "correct" if valid_1 else "incorrect"
+                invalid_class_1 = "incorrect" if valid_1 else "correct"
                 words.append({"id": id_1})
 
                 word_tuple = next(wi, None)
                 if word_tuple is None:
                     break
-                word_2 = word_tuple[0]
-                id_2 = word_tuple[1]
-                valid_class_2 = "correct" if word_tuple[2] else "incorrect"
-                invalid_class_2 = "incorrect" if word_tuple[2] else "correct"
-                valid_2 = word_tuple[2]
+
+                word_2, id_2, valid_2 = word_tuple
+                valid_class_2 = "correct" if valid_2 else "incorrect"
+                invalid_class_2 = "incorrect" if valid_2 else "correct"
                 words.append({"id": id_2})
 
                 word_tuple = next(wi, None)
                 if word_tuple is None:
                     break
-                word_3 = word_tuple[0]
-                id_3 = word_tuple[1]
-                valid_class_3 = "correct" if word_tuple[2] else "incorrect"
-                invalid_class_3 = "incorrect" if word_tuple[2] else "correct"
-                valid_3 = word_tuple[2]
+
+                word_3, id_3, valid_3 = word_tuple
+                valid_class_3 = "correct" if valid_3 else "incorrect"
+                invalid_class_3 = "incorrect" if valid_3 else "correct"
                 words.append({"id": id_3})
+
+                word_tuple = next(wi, None)
 
                 tab_list.append({
                     "word1": word_1,
@@ -385,28 +380,15 @@ def export_vspt():
                     "id2": id_2,
                     "valid_class_2": valid_class_2,
                     "invalid_class_2": invalid_class_2,
-                    "valid2": valid_2,
                     "word3": word_3,
                     "id3": id_3,
                     "valid_class_3": valid_class_3,
                     "invalid_class_3": invalid_class_3
                 })
 
-            #print(tab_list)
-
-            def is_correct_function(compound_id):
-                print("COMPOUND ID: " + compound_id)
-                word_id, validity = compound_id.split("_")
-                print("WORD ID: " + word_id)
-                if valid_map[word_id]:
-                    return "correct" if validity == "valid" else "incorrect"
-                else:
-                    return "correct" if validity == "invalid" else "incorrect"
-
             values = {
                 "al": al,
                 "title": title,
-                #"isCorrect": is_correct_function,
                 "tl": tl,
                 "warningText": warning_text,
                 "yes": yes,
@@ -414,7 +396,8 @@ def export_vspt():
                 "confirmsendquestion": confirmSend,
                 "submit": submit,
                 "words": words,
-                "tab": tab_list
+                "tab": tab_list,
+                "stage": "prod"
             }
 
             renderer = pystache.Renderer()
@@ -422,14 +405,12 @@ def export_vspt():
             with open(base_dir + '/vspt/' + al + '/' + tl + '.html', 'w') as f:
                 print(vspt_fragment, file = f)
 
-"""
 export_als()
 export_help_dialogs()
 export_legend()
 export_flowchart()
 export_tls()
 export_vsptintro()
-"""
 export_vspt()
 
 """

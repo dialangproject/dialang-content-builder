@@ -3,6 +3,7 @@ import psycopg2
 import datetime
 import os
 import configparser
+import csv
 from pathlib import Path
 
 start = datetime.datetime.now()
@@ -34,6 +35,33 @@ for language in admin_languages:
     config = configparser.ConfigParser()
     config.read('../admin-texts/admintexts_' + al + '.properties')
     translations[al] = config._sections['AdminTexts']
+
+def export_vspt_data():
+
+    Path(base_dir + '/db-import').mkdir(exist_ok=True)
+
+    with open(base_dir + '/db-import/dialang-vspt-words.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_MINIMAL)
+        writer.writerow(("test_language", "word_id", "word", "valid", "weight"))
+        for tl in [tl['locale'] for tl in test_languages]:
+            cursor = conn.cursor()
+            cursor.execute("SELECT words.word_id,words.word,words.valid,words.weight FROM vsp_test_word,words WHERE locale = '" + tl + "' AND vsp_test_word.word_id = words.word_id")
+            rows = list(cursor.fetchall())
+            for row in rows:
+                writer.writerow((tl, row[0], row[1], row[2], row[3]))
+            cursor.close()
+        csvfile.close()
+
+    with open(base_dir + '/db-import/dialang-vspt-bands.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_MINIMAL)
+        writer.writerow(("test_language", "level", "low", "high"))
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM vsp_bands")
+        rows = list(cursor.fetchall())
+        for row in rows:
+            writer.writerow((row[0], row[1], row[2], row[3]))
+        cursor.close()
+        csvfile.close()
 
 def export_als():
     renderer = pystache.Renderer()
@@ -98,9 +126,6 @@ def export_help_dialogs():
 def export_legend():
 
     Path(base_dir + '/legend').mkdir(exist_ok=True)
-
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM admin_languages")
 
     for al in [al['locale'] for al in admin_languages]:
         key = translations[al]['title_key']
@@ -405,6 +430,7 @@ def export_vspt():
             with open(base_dir + '/vspt/' + al + '/' + tl + '.html', 'w') as f:
                 print(vspt_fragment, file = f)
 
+export_vspt_data()
 export_als()
 export_help_dialogs()
 export_legend()

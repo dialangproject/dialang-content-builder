@@ -40,7 +40,7 @@ def export_vspt_data():
 
     Path(base_dir + '/db-import').mkdir(exist_ok=True)
 
-    with open(base_dir + '/db-import/dialang-vspt-words.csv', 'w', newline='') as csvfile:
+    with open("../../dialang-web/db-import/dialang-vspt-words.csv", 'w', newline='') as csvfile:
         writer = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_MINIMAL)
         writer.writerow(("test_language", "word_id", "word", "valid", "weight"))
         for tl in [tl['locale'] for tl in test_languages]:
@@ -52,7 +52,7 @@ def export_vspt_data():
             cursor.close()
         csvfile.close()
 
-    with open(base_dir + '/db-import/dialang-vspt-bands.csv', 'w', newline='') as csvfile:
+    with open("../../dialang-web/db-import/dialang-vspt-bands.csv", 'w', newline='') as csvfile:
         writer = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_MINIMAL)
         writer.writerow(("test_language", "level", "low", "high"))
         cursor = conn.cursor()

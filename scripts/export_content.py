@@ -430,6 +430,50 @@ def export_vspt():
             with open(base_dir + '/vspt/' + al + '/' + tl + '.html', 'w') as f:
                 print(vspt_fragment, file = f)
 
+def export_vspt_feedback():
+
+    Path(base_dir + '/vsptfeedback').mkdir(exist_ok=True)
+
+    cursor = conn.cursor()
+    cursor.execute("SELECT level FROM vsp_levels")
+
+    renderer = pystache.Renderer()
+
+    for al in [al['locale'] for al in admin_languages]:
+        title = translations[al]['title_placementfeedback']
+        yourscore = translations[al]['placementfeedback_yourscore']
+        backtooltip = translations[al]['caption_backtofeedback']
+        nexttooltip = translations[al]['caption_gotonext']
+
+        tip_values = { "backtooltip": backtooltip, "nexttooltip": nexttooltip }
+        tip_output = renderer.render_path('../templates/toolbartooltips.mustache', tip_values)
+        with open(base_dir + '/vsptfeedback/' + al + '-toolbarTooltips.json', 'w') as f:
+            print(tip_output, file = f)
+
+        levelv6 = translations[al]['placementfeedback_text#v6']
+        levelv5 = translations[al]['placementfeedback_text#v5']
+        levelv4 = translations[al]['placementfeedback_text#v4']
+        levelv3 = translations[al]['placementfeedback_text#v3']
+        levelv2 = translations[al]['placementfeedback_text#v2']
+        levelv1 = translations[al]['placementfeedback_text#v1']
+        values = {
+            "al": al,
+            "title": title,
+            "yourscore": yourscore,
+            "levelv6": levelv6,
+            "levelv5": levelv5,
+            "levelv4": levelv4,
+            "levelv3": levelv3,
+            "levelv2": levelv2,
+            "levelv1": levelv1,
+            "nexttooltip": nexttooltip,
+            "stage": "prod"
+        }
+
+        fragment = renderer.render_path('../templates/vsptfeedback.mustache', values)
+        with open(base_dir + '/vsptfeedback/' + al + '.html', 'w') as f:
+            print(fragment, file = f)
+
 export_vspt_data()
 export_als()
 export_help_dialogs()
@@ -438,6 +482,7 @@ export_flowchart()
 export_tls()
 export_vsptintro()
 export_vspt()
+export_vspt_feedback()
 
 """
   val db = new DB

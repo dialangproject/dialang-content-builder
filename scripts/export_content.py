@@ -26,15 +26,33 @@ rows = list(cursor.fetchall())
 test_languages = [{ 'locale': r[0], 'two_letter_code': r[1] } for r in rows]
 cursor.close()
 
+saSkills = ("Reading", "Writing", "Listening")
+
 base_dir = '../../dialang-web/static-site/content'
 
 translations = {}
+
+cefr_levels = {
+    1: "A1",
+    2: "A2",
+    3: "B1",
+    4: "B2",
+    5: "C1",
+    6: "C2"
+}
 
 for language in admin_languages:
     al = language["locale"]
     config = configparser.ConfigParser()
     config.read('../admin-texts/admintexts_' + al + '.properties')
     translations[al] = config._sections['AdminTexts']
+
+def get_translation_like(pattern, al):
+    pre, post = pattern.split('%')
+    for kv in translations[al].items():
+        if kv[0].startswith(pre) and kv[0].endswith(post):
+            return kv[1]
+
 
 def export_vspt_data():
 
@@ -60,6 +78,58 @@ def export_vspt_data():
         rows = list(cursor.fetchall())
         for row in rows:
             writer.writerow((row[0], row[1], row[2], row[3]))
+        cursor.close()
+        csvfile.close()
+
+def export_sa_data():
+
+    Path(base_dir + '/db-import').mkdir(exist_ok=True)
+
+    with open("../../dialang-web/db-import/dialang-sa-weights.csv", 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_MINIMAL)
+        writer.writerow(("skill", "wid", "weight"))
+        cursor = conn.cursor()
+        cursor.execute("SELECT * from sa_weights")
+        rows = list(cursor.fetchall())
+        for row in rows:
+            writer.writerow((row[0], row[1], row[2]))
+        cursor.close()
+        csvfile.close()
+
+    with open("../../dialang-web/db-import/dialang-sa-grading.csv", 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_MINIMAL)
+        writer.writerow(("skill", "rsc", "ppe", "se", "grade"))
+        cursor = conn.cursor()
+        cursor.execute("SELECT * from sa_grading")
+        rows = list(cursor.fetchall())
+        for row in rows:
+            writer.writerow((row[0], row[1], row[2], row[3], row[4]))
+        cursor.close()
+        csvfile.close()
+
+def export_preest_data():
+
+    Path(base_dir + '/db-import').mkdir(exist_ok=True)
+
+    with open("../../dialang-web/db-import/dialang-preest-weights.csv", 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_MINIMAL)
+        writer.writerow(("key", "sa", "vspt", "coe"))
+        cursor = conn.cursor()
+        cursor.execute("SELECT * from preest_weights")
+        rows = list(cursor.fetchall())
+        for row in rows:
+            writer.writerow((f"{row[0]}#{row[1]}#{row[2]}#{row[3]}", row[4], row[5], row[6]))
+        cursor.close()
+        csvfile.close()
+
+    with open("../../dialang-web/db-import/dialang-preest-assignments.csv", 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_MINIMAL)
+        writer.writerow(("key", "pe", "booklet_id"))
+        cursor = conn.cursor()
+        cursor.execute("SELECT * from preest_assignments")
+        rows = list(cursor.fetchall())
+        for row in rows:
+            writer.writerow((f"{row[0]}#{row[1]}", row[2], row[3]))
         cursor.close()
         csvfile.close()
 
@@ -474,7 +544,189 @@ def export_vspt_feedback():
         with open(base_dir + '/vsptfeedback/' + al + '.html', 'w') as f:
             print(fragment, file = f)
 
+def export_saintro():
+
+    Path(base_dir + '/saintro').mkdir(exist_ok=True)
+
+    renderer = pystache.Renderer()
+
+    for al in [al['locale'] for al in admin_languages]:
+        Path(base_dir + '/saintro/' + al).mkdir(exist_ok=True)
+
+        nexttooltip = translations[al]['caption_startselfassess']
+        skipforwardtooltip = translations[al]['caption_skipselfassess']
+        text = translations[al]['selfassessintro_text']
+
+        warningText = translations[al]['dialogues_skipselfassess']
+        yes = translations[al]['caption_yes']
+        no = translations[al]['caption_no']
+
+        tip_values = { "nexttooltip": nexttooltip,"skipforwardtooltip": skipforwardtooltip }
+        tip_output = renderer.render_path('../templates/toolbartooltips.mustache', tip_values)
+        with open(base_dir + '/saintro/' + al + '-toolbarTooltips.json', 'w') as f:
+            print(tip_output, file = f)
+
+        for skill in saSkills:
+
+            title = translations[al]["title_selfassess#" + skill.lower()]
+
+            values = {
+                "al": al,
+                "skill": skill.lower(),
+                "title": title,
+                "text": text,
+                "warningText": warningText,
+                "yes": yes,
+                "no": no,
+                "nexttooltip": nexttooltip,
+                "skipforwardtooltip": skipforwardtooltip,
+                "stage": "prod"
+            }
+
+            fragment = renderer.render_path('../templates/saintro.mustache', values)
+            with open(base_dir + '/saintro/' + al + '/' + skill.lower() + '.html', 'w') as f:
+                print(fragment, file = f)
+
+def export_sa():
+
+    Path(base_dir + '/sa').mkdir(exist_ok=True)
+
+    renderer = pystache.Renderer()
+
+    for al in [al['locale'] for al in admin_languages]:
+        Path(base_dir + '/sa/' + al).mkdir(exist_ok=True)
+
+        submit = translations[al]['caption_submitanswers']
+        skipforwardtooltip = translations[al]['caption_quitselfassess']
+        yes = translations[al]['caption_yes']
+        no = translations[al]['caption_no']
+        confirmSend = translations[al]['dialogues_submit']
+
+        warningText = translations[al]['dialogues_skipselfassess']
+
+        tip_values = { "nexttooltip": submit,"skipforwardtooltip": skipforwardtooltip }
+        tip_output = renderer.render_path('../templates/toolbartooltips.mustache', tip_values)
+        with open(base_dir + '/sa/' + al + '-toolbarTooltips.json', 'w') as f:
+            print(tip_output, file = f)
+
+        for skill in saSkills:
+            cursor = conn.cursor()
+            cursor.execute(f"SELECT * FROM sa_statements WHERE locale = '{al}' AND skill = '{skill.lower()}' ORDER BY wid")
+            statements = [ {"wid": r[2], "statement": r[3]} for r in cursor.fetchall() ]
+
+            title = translations[al]["title_selfassess#" + skill.lower()]
+            values = {
+                "al": al,
+                "skill": skill.lower(),
+                "title": title,
+                "warningText": warningText,
+                "submit": submit,
+                "yes": yes,
+                "no": no,
+                "confirmsendquestion": confirmSend,
+                "statements": statements,
+                "stage": "prod"
+            }
+
+            fragment = renderer.render_path("../templates/sa.mustache", values)
+            with open(base_dir + '/sa/' + al + '/' + skill.lower() + '.html', 'w') as f:
+                print(fragment, file = f)
+
+def export_test_intro():
+
+    Path(f"{base_dir}/testintro").mkdir(exist_ok=True)
+
+    renderer = pystache.Renderer()
+
+    for al in [al['locale'] for al in admin_languages]:
+        nexttooltip = translations[al]['caption_starttest']
+        skipforwardtooltip = translations[al]['caption_skiplangtest']
+        title = translations[al]['title_dialanglangtest']
+        text = translations[al]['langtestintro_text']
+        feedback = translations[al]['caption_instantfeedback']
+        instantfeedbackofftooltip = translations[al]['caption_instantfeedbackoff']
+        instantfeedbackontooltip = translations[al]['caption_instantfeedbackon']
+
+        warningText = translations[al]['dialogues_skiplangtest']
+        yes = translations[al]['caption_yes']
+        no = translations[al]['caption_no']
+
+        values = {
+            "al": al,
+            "title": title,
+            "text": text,
+            "warningText": warningText,
+            "yes": yes,
+            "no": no,
+            "feedback": feedback,
+            "instantfeedbackontooltip": instantfeedbackontooltip,
+            "instantfeedbackofftooltip": instantfeedbackofftooltip,
+            "stage": "prod"
+        }
+
+        fragment = renderer.render_path("../templates/testintro.mustache", values)
+        with open(f"{base_dir}/testintro/{al}.html", 'w') as f:
+            print(fragment, file = f)
+
+        tip_values = { "nexttooltip": nexttooltip, "skipforwardtooltip": skipforwardtooltip }
+        tip_output = renderer.render_path('../templates/toolbartooltips.mustache', tip_values)
+        with open(f"{base_dir}/testintro/{al}-toolbarTooltips.json", 'w') as f:
+            print(tip_output, file = f)
+
+def export_sa_feedback():
+
+    Path(f"{base_dir}/safeedback").mkdir(exist_ok=True)
+
+    renderer = pystache.Renderer()
+
+    levels = list(cefr_levels.values())
+
+    for al in [al['locale'] for al in admin_languages]:
+        Path(f"{base_dir}/safeedback/{al}").mkdir(exist_ok=True)
+
+        tip_values = { "backtooltip": translations[al]['caption_backtofeedback'] }
+        tip_output = renderer.render_path('../templates/toolbartooltips.mustache', tip_values)
+        with open(base_dir + '/safeedback/' + al + '-toolbarTooltips.json', 'w') as f:
+            print(tip_output, file = f)
+
+        title = translations[al]['title_selfassessfeedback']
+        aboutSAText = translations[al]['feedbackoption_aboutselfassess']
+        overEst = translations[al]['selfassessfeedback_overest_par2']
+        accurate = translations[al]['selfassessfeedback_match_par2']
+        underEst = translations[al]['selfassessfeedback_underest_par2']
+
+        for item_level in levels:
+            Path(f"{base_dir}/safeedback/{al}/{item_level}").mkdir(exist_ok=True)
+            for sa_level in levels:
+                if sa_level != item_level:
+                    #part_one = translations[al][f"selfassessfeedback%par1#{item_level.lower()}#{sa_level.lower()}"]
+                    get_translation_like(f"selfassessfeedback%par1#{item_level.lower()}#{sa_level.lower()}", al)
+                else:
+                    part_one = translations[al][f"selfassessfeedback_match_par1#{item_level.lower()}"]
+
+                if sa_level > item_level:
+                    part_two = overEst
+                elif sa_level == item_level:
+                    part_two = accurate
+                else:
+                    part_two = underEst
+
+            values = {
+                "al": al,
+                "title": title,
+                "partOne": part_one,
+                "partTwo": part_two,
+                "aboutSAText": aboutSAText,
+                "stage": "prod"
+            }
+
+            fragment = renderer.render_path("../templates/safeedback.mustache", values)
+            with open(base_dir + "/safeedback/" + al + "/" + item_level + "/" + sa_level + ".html", "w") as f:
+                print(fragment, file=f)
+
 export_vspt_data()
+export_sa_data()
+export_preest_data()
 export_als()
 export_help_dialogs()
 export_legend()
@@ -483,6 +735,10 @@ export_tls()
 export_vsptintro()
 export_vspt()
 export_vspt_feedback()
+export_saintro()
+export_sa()
+export_sa_feedback()
+export_test_intro()
 
 """
   val db = new DB

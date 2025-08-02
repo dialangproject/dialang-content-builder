@@ -9,7 +9,7 @@
           </script>
           <h1>{{{title}}}</h1>
           <img src="/{{stage}}/assets/images/true.gif"/> = {{yes}} <img src="/{{stage}}/assets/images/false.gif"/> = {{no}}
-          <form id="vsptform" action="/prod/scorevspt" method="POST">
+          <form id="vsptform" action="/{{stage}}/scorevspt" method="POST">
             <input type="hidden" name="al" value="{{al}}"/>
             <input type="hidden" name="tl" value="{{tl}}"/>
             <input type="hidden" id="cheatlevel" name="cheatlevel" value="zero"/>

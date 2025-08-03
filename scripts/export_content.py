@@ -133,6 +133,89 @@ def export_preest_data():
         cursor.close()
         csvfile.close()
 
+def export_booklet_data():
+
+    """
+    lazy val conn:Connection = ds.getConnection
+    lazy val st1:PreparedStatement = conn.prepareStatement(
+        "SELECT baskets.* FROM baskets, booklet_basket WHERE booklet_basket.booklet_id = ? AND booklet_basket.basket_id = baskets.id")
+    lazy val st2:PreparedStatement = conn.prepareStatement(
+        "SELECT * FROM baskets WHERE parent_testlet_id = ?")
+    lazy val st3:PreparedStatement = conn.prepareStatement(
+        "SELECT count(*) as num_items FROM basket_item WHERE basket_id = ?")
+    """
+
+    Path(base_dir + '/db-import').mkdir(exist_ok=True)
+
+    with open("../../dialang-web/db-import/dialang-booklet-lengths.csv", 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_MINIMAL)
+        writer.writerow(("booklet_id", "length"))
+
+        temp = {}
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM booklets")
+        booklet_id_rows = list(cursor.fetchall())
+        cursor.close()
+
+        for id_row in booklet_id_rows:
+
+            total = 0
+            cursor = conn.cursor()
+            booklet_id = id_row[0]
+            cursor.execute(f"SELECT baskets.* FROM baskets, booklet_basket WHERE booklet_basket.booklet_id = {booklet_id} AND booklet_basket.basket_id = baskets.id")
+            baskets = list(cursor.fetchall())
+            cursor.close()
+
+            for basket in baskets:
+                basket_id = basket[0]
+                basket_type = basket[1]
+
+                if basket_type == "tabbedpane":
+                    cursor = conn.cursor()
+                    cursor.execute(f"SELECT * FROM baskets WHERE parent_testlet_id = {basket_id}")
+                    child_baskets = list(cursor.fetchall())
+                    cursor.close()
+                    for child_basket in child_baskets:
+                        child_basket_id = child_basket[0]
+                        cursor = conn.cursor()
+                        cursor.execute(f"SELECT count(*) as num_items FROM basket_item WHERE basket_id = {child_basket_id}")
+                        child_basket_item_count = cursor.fetchone()
+                        cursor.close()
+                        total += child_basket_item_count[0]
+                else:
+                    cursor = conn.cursor()
+                    cursor.execute(f"SELECT count(*) as num_items FROM basket_item WHERE basket_id = {basket_id}")
+                    basket_item_count = cursor.fetchone()
+                    cursor.close()
+                    total += basket_item_count[0]
+
+            writer.writerow((booklet_id, total))
+                
+        csvfile.close()
+
+    with open("../../dialang-web/db-import/dialang-booklet-baskets.csv", 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_MINIMAL)
+        writer.writerow(("booklet_id", "basket_ids"))
+
+        cursor = conn.cursor()
+        booklet_id = id_row[0]
+        cursor.execute(f"SELECT * FROM booklet_basket")
+        booklet_baskets = list(cursor.fetchall())
+        cursor.close()
+
+        mapping = {}
+
+        for booklet_basket in booklet_baskets:
+            if booklet_basket[0] not in mapping:
+                mapping[booklet_basket[0]] = []
+            mapping[booklet_basket[0]].append(booklet_basket[1])
+
+        for booklet_id in mapping:
+            writer.writerow((booklet_id, ",".join([str(i) for i in mapping[booklet_id]])))
+
+        csvfile.close()
+
+
 def export_als():
     renderer = pystache.Renderer()
     funder_message = 'The original DIALANG Project was carried out with the support of the commission of the European Communities within the framework of the SOCRATES programme, LINGUA 2'
@@ -726,6 +809,7 @@ def export_sa_feedback():
 
 export_vspt_data()
 export_sa_data()
+export_booklet_data()
 export_preest_data()
 export_als()
 export_help_dialogs()

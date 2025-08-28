@@ -53,10 +53,10 @@ def get_translation_like(pattern, al):
         if kv[0].startswith(pre) and kv[0].endswith(post):
             return kv[1]
 
+Path("../../dialang-web/db-import").mkdir(exist_ok=True)
+Path("../../dialang-web/static-site/content").mkdir(exist_ok=True)
 
 def export_vspt_data():
-
-    Path(base_dir + '/db-import').mkdir(exist_ok=True)
 
     with open("../../dialang-web/db-import/dialang-vspt-words.csv", 'w', newline='') as csvfile:
         writer = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_MINIMAL)
@@ -83,8 +83,6 @@ def export_vspt_data():
 
 def export_sa_data():
 
-    Path(base_dir + '/db-import').mkdir(exist_ok=True)
-
     with open("../../dialang-web/db-import/dialang-sa-weights.csv", 'w', newline='') as csvfile:
         writer = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_MINIMAL)
         writer.writerow(("skill", "wid", "weight"))
@@ -108,8 +106,6 @@ def export_sa_data():
         csvfile.close()
 
 def export_preest_data():
-
-    Path(base_dir + '/db-import').mkdir(exist_ok=True)
 
     with open("../../dialang-web/db-import/dialang-preest-weights.csv", 'w', newline='') as csvfile:
         writer = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_MINIMAL)
@@ -144,8 +140,6 @@ def export_booklet_data():
     lazy val st3:PreparedStatement = conn.prepareStatement(
         "SELECT count(*) as num_items FROM basket_item WHERE basket_id = ?")
     """
-
-    Path(base_dir + '/db-import').mkdir(exist_ok=True)
 
     with open("../../dialang-web/db-import/dialang-booklet-lengths.csv", 'w', newline='') as csvfile:
         writer = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_MINIMAL)

@@ -28,7 +28,7 @@ cursor.close()
 
 saSkills = ("Reading", "Writing", "Listening")
 
-base_dir = '../../dialang-web/static-site/content'
+base_dir = '../static-site/content'
 
 translations = {}
 
@@ -53,8 +53,8 @@ def get_translation_like(pattern, al):
         if kv[0].startswith(pre) and kv[0].endswith(post):
             return kv[1]
 
-Path("../../dialang-web/db-import").mkdir(exist_ok=True)
-Path("../../dialang-web/static-site/content").mkdir(exist_ok=True)
+Path("db-import").mkdir(exist_ok=True)
+Path(base_dir).mkdir(exist_ok=True)
 
 def export_vspt_data():
 

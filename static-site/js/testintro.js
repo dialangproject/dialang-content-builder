@@ -1,9 +1,8 @@
 $('#next').prop('disabled', false).click(function (e) {
 
-  const url = "/starttest";
+  const url = "/api/starttest";
   console.log(dialang.session);
-  const body = { session: dialang.session };
-  fetch(url, { "method": "POST", body: JSON.stringify(body) })
+  fetch(url, { "method": "POST", body: JSON.stringify(dialang.session) })
   .then(r => {
 
     if (r.ok) {

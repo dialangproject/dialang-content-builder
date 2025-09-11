@@ -50,7 +50,7 @@ $.get(`/content/sa/${dialang.session.al}/${dialang.session.skill}.html`, functio
     formData.append("skill", dialang.session.skill);
     formData.append("sessionId", dialang.session.id);
 
-    const url = "/scoresa";
+    const url = "/api/scoresa";
     fetch(url, {
       method: "POST",
       body: JSON.stringify(Object.fromEntries(formData)),

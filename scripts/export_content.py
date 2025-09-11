@@ -9,7 +9,7 @@ from pathlib import Path
 start = datetime.datetime.now()
 
 conn = psycopg2.connect(
-    database="DIALANG",
+    database="dialang",
     user="dialangadmin",
     host="localhost",  # Usually 'localhost'
     port="5432")
@@ -184,6 +184,10 @@ def export_booklet_data():
                     total += basket_item_count[0]
 
             writer.writerow((booklet_id, total))
+            cursor = conn.cursor()
+            cursor.execute("INSERT INTO booklet_lengths VALUES(%s, %s)", (booklet_id, total))
+
+        conn.commit()
                 
         csvfile.close()
 
